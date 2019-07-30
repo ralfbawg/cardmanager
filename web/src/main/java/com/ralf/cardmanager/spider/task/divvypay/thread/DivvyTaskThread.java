@@ -4,17 +4,24 @@ package com.ralf.cardmanager.spider.task.divvypay.thread;
 import com.jeesite.common.web.SpiderUtil;
 import com.ralf.cardmanager.spider.task.SpiderBasicThread;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
+import com.ralf.cardmanager.spider.task.divvypay.service.DivvypayService;
 import com.ralf.cardmanager.spider.util.WebDriverPool;
+import org.apache.ibatis.annotations.AutomapConstructor;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
+@Component
 public class DivvyTaskThread extends SpiderBasicThread implements Runnable {
     WebDriverPool webDriverPool;
     WebDriver webDriver;
+    @Autowired
+    DivvypayService service;
 
     public DivvyTaskThread(DivvyPaySiteConfig config) {
         super(config);
@@ -52,28 +59,16 @@ public class DivvyTaskThread extends SpiderBasicThread implements Runnable {
             Thread.sleep(1 * 1000);
         }
         ChromeDriver chrome = ((ChromeDriver) webDriver);
-        String event = "function fireKeyEvent(el, evtType, keyCode){ var doc = el.ownerDocument, win = doc.defaultView || doc.parentWindow, evtObj; if(doc.createEvent){ if(win.KeyEvent) { evtObj = doc.createEvent('KeyEvents'); evtObj.initKeyEvent( evtType, true, true, win, false, false, false, false, keyCode, 0 ); } else { evtObj = doc.createEvent('UIEvents'); Object.defineProperty(evtObj, 'keyCode', {         get : function() { return this.keyCodeVal; }     });          Object.defineProperty(evtObj, 'which', {         get : function() { return this.keyCodeVal; }     }); evtObj.initUIEvent( evtType, true, true, win, 1 ); evtObj.keyCodeVal = keyCode; if (evtObj.keyCode !== keyCode) {            } } el.dispatchEvent(evtObj); }  else if(doc.createEventObject){ evtObj = doc.createEventObject(); evtObj.keyCode = keyCode; el.fireEvent('on' + evtType, evtObj); } } ";
-        chrome.executeScript(event + " fireKeyEvent(document.querySelector('input[name=email]'), 'keydown', 65);");
-        chrome.executeScript(event + " fireKeyEvent(document.querySelector('input[name=email]'), 'keydown', 65);");
-        chrome.executeScript(event + "fireKeyEvent(document.querySelector('input[name=email]'), 'keydown', 67);");
-        chrome.executeScript(event + "fireKeyEvent(document.querySelector('input[name=email]'), 'keydown', 68);");
-        chrome.executeScript(event + "fireKeyEvent(document.querySelector('input[name=email]'), 'keydown', 69);");
-        chrome.executeScript(event + "fireKeyEvent(document.querySelector('input[name=email]'), 'keydown', 69);");
-        chrome.executeScript(event + "fireKeyEvent(document.querySelector('input[name=email]'), 'keydown', 69);");
-        chrome.executeScript(event + "fireKeyEvent(document.querySelector('input[name=email]'), 'keydown', 69);");
-        chrome.executeScript(event + "fireKeyEvent(document.querySelector('input[name=email]'), 'keydown', 69);");
-//        chrome.executeScript("evtObj = document.createEvent('UIEvents'); " +
-//                "evtObj.initUIEvent( evtType, true, true, window, 67 );");
-//        chrome.executeScript("evtObj = document.createEvent('UIEvents'); " +
-//                "evtObj.initUIEvent( evtType, true, true, window, 68 );");
-//        chrome.executeScript("evtObj = document.createEvent('UIEvents'); " +
-//                "evtObj.initUIEvent( evtType, true, true, window, 69 );");
+//        String event = "function fireKeyEvent(el, evtType, keyCode){ var doc = el.ownerDocument, win = doc.defaultView || doc.parentWindow, evtObj; if(doc.createEvent){ if(win.KeyEvent) { evtObj = doc.createEvent('KeyEvents'); evtObj.initKeyEvent( evtType, true, true, win, false, false, false, false, keyCode, 0 ); } else { evtObj = doc.createEvent('UIEvents'); Object.defineProperty(evtObj, 'keyCode', {         get : function() { return this.keyCodeVal; }     });          Object.defineProperty(evtObj, 'which', {         get : function() { return this.keyCodeVal; }     }); evtObj.initUIEvent( evtType, true, true, win, 1 ); evtObj.keyCodeVal = keyCode; if (evtObj.keyCode !== keyCode) {            } } el.dispatchEvent(evtObj); }  else if(doc.createEventObject){ evtObj = doc.createEventObject(); evtObj.keyCode = keyCode; el.fireEvent('on' + evtType, evtObj); } } ";
+//        chrome.executeScript(event + " fireKeyEvent(document.querySelector('input[name=email]'), 'keydown', 65);");
 
-        chrome.executeScript("document.querySelector(\"input[name=email]\").value=\"" + config.username + "\";");
-        chrome.executeScript("document.querySelector(\"input[name=password]\").value=\"" + config.password + "\";");
-        chrome.executeScript("document.querySelector('button.auth0-lock-submit').click();");
+
+//        chrome.executeScript("document.querySelector(\"input[name=email]\").value=\"" + config.username + "\";");
+//        chrome.executeScript("document.querySelector(\"input[name=password]\").value=\"" + config.password + "\";");
+//        chrome.executeScript("document.querySelector('button.auth0-lock-submit').click();");
         while (!SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("i.SideNavigation-header-logo.Icon.Icon-logoSmall"))) {
-            Thread.sleep(1 * 1000);
+            service.sendShouldLoginByHandEmail();
+            Thread.sleep(service.emailInterval * 1000);
         }
         config.authToken = ((ChromeDriver) webDriver).getSessionStorage().getItem("id_token");
         config.getRequestHead().put("authorization", "Bearer " + config.authToken);

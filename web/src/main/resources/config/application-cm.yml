@@ -1,0 +1,10 @@
+cm:
+  spider:
+    loginTip:
+      inteval: 30
+      email:
+        fromAddress: 22123971@qq.com
+        username: 22123971@qq.com
+        password: Wwkkvikthh123
+        ssl: true
+        smtpPort: 23
