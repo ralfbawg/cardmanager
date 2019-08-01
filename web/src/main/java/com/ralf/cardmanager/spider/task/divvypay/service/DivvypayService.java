@@ -26,7 +26,7 @@ public class DivvypayService {
     @Value("${cm.spider.loginTip.email.ssl}")
     private String emailSsl;
     @Value("${cm.spider.loginTip.interval}")
-    public Long emailInterval;
+    public String emailInterval;
     @Autowired
     EmailSendService emailSendService;
 
