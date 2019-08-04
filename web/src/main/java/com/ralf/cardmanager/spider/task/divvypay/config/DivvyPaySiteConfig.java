@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Component
+@Component("DivvySiteConfig")
 public class DivvyPaySiteConfig extends SiteBaseConfig {
 
 }

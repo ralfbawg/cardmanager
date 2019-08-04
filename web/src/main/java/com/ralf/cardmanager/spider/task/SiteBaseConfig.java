@@ -12,7 +12,7 @@ public class SiteBaseConfig {
 
     public volatile Boolean Logined = false;
 
-    public volatile String loginUrl = "";
+    public String loginUrl = "";
 
     public volatile String authToken = "";
 
