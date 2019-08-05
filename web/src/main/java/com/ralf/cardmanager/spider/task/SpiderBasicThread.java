@@ -6,6 +6,7 @@ import org.openqa.selenium.WebDriver;
 
 @Slf4j
 public abstract class SpiderBasicThread {
+
     protected SiteBaseConfig config;
 
     public static final int poolSize = 5;

@@ -1,27 +1,39 @@
 package com.ralf.cardmanager.spider.task.divvypay.operation;
 
-import com.jeesite.common.web.http.HttpClientUtils;
+import com.jeesite.common.lang.StringUtils;
 import com.ralf.cardmanager.spider.task.BaseOperation;
-import com.ralf.cardmanager.spider.task.SiteBaseConfig;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
+import com.ralf.cardmanager.spider.task.divvypay.exception.NotInitedException;
 import com.ralf.cardmanager.spider.util.SpringContextUtil;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class BaseDivvyOperation extends BaseOperation {
-    public BaseDivvyOperation(DivvyPaySiteConfig config) {
-        defaultHeader.put("authorization", "Bearer " + SpringContextUtil.getBean( DivvyPaySiteConfig.class).authToken);
+    private boolean inited = false;
+    protected String body = "";
+    protected String[] bodyParams;
+    protected String defaultUrl = "https://www.divvypay.co/js/graph";
+
+    protected void checkInit() throws NotInitedException {
+        if (!inited) {
+            throw new NotInitedException("please init first");
+        }
     }
 
-    protected String defaultUrl = "https://www.divvypay.co/js/graph";
+    protected void init(String... param) {
+        bodyParams = param;
+        inited = true;
+    }
+
+    public BaseDivvyOperation(DivvyPaySiteConfig config) {
+        defaultHeader.put("authorization", "Bearer " + SpringContextUtil.getBean(DivvyPaySiteConfig.class).authToken);
+    }
+
     protected String defaultUserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3704.400 QQBrowser/10.4.3587.400";
     protected Map defaultHeader = new HashMap<String, String>() {{
         put("authority", "app.divvy.co");
@@ -35,10 +47,36 @@ public abstract class BaseDivvyOperation extends BaseOperation {
         put("content-type", " application/json");
         put("cookie", " _ga=GA1.2.87993226.1563987455; _pendo_accountId.063f9b98-4d82-4b70-48d1-1e82e1fa3973=Q29tcGFueTozMDI3; _pendo_visitorId.063f9b98-4d82-4b70-48d1-1e82e1fa3973=VXNlcjo1MTIzNg%3D%3D; _gid=GA1.2.734103677.1564589193; _pendo_meta.063f9b98-4d82-4b70-48d1-1e82e1fa3973=1986949279; _gat=1; AWSALB=9Uefnz6V2WIyaTkqAU7CooRCOxPQYKQyTg8ZEeYD00bytbUYM1N0d2HSfRoH0Ug8gpQ0erzieOpyPefixfs37spf1zF3jaxxHiH6MldBX+1uXdbqJElcBOo1ltgw2ZouehsjeffW4NmbMASZMOEB5I2JKAKXqGSl6Iff95WhdVRXCZUJ7F0SBFInPx94tGDe23tmI5IBUSp7umV9ZkKJavCD99Sj20uJyg3OMVltiyzIWpoRPOJiqPnE8bbc3IU=; intercom-session-gh17um10=TXZQWUxDdEM4VEZvbkdyQnMwREFRLysrNHpQOHMxRXBrSjBURkQ3bUszWnNBRGw2V0pSb0p6a2kwdE1oOGlySS0tUk02Rm92ZmhyVGNhUGVJQlBnaG1mdz09--dbce332ab9c07930d71e7e2d33e9722a4393b682");
         put("origin", " https://app.divvy.co");
-        put("referer", "https://app.divvy.co/budgets/QnVkZ2V0OjQ3MzAz/virtual-cards");
         put("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3704.400 QQBrowser/10.4.3587.400");
         put("x-api-version", " 2");
     }};
 
+    @Override
+    public void packageParams() {
+        if (!StringUtils.isEmpty(body) && bodyParams != null && bodyParams.length > 0) {
+            setBody(String.format(body, bodyParams));
+        }
 
+    }
+
+    @Override
+    public void packageRequest() {
+        super.setHeader(null);
+    }
+
+    @Override
+    public Object execute() throws IOException {
+        packageParams();
+        packageRequest();
+        CloseableHttpResponse rsp = new DefaultHttpClient().execute(client);
+        if (rsp.getStatusLine().getStatusCode() >= 200) {
+            persistent(EntityUtils.toString(rsp.getEntity()));
+        }
+        return null;
+    }
+
+    @Override
+    public String getUrl() {
+        return defaultUrl;
+    }
 }

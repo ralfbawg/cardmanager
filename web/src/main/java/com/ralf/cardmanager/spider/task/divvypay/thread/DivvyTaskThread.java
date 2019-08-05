@@ -5,6 +5,7 @@ import com.jeesite.common.web.SpiderUtil;
 import com.ralf.cardmanager.spider.task.SpiderBasicThread;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.service.DivvypayService;
+import com.ralf.cardmanager.spider.util.SpringContextUtil;
 import com.ralf.cardmanager.spider.util.WebDriverPool;
 import org.apache.ibatis.annotations.AutomapConstructor;
 import org.openqa.selenium.By;
@@ -20,8 +21,8 @@ public class DivvyTaskThread extends SpiderBasicThread implements Runnable {
     WebDriverPool webDriverPool;
     WebDriver webDriver;
 
-    public DivvyTaskThread(DivvyPaySiteConfig config) {
-        super(config);
+    public DivvyTaskThread() {
+        super(SpringContextUtil.getBean(DivvyPaySiteConfig.class));
         config.loginUrl = "https://app.divvy.co/login";
         config.requestHead = new HashMap() {{
             put(":authority", "app.divvy.co");

@@ -21,7 +21,7 @@ public abstract class BaseOperation<T extends Object> {
 
     public abstract T execute() throws IOException;
 
-    public abstract void persistent();
+    public abstract void persistent(String rsp);
 
 
     public String url = "";
@@ -49,7 +49,11 @@ public abstract class BaseOperation<T extends Object> {
     }
 
     protected BaseOperation setBody(String body) {
-        ((HttpPost) client).setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
+        return setBody(body, ContentType.APPLICATION_JSON);
+    }
+
+    protected BaseOperation setBody(String body, ContentType type) {
+        ((HttpPost) client).setEntity(new StringEntity(body, type));
         return this;
     }
 
@@ -67,8 +71,10 @@ public abstract class BaseOperation<T extends Object> {
         return this;
     }
 
-    public abstract void packageRequest(BaseOperation client);
+    public abstract void packageRequest();
 
-    public abstract void packageParams(BaseOperation client);
+    public abstract void packageParams();
+
+    public abstract String getUrl();
 
 }
