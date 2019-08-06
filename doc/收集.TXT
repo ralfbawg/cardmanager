@@ -58,3 +58,6 @@ https://app.divvy.co/de/rest/pan?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJk
 "cvv": "070",
 "cardNumber": "5532320951880580"
 }
+
+获取卡状态
+{"operationName":"GetVirtualCardDetailsMoreDropdown","variables":{"cardId":"Q2FyZDozNjA2ODY="},"query":"query GetVirtualCardDetailsMoreDropdown($cardId: ID!) {\n  node(id: $cardId) {\n    ... on Card {\n      id\n      frozen\n      name\n      __typename\n    }\n    __typename\n  }\n}\n"}

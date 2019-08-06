@@ -1,4 +1,25 @@
 ﻿放在sessionStoreage
 sessionStorage.getItem('id_token');
 Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2RpdnZ5LXByZC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWNmOGQ4NDcwN2RiYmUwYzY5NWVlY2VmIiwiYXVkIjoiaHR0cHM6Ly9iYWNrZW5kLmRpdnZ5cGF5LmNvbS9ncmFwaHFsIiwiaWF0IjoxNTYzOTg3MTA0LCJleHAiOjE1NjM5OTQzMDQsImF6cCI6IjYwYVdpZmpybGFLTHpIcEhYVVhwZE5nVVIwanpueng3Iiwic2NvcGUiOiIifQ.SIJRI79sj878ixye3QmEoxx7yOO4evou7tzR-olJGuQ
- 
+
+Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2RpdnZ5LXByZC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWNmOGQ4NDcwN2RiYmUwYzY5NWVlY2VmIiwiYXVkIjoiaHR0cHM6Ly9iYWNrZW5kLmRpdnZ5cGF5LmNvbS9ncmFwaHFsIiwiaWF0IjoxNTYzOTg3MTA0LCJleHAiOjE1NjM5OTQzMDQsImF6cCI6IjYwYVdpZmpybGFLTHpIcEhYVVhwZE5nVVIwanpueng3Iiwic2NvcGUiOiIifQ.SIJRI79sj878ixye3QmEoxx7yOO4evou7tzR-olJGuQ
+loginUrl:
+https://divvy-prd.auth0.com/usernamepassword/login
+loginBody:
+{"client_id":"60aWifjrlaKLzHpHXUXpdNgUR0jznzx7","redirect_uri":"https://app.divvy.co","tenant":"divvy-prd","response_type":"code","connection":"Username-Password-Authentication","username":"22123971@qq.com","password":"Wwkkvikthh1234","popup":false,"popup_options":{},"sso":true,"nonce":"DHXp8XV2Gu4Xt1Fce92JhyzF70PuNhdV","state":"g6Fo2SBIZEdBZjVmXzhzR1N1LWdNWlNOei0xOWVKLVNnWDZWRqN0aWTZIE5LMmlWNV9weC1HNU9LX25KaGx3TVlQcWt1aVp4TU9Eo2NpZNkgNjBhV2lmanJsYUtMekhwSFhVWHBkTmdVUjBqem56eDc","_intstate":"deprecated","_csrf":"iOxJ3CwC-FgxZgNkAe1XWaT_nvyJfsDawO04","audience":"https://backend.divvypay.com/graphql","auth0Client":"eyJuYW1lIjoiYXV0aDAuanMiLCJ2ZXJzaW9uIjoiOC4xMi4zIn0=","scope":"openid","protocol":"oauth2","type":"id_token token"}
+{"client_id":"60aWifjrlaKLzHpHXUXpdNgUR0jznzx7","redirect_uri":"https://app.divvy.co","tenant":"divvy-prd","response_type":"code","connection":"Username-Password-Authentication","username":"22123971@qq.com","password":"Wwkkvikthh1234","popup":false,"popup_options":{},"sso":true,"nonce":"DHXp8XV2Gu4Xt1Fce92JhyzF70PuNhdV","state":"g6Fo2SBIZEdBZjVmXzhzR1N1LWdNWlNOei0xOWVKLVNnWDZWRqN0aWTZIE5LMmlWNV9weC1HNU9LX25KaGx3TVlQcWt1aVp4TU9Eo2NpZNkgNjBhV2lmanJsYUtMekhwSFhVWHBkTmdVUjBqem56eDc","_intstate":"deprecated","_csrf":"6xbA2pO0-Jyiqf1bxOGh6-Zix-12OcDyOuOQ","audience":"https://backend.divvypay.com/graphql","auth0Client":"eyJuYW1lIjoiYXV0aDAuanMiLCJ2ZXJzaW9uIjoiOC4xMi4zIn0=","scope":"openid","protocol":"oauth2","type":"id_token token"}
+注意
+1：state会变 2：crsf在cookie中
+3.返回一个form表单
+<form method="post" name="hiddenform" action="https://divvy-prd.auth0.com/login/callback">
+    <input type="hidden" name="wa" value="wsignin1.0">
+    <input type="hidden"
+           name="wresult"
+           value="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1c2VyX2lkIjoiNWNmOGQ4NDcwN2RiYmUwYzY5NWVlY2VmIiwiZW1haWwiOiIyMjEyMzk3MUBxcS5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibGFzdF9wYXNzd29yZF9yZXNldCI6IjIwMTktMDctMjRUMTQ6MDQ6MzMuNzM5WiIsInNpZCI6IlVoei1pbkFsa1hyUFY0b291TzZUXzlFRFdBUmxfNkhnIiwiaWF0IjoxNTY0NTk1NjE2LCJleHAiOjE1NjQ1OTU2NzYsImF1ZCI6InVybjphdXRoMDpkaXZ2eS1wcmQ6VXNlcm5hbWUtUGFzc3dvcmQtQXV0aGVudGljYXRpb24iLCJpc3MiOiJ1cm46YXV0aDAifQ.YX7UFll3hOUXCUDt5d3qTrIpBEv347f-tqUqhjd4KDS3msjCoahpwQpOHb5giKGTtuOuaSxSK_IkTCdg04fYqo2JuT_KmRUCm72mssDBB0l-ojx1rvKQNQlc9TI-iGsXQDpAclgJ5Ovec1kYPGkypxF-QDa6pVVO5pQJruDoVTA">
+    <input type="hidden" name="wctx" value="{&#34;strategy&#34;:&#34;auth0&#34;,&#34;auth0Client&#34;:&#34;&#34;,&#34;tenant&#34;:&#34;divvy-prd&#34;,&#34;connection&#34;:&#34;Username-Password-Authentication&#34;,&#34;client_id&#34;:&#34;60aWifjrlaKLzHpHXUXpdNgUR0jznzx7&#34;,&#34;response_type&#34;:&#34;code&#34;,&#34;scope&#34;:&#34;openid&#34;,&#34;protocol&#34;:&#34;oauth2&#34;,&#34;redirect_uri&#34;:&#34;https://app.divvy.co&#34;,&#34;state&#34;:&#34;g6Fo2SBReHhiZDhXRjlISHpiWFZZNjF0UEdNVDUwTnVQZUc5aaN0aWTZIE50LTJvbi1DM040bEwxSDY5VjhHdlpnckY0RDVKUUlXo2NpZNkgNjBhV2lmanJsYUtMekhwSFhVWHBkTmdVUjBqem56eDc&#34;,&#34;nonce&#34;:&#34;DHXp8XV2Gu4Xt1Fce92JhyzF70PuNhdV&#34;,&#34;sid&#34;:&#34;Uhz-inAlkXrPV4oouO6T_9EDWARl_6Hg&#34;,&#34;audience&#34;:&#34;https://backend.divvypay.com/graphql&#34;,&#34;realm&#34;:&#34;Username-Password-Authentication&#34;,&#34;session_user&#34;:&#34;5d41d5a0748dc10dabc7ca44&#34;}">
+    <noscript>
+        <p>
+            Script is disabled. Click Submit to continue.
+        </p><input type="submit" value="Submit">
+    </noscript>
+</form>

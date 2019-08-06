@@ -1,7 +1,6 @@
 package com.ralf.cardmanager.spider.task.divvypay.operation;
 
 import com.jeesite.common.lang.StringUtils;
-import com.ralf.cardmanager.spider.task.BaseOperation;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -23,7 +22,7 @@ public class GetVirtualCardByBudget extends BaseDivvyOperation {
         super(config);
         String referer = String.format("https://app.divvy.co/budgets/%s/virtual-cards", budgetId);
         defaultHeader.put("referer", referer);
-        client = postClient(StringUtils.isEmpty(url) ? defaultUrl : url);
+        requestBase = postClient(StringUtils.isEmpty(url) ? defaultUrl : url);
     }
 
     public GetVirtualCardByBudget(DivvyPaySiteConfig config, String budgetId) {
@@ -37,7 +36,7 @@ public class GetVirtualCardByBudget extends BaseDivvyOperation {
     public Object execute() throws IOException {
         setBody(String.format(body, this.budgetId));
         setHeader(null);
-        CloseableHttpResponse rsp = new DefaultHttpClient().execute(client);
+        CloseableHttpResponse rsp = new DefaultHttpClient().execute(requestBase);
         if (rsp.getStatusLine().getStatusCode() >= 200) {
             EntityUtils.toByteArray(rsp.getEntity());
         }
@@ -49,11 +48,6 @@ public class GetVirtualCardByBudget extends BaseDivvyOperation {
     @Override
     public void persistent(String rsp) {
 
-    }
-
-    @Override
-    public String getUrl() {
-        return null;
     }
 
 

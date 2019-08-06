@@ -5,19 +5,27 @@ import com.ralf.cardmanager.spider.task.BaseOperation;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.exception.NotInitedException;
 import com.ralf.cardmanager.spider.util.SpringContextUtil;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class BaseDivvyOperation extends BaseOperation {
+    DivvyPaySiteConfig config;
+
     private boolean inited = false;
     protected String body = "";
     protected String[] bodyParams;
     protected String defaultUrl = "https://www.divvypay.co/js/graph";
+    protected String companyId = "Q29tcGFueTozMDI3";
+
+    public static volatile String AWSALB = "";
 
     protected void checkInit() throws NotInitedException {
         if (!inited) {
@@ -31,6 +39,7 @@ public abstract class BaseDivvyOperation extends BaseOperation {
     }
 
     public BaseDivvyOperation(DivvyPaySiteConfig config) {
+        this.config = config;
         defaultHeader.put("authorization", "Bearer " + SpringContextUtil.getBean(DivvyPaySiteConfig.class).authToken);
     }
 
@@ -68,9 +77,13 @@ public abstract class BaseDivvyOperation extends BaseOperation {
     public Object execute() throws IOException {
         packageParams();
         packageRequest();
-        CloseableHttpResponse rsp = new DefaultHttpClient().execute(client);
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        CloseableHttpResponse rsp = httpClient.execute(requestBase);
         if (rsp.getStatusLine().getStatusCode() >= 200) {
+            AWSALB = getCookie(httpClient.getCookieStore(), "AWSALB");
             persistent(EntityUtils.toString(rsp.getEntity()));
+        } else {
+
         }
         return null;
     }
@@ -78,5 +91,28 @@ public abstract class BaseDivvyOperation extends BaseOperation {
     @Override
     public String getUrl() {
         return defaultUrl;
+    }
+
+    private void checkLoginException(String rsp) {
+        if (false) {
+            config.shouldLogin = true;
+            config.setLogined(false);
+        }
+    }
+
+    protected String getCookie(CookieStore store, String name) {
+        List<Cookie> cookieList = store.getCookies();
+        for (Cookie cookie : cookieList) {
+            String k = cookie.getName();
+            if (k.equalsIgnoreCase(name)) {
+                return cookie.getValue();
+            }
+
+        }
+        return "";
+    }
+
+    protected void afterExecute() {
+
     }
 }

@@ -8,10 +8,7 @@ import org.apache.http.entity.StringEntity;
 import us.codecraft.webmagic.utils.HttpConstant;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public abstract class BaseOperation<T extends Object> {
 
@@ -26,7 +23,7 @@ public abstract class BaseOperation<T extends Object> {
 
     public String url = "";
 
-    protected HttpRequestBase client;
+    protected HttpRequestBase requestBase;
 
     protected Map<String, String> defaultHeader;
 
@@ -53,7 +50,7 @@ public abstract class BaseOperation<T extends Object> {
     }
 
     protected BaseOperation setBody(String body, ContentType type) {
-        ((HttpPost) client).setEntity(new StringEntity(body, type));
+        ((HttpPost) requestBase).setEntity(new StringEntity(body, type));
         return this;
     }
 
@@ -66,7 +63,7 @@ public abstract class BaseOperation<T extends Object> {
             headers.forEach((key, value) -> defaultHeader.merge(key, value, (v1, v2) -> v2));
         }
         defaultHeader.forEach((k, v) -> {
-            client.setHeader(k, v);
+            requestBase.setHeader(k, v);
         });
         return this;
     }
