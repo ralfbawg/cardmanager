@@ -61,3 +61,22 @@ https://app.divvy.co/de/rest/pan?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJk
 
 获取卡状态
 {"operationName":"GetVirtualCardDetailsMoreDropdown","variables":{"cardId":"Q2FyZDozNjA2ODY="},"query":"query GetVirtualCardDetailsMoreDropdown($cardId: ID!) {\n  node(id: $cardId) {\n    ... on Card {\n      id\n      frozen\n      name\n      __typename\n    }\n    __typename\n  }\n}\n"}
+
+
+卡类型
+//VGFnVmFsdWU6NDA5NTI5:Car Rental
+//VGFnVmFsdWU6NDA5NTMw:Entertainment
+//VGFnVmFsdWU6NDA5NTMx:Flights
+//VGFnVmFsdWU6NDA5NTMy:Food
+//VGFnVmFsdWU6NDA5NTMz:Fuel
+//VGFnVmFsdWU6NDA5NTM0:Lodging
+//VGFnVmFsdWU6NDA5NTM1:Maintenance
+//VGFnVmFsdWU6NDA5NTM2:Marketing
+//VGFnVmFsdWU6NDA5NTM3:Meetings
+//VGFnVmFsdWU6NDA5NTM4:Other
+//VGFnVmFsdWU6NDA5NTM5:Shipping
+//VGFnVmFsdWU6NDA5NTQw:Subscriptions
+//VGFnVmFsdWU6NDA5NTQx:Supplies
+//VGFnVmFsdWU6NDA5NTQy:Telecom
+//VGFnVmFsdWU6NDA5NTQz:Training
+//VGFnVmFsdWU6NDA5NTQ0:Transportation

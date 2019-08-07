@@ -27,7 +27,7 @@ public class CreateCardStep2 extends BaseDivvyOperation {
     }
 
     //{"data":{"node":{"userAllocation":{"type":"RECURRING","id":"VXNlckFsbG9jYXRpb246NDY0MzUw","expiresAt":null,"__typename":"UserAllocation"},"user":{"id":"VXNlcjo1MTE5OA==","__typename":"User"},"token":"001.R.20190806122948189060","latestTransaction":null,"lastFour":"4902","id":"Q2FyZDozNjA2ODY=","expirationDate":"08/22","cardType":"SUBSCRIPTION","brand":"mastercard","__typename":"Card"}}}
-    //需要获取token
+    //需要获取token(用来获取卡号)与userAllocation的id(用来修改卡的recurring-funds,而且每个月[好像]会更新)
     @Override
     public void persistent(String rsp) {
         JsonObject jsonObject = new JsonParser().parse(rsp).getAsJsonObject().get("data").getAsJsonObject().get("node").getAsJsonObject();
