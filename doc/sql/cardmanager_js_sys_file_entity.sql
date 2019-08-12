@@ -1,0 +1,2 @@
+INSERT INTO cardmanager.js_sys_file_entity (file_id, file_md5, file_path, file_content_type, file_extension, file_size, file_meta) VALUES ('1154436292214607872', '8b5d0a094276d92c7505f370bc96de0e', '20190726/', 'application/msword', 'doc', 345385, null);
+INSERT INTO cardmanager.js_sys_file_entity (file_id, file_md5, file_path, file_content_type, file_extension, file_size, file_meta) VALUES ('1159883083610247169', '6c2aead24578686acfe42ae145023954', '20190810/', 'application/msword', 'doc', 38400, null);

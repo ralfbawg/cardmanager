@@ -1,0 +1,1 @@
+INSERT INTO cardmanager.card_info (id, card_name, card_num, create_time, owner_user_id, update_time) VALUES (1, 'ralfchen', 123456, '2019-07-21 16:40:31', 1, '2019-07-21 16:40:35');
