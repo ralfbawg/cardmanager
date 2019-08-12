@@ -39,7 +39,7 @@ public class DivvypayService {
         divvyConfig.username = "22123971@qq.com";
         divvyConfig.password = "Wwkkvikthh1234";
 
-        new Thread(new DivvyTaskThread(divvyConfig)).start();
+        new Thread(new DivvyTaskThread()).start();
     }
 
 

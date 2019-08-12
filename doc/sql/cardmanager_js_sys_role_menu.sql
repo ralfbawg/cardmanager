@@ -74,3 +74,5 @@ INSERT INTO cardmanager.js_sys_role_menu (role_code, menu_code) VALUES ('corpAdm
 INSERT INTO cardmanager.js_sys_role_menu (role_code, menu_code) VALUES ('user', '1154440148629671936');
 INSERT INTO cardmanager.js_sys_role_menu (role_code, menu_code) VALUES ('user', '1154440401416179712');
 INSERT INTO cardmanager.js_sys_role_menu (role_code, menu_code) VALUES ('user', '1154440507670482944');
+INSERT INTO cardmanager.js_sys_role_menu (role_code, menu_code) VALUES ('user', '1160907871925633024');
+INSERT INTO cardmanager.js_sys_role_menu (role_code, menu_code) VALUES ('user', '1160915346825478144');
