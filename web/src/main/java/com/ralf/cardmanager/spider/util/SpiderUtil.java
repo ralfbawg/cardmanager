@@ -1,4 +1,4 @@
-package com.jeesite.common.web;
+package com.ralf.cardmanager.spider.util;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;

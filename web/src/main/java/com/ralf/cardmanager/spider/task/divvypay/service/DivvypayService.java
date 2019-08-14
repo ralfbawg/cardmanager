@@ -29,12 +29,12 @@ public class DivvypayService {
     public String emailInterval;
     @Autowired
     EmailSendService emailSendService;
-
+    @Autowired
+    DivvyPaySiteConfig divvyConfig;
 
     @PostConstruct
     public void init() {
         log.debug("i am come in");
-        DivvyPaySiteConfig divvyConfig = new DivvyPaySiteConfig();
         divvyConfig.shouldLogin = true;
         divvyConfig.username = "22123971@qq.com";
         divvyConfig.password = "Wwkkvikthh1234";

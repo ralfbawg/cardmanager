@@ -1,10 +1,10 @@
 package com.ralf.cardmanager.spider.task.divvypay.thread;
 
 
-import com.jeesite.common.web.SpiderUtil;
 import com.ralf.cardmanager.spider.task.SpiderBasicThread;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.service.DivvypayService;
+import com.ralf.cardmanager.spider.util.SpiderUtil;
 import com.ralf.cardmanager.spider.util.SpringContextUtil;
 import com.ralf.cardmanager.spider.util.WebDriverPool;
 import org.apache.ibatis.annotations.AutomapConstructor;

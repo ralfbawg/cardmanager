@@ -1,8 +1,6 @@
 package com.ralf.cardmanager.spider.util;
 
 import com.jeesite.common.lang.StringUtils;
-import com.jeesite.common.web.ProxyUtil;
-import com.jeesite.common.web.UserAgentUtil;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;

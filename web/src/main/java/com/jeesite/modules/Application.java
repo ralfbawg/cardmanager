@@ -20,7 +20,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 @ComponentScans(value = {
-        @ComponentScan("com.jeesite"), @ComponentScan("com.ralf")
+        @ComponentScan("com.ralf.cardmanager"), @ComponentScan("com.jeesite")
 })
 public class Application extends SpringBootServletInitializer {
 

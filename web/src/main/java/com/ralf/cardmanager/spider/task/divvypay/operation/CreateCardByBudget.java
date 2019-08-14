@@ -1,20 +1,21 @@
 package com.ralf.cardmanager.spider.task.divvypay.operation;
 
-import com.ralf.cardmanager.spider.task.BaseOperation;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-
 @Scope
 @Service
+@Lazy
 public class CreateCardByBudget extends BaseDivvyOperation {
     @Override
     protected void init(String... param) {
         super.init(param);
     }
 
+    @Autowired
     public CreateCardByBudget(DivvyPaySiteConfig config) {
         super(config);
         //VGFnVmFsdWU6NDA5NTI5:Car Rental

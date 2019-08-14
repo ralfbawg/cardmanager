@@ -1,4 +1,4 @@
-package com.jeesite.common.web;
+package com.ralf.cardmanager.spider.util;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;

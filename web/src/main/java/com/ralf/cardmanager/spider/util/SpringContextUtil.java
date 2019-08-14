@@ -6,10 +6,12 @@
  */
 package com.ralf.cardmanager.spider.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Component;
  * @Todo
  */
 @Component
+@Lazy(value = false)
+@Slf4j
 public class SpringContextUtil implements ApplicationContextAware {
     private static ApplicationContext context;
 
@@ -28,6 +32,7 @@ public class SpringContextUtil implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext)
             throws BeansException {
+        log.info("i am in application context");
         this.context = applicationContext;
 
     }
@@ -93,7 +98,7 @@ public class SpringContextUtil implements ApplicationContextAware {
         throw new Exception("the spring isn't inited");
     }
 
-    public String getBootProperties(String key){
+    public String getBootProperties(String key) {
         return env.getProperty(key);
     }
 
