@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 @Component
-@Lazy(false)
 @Slf4j
 public class DivvypayService {
     @Value("${cm.spider.loginTip.email.username}")
@@ -39,7 +38,7 @@ public class DivvypayService {
         divvyConfig.username = "22123971@qq.com";
         divvyConfig.password = "Wwkkvikthh1234";
 
-        new Thread(new DivvyTaskThread()).start();
+
     }
 
 

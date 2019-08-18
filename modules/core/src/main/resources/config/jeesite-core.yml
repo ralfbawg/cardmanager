@@ -421,7 +421,7 @@ session:
 mybatis:
 
   # @MyBatisDao、Aliases 扫描基础包，如果多个，用“,”分隔
-  scanBasePackage: com.jeesite.modules
+  scanBasePackage: com.jeesite.modules,com.ralf.cardmanager
   
   # TypeHandlers 扫描基础包，如果多个，用“,”分隔
   scanTypeHandlersPackage: ~

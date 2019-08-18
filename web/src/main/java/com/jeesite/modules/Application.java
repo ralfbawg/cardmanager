@@ -3,6 +3,8 @@
  */
 package com.jeesite.modules;
 
+import com.ralf.cardmanager.spider.task.divvypay.thread.DivvyTaskThread;
+import lombok.val;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -20,12 +22,16 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 @ComponentScans(value = {
-        @ComponentScan("com.ralf.cardmanager"), @ComponentScan("com.jeesite")
+        @ComponentScan("com.ralf"), @ComponentScan("com.jeesite")
 })
 public class Application extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        val context = SpringApplication.run(Application.class, args);
+        if (context.getEnvironment().getRequiredProperty("cm.spider.enabled", boolean.class)) {
+            new Thread(new DivvyTaskThread()).start();
+        }
+
     }
 
     @Override

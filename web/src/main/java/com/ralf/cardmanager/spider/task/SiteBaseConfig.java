@@ -20,6 +20,7 @@ public class SiteBaseConfig {
 
     public String password;
 
-    public Map requestHead = new HashMap<String,String>();
+    public Map requestHead = new HashMap<String, String>();
 
+    public volatile boolean runFlag = true;
 }

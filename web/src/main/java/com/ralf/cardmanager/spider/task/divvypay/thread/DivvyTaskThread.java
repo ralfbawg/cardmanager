@@ -1,6 +1,7 @@
 package com.ralf.cardmanager.spider.task.divvypay.thread;
 
 
+import com.jeesite.common.lang.StringUtils;
 import com.ralf.cardmanager.spider.task.SpiderBasicThread;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.service.DivvypayService;
@@ -42,40 +43,47 @@ public class DivvyTaskThread extends SpiderBasicThread implements Runnable {
         }};
         webDriverPool = new WebDriverPool();
         webDriver = webDriverPool.getNew(WebDriverPool.DRIVER_CHROME);
-
+        webDriver.get(config.loginUrl);
     }
 
     @Override
     public void run() {
-        login();
+        while (config.runFlag) {
+            while (!config.Logined) {
+                login();
+            }
+
+            try {
+                Thread.sleep(60 * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
+
 
     @Override
     public void doLogin() throws Exception {
-        webDriver.get(config.loginUrl);
-        while (!checkLoginStatus()) {
-            Thread.sleep(1 * 1000);
+        int loginTry = 3;
+        while (!checkLoginStatus(--loginTry)) {
+            Thread.sleep(10 * 1000);
         }
         ChromeDriver chrome = ((ChromeDriver) webDriver);
-//        String event = "function fireKeyEvent(el, evtType, keyCode){ var doc = el.ownerDocument, win = doc.defaultView || doc.parentWindow, evtObj; if(doc.createEvent){ if(win.KeyEvent) { evtObj = doc.createEvent('KeyEvents'); evtObj.initKeyEvent( evtType, true, true, win, false, false, false, false, keyCode, 0 ); } else { evtObj = doc.createEvent('UIEvents'); Object.defineProperty(evtObj, 'keyCode', {         get : function() { return this.keyCodeVal; }     });          Object.defineProperty(evtObj, 'which', {         get : function() { return this.keyCodeVal; }     }); evtObj.initUIEvent( evtType, true, true, win, 1 ); evtObj.keyCodeVal = keyCode; if (evtObj.keyCode !== keyCode) {            } } el.dispatchEvent(evtObj); }  else if(doc.createEventObject){ evtObj = doc.createEventObject(); evtObj.keyCode = keyCode; el.fireEvent('on' + evtType, evtObj); } } ";
-//        chrome.executeScript(event + " fireKeyEvent(document.querySelector('input[name=email]'), 'keydown', 65);");
         chrome.executeScript("document.querySelector('input[name=email]').focus()");
         chrome.getKeyboard().sendKeys("22123971@qq.com");
-//        chrome.executeScript("document.querySelector(\"input[name=email]\").value=\"" + config.username + "\";");
         chrome.executeScript("document.querySelector('input[name=password]').focus()");
         chrome.getKeyboard().sendKeys("Wwkkvikthh1234");
-//        chrome.executeScript("document.querySelector(\"input[name=password]\").value=\"" + config.password + "\";");
         chrome.executeScript("document.querySelector('button.auth0-lock-submit').click();");
         while (!SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("i.SideNavigation-header-logo.Icon.Icon-logoSmall"))) {
 //            service.sendShouldLoginByHandEmail();
-//            Thread.sleep(Long.valueOf(service.emailInterval) * 1000);
+            Thread.sleep(Long.valueOf(SpringContextUtil.getBean(DivvypayService.class).emailInterval) * 1000);
         }
-        config.authToken = ((ChromeDriver) webDriver).getSessionStorage().getItem("id_token");
+        config.authToken = StringUtils.isEmpty(((ChromeDriver) webDriver).getSessionStorage().getItem("id_token")) ? ((ChromeDriver) webDriver).getLocalStorage().getItem("id_token") : ((ChromeDriver) webDriver).getSessionStorage().getItem("id_token");
         config.getRequestHead().put("authorization", "Bearer " + config.authToken);
         config.setLogined(true);
     }
 
-    private boolean checkLoginStatus() {
+    private boolean checkLoginStatus(int tryCount) {
         if (SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("input[name=email]")) && SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("input[name=password]"))) {
             return true;
         } else {
