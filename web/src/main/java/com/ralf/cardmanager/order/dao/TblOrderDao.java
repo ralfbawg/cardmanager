@@ -1,18 +1,18 @@
 /**
  * Copyright (c) 2013-Now http://jeesite.com All rights reserved.
  */
-package com.ralf.cardmanager.budget.dao;
+package com.ralf.cardmanager.order.dao;
 
 import com.jeesite.common.dao.CrudDao;
 import com.jeesite.common.mybatis.annotation.MyBatisDao;
-import com.ralf.cardmanager.budget.entity.TblCardInfo;
+import com.ralf.cardmanager.order.entity.TblOrder;
 
 /**
- * tbl_budgetDAO接口
+ * tbl_orderDAO接口
  * @author ralfchen
- * @version 2019-08-18
+ * @version 2019-08-20
  */
 @MyBatisDao
-public interface TblCardInfoDao extends CrudDao<TblCardInfo> {
+public interface TblOrderDao extends CrudDao<TblOrder> {
 	
 }

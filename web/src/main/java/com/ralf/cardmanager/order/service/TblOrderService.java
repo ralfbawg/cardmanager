@@ -1,26 +1,32 @@
 /**
  * Copyright (c) 2013-Now http://jeesite.com All rights reserved.
  */
-package com.ralf.cardmanager.tbl.service;
+package com.ralf.cardmanager.order.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jeesite.common.entity.Page;
 import com.jeesite.common.service.CrudService;
-import com.ralf.cardmanager.tbl.entity.TblOrder;
-import com.ralf.cardmanager.tbl.dao.TblOrderDao;
+import com.ralf.cardmanager.order.entity.TblOrder;
+import com.ralf.cardmanager.order.dao.TblOrderDao;
+import com.ralf.cardmanager.order.entity.TblOrderDetail;
+import com.ralf.cardmanager.order.dao.TblOrderDetailDao;
 
 /**
  * tbl_orderService
  * @author ralfchen
- * @version 2019-08-18
+ * @version 2019-08-20
  */
 @Service
 @Transactional(readOnly=true)
 public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
+	
+	@Autowired
+	private TblOrderDetailDao tblOrderDetailDao;
 	
 	/**
 	 * 获取单条数据
@@ -29,7 +35,13 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
 	 */
 	@Override
 	public TblOrder get(TblOrder tblOrder) {
-		return super.get(tblOrder);
+		TblOrder entity = super.get(tblOrder);
+		if (entity != null){
+			TblOrderDetail tblOrderDetail = new TblOrderDetail(entity);
+			tblOrderDetail.setStatus(TblOrderDetail.STATUS_NORMAL);
+			entity.setTblOrderDetailList(tblOrderDetailDao.findList(tblOrderDetail));
+		}
+		return entity;
 	}
 	
 	/**
@@ -51,6 +63,19 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
 	@Transactional(readOnly=false)
 	public void save(TblOrder tblOrder) {
 		super.save(tblOrder);
+		// 保存 TblOrder子表
+		for (TblOrderDetail tblOrderDetail : tblOrder.getTblOrderDetailList()){
+			if (!TblOrderDetail.STATUS_DELETE.equals(tblOrderDetail.getStatus())){
+				tblOrderDetail.setOrderId(tblOrder);
+				if (tblOrderDetail.getIsNewRecord()){
+					tblOrderDetailDao.insert(tblOrderDetail);
+				}else{
+					tblOrderDetailDao.update(tblOrderDetail);
+				}
+			}else{
+				tblOrderDetailDao.delete(tblOrderDetail);
+			}
+		}
 	}
 	
 	/**
@@ -71,6 +96,9 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
 	@Transactional(readOnly=false)
 	public void delete(TblOrder tblOrder) {
 		super.delete(tblOrder);
+		TblOrderDetail tblOrderDetail = new TblOrderDetail();
+		tblOrderDetail.setOrderId(tblOrder);
+		tblOrderDetailDao.deleteByEntity(tblOrderDetail);
 	}
 	
 }

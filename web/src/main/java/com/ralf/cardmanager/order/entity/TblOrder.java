@@ -1,13 +1,15 @@
 /**
  * Copyright (c) 2013-Now http://jeesite.com All rights reserved.
  */
-package com.ralf.cardmanager.tbl.entity;
+package com.ralf.cardmanager.order.entity;
 
 import org.hibernate.validator.constraints.Length;
 import java.util.Date;
 import com.jeesite.common.mybatis.annotation.JoinTable;
 import com.jeesite.common.mybatis.annotation.JoinTable.Type;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.List;
+import com.jeesite.common.collect.ListUtils;
 
 import com.jeesite.common.entity.DataEntity;
 import com.jeesite.common.mybatis.annotation.Column;
@@ -17,7 +19,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 /**
  * tbl_orderEntity
  * @author ralfchen
- * @version 2019-08-18
+ * @version 2019-08-20
  */
 @Table(name="tbl_order", alias="a", columns={
 		@Column(name="id", attrName="id", label="id", isPK=true),
@@ -41,6 +43,7 @@ public class TblOrder extends DataEntity<TblOrder> {
 	private Date auditTime;		// 审核时间
 	private Long orderAmount;		// 订单金额
 	private String payStatus;		// 00:提交前，01提交待付款02已付款未完成03已付款已完成
+	private List<TblOrderDetail> tblOrderDetailList = ListUtils.newArrayList();		// 子表列表
 	
 	public TblOrder() {
 		this(null);
@@ -126,6 +129,14 @@ public class TblOrder extends DataEntity<TblOrder> {
 
 	public void setAuditTime_lte(Date auditTime) {
 		sqlMap.getWhere().and("audit_time", QueryType.LTE, auditTime);
+	}
+	
+	public List<TblOrderDetail> getTblOrderDetailList() {
+		return tblOrderDetailList;
+	}
+
+	public void setTblOrderDetailList(List<TblOrderDetail> tblOrderDetailList) {
+		this.tblOrderDetailList = tblOrderDetailList;
 	}
 	
 }

@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2013-Now http://jeesite.com All rights reserved.
  */
-package com.ralf.cardmanager.tbl.web;
+package com.ralf.cardmanager.order.web;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,16 +19,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.jeesite.common.config.Global;
 import com.jeesite.common.entity.Page;
 import com.jeesite.common.web.BaseController;
-import com.ralf.cardmanager.tbl.entity.TblOrder;
-import com.ralf.cardmanager.tbl.service.TblOrderService;
+import com.ralf.cardmanager.order.entity.TblOrder;
+import com.ralf.cardmanager.order.service.TblOrderService;
 
 /**
  * tbl_orderController
  * @author ralfchen
- * @version 2019-08-18
+ * @version 2019-08-20
  */
 @Controller
-@RequestMapping(value = "${adminPath}/tbl/tblOrder")
+@RequestMapping(value = "${adminPath}/order/tblOrder")
 public class TblOrderController extends BaseController {
 
 	@Autowired
@@ -45,17 +45,17 @@ public class TblOrderController extends BaseController {
 	/**
 	 * 查询列表
 	 */
-	@RequiresPermissions("tbl:tblOrder:view")
+	@RequiresPermissions("order:tblOrder:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(TblOrder tblOrder, Model model) {
 		model.addAttribute("tblOrder", tblOrder);
-		return "cardmanager/tbl/tblOrderList";
+		return "cardmanager/order/tblOrderList";
 	}
 	
 	/**
 	 * 查询列表数据
 	 */
-	@RequiresPermissions("tbl:tblOrder:view")
+	@RequiresPermissions("order:tblOrder:view")
 	@RequestMapping(value = "listData")
 	@ResponseBody
 	public Page<TblOrder> listData(TblOrder tblOrder, HttpServletRequest request, HttpServletResponse response) {
@@ -67,17 +67,17 @@ public class TblOrderController extends BaseController {
 	/**
 	 * 查看编辑表单
 	 */
-	@RequiresPermissions("tbl:tblOrder:view")
+	@RequiresPermissions("order:tblOrder:view")
 	@RequestMapping(value = "form")
 	public String form(TblOrder tblOrder, Model model) {
 		model.addAttribute("tblOrder", tblOrder);
-		return "cardmanager/tbl/tblOrderForm";
+		return "cardmanager/order/tblOrderForm";
 	}
 
 	/**
 	 * 保存tbl_order
 	 */
-	@RequiresPermissions("tbl:tblOrder:edit")
+	@RequiresPermissions("order:tblOrder:edit")
 	@PostMapping(value = "save")
 	@ResponseBody
 	public String save(@Validated TblOrder tblOrder) {
@@ -88,7 +88,7 @@ public class TblOrderController extends BaseController {
 	/**
 	 * 删除tbl_order
 	 */
-	@RequiresPermissions("tbl:tblOrder:edit")
+	@RequiresPermissions("order:tblOrder:edit")
 	@RequestMapping(value = "delete")
 	@ResponseBody
 	public String delete(TblOrder tblOrder) {

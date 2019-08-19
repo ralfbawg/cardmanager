@@ -1,4 +1,4 @@
-<% layout('/layouts/default.html', {title: 'tbl_budget管理', libs: ['validate','dataGrid']}){ %>
+<% layout('/layouts/default.html', {title: 'tbl_budget管理', libs: ['validate']}){ %>
 <div class="main-content">
 	<div class="box box-main">
 		<div class="box-header with-border">
@@ -12,12 +12,11 @@
 		<#form:form id="inputForm" model="${tblBudget}" action="${ctx}/budget/tblBudget/save" method="post" class="form-horizontal">
 			<div class="box-body">
 				<div class="form-unit">${text('基本信息')}</div>
-				<#form:hidden path="id"/>
 				<div class="row">
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('name')}：<i class="fa icon-question hide"></i></label>
+								<span class="required hide">*</span> ${text('帐户名')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
 								<#form:input path="name" maxlength="64" class="form-control"/>
 							</div>
@@ -26,9 +25,9 @@
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('owner_usercode')}：<i class="fa icon-question hide"></i></label>
+								<span class="required hide">*</span> ${text('状态')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
-								<#form:input path="ownerUsercode" class="form-control"/>
+								<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control" />
 							</div>
 						</div>
 					</div>
@@ -37,129 +36,21 @@
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('create_time')}：<i class="fa icon-question hide"></i></label>
+								<span class="required hide">*</span> ${text('是否虚拟')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
-								<#form:input path="createTime" readonly="true" maxlength="20" class="form-control Wdate"
-									dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:true});"/>
+								<#form:select path="virtual" dictType="" blankOption="true" class="form-control digits" />
 							</div>
 						</div>
 					</div>
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('account_id')}：<i class="fa icon-question hide"></i></label>
-							<div class="col-sm-8">
-								<#form:input path="accountId" maxlength="64" class="form-control"/>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-xs-6">
-						<div class="form-group">
-							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('card_service_provider')}：<i class="fa icon-question hide"></i></label>
-							<div class="col-sm-8">
-								<#form:input path="cardServiceProvider" maxlength="64" class="form-control"/>
-							</div>
-						</div>
-					</div>
-					<div class="col-xs-6">
-						<div class="form-group">
-							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('sp_budget_id')}：<i class="fa icon-question hide"></i></label>
-							<div class="col-sm-8">
-								<#form:input path="spBudgetId" maxlength="128" class="form-control"/>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-xs-6">
-						<div class="form-group">
-							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('create_user_code')}：<i class="fa icon-question hide"></i></label>
-							<div class="col-sm-8">
-								<#form:input path="createUserCode" class="form-control"/>
-							</div>
-						</div>
-					</div>
-					<div class="col-xs-6">
-						<div class="form-group">
-							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('所有的帐户值都为整数，实际使用除以100')}：<i class="fa icon-question hide"></i></label>
-							<div class="col-sm-8">
-								<#form:input path="budgetAmount" maxlength="20" class="form-control digits"/>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-xs-6">
-						<div class="form-group">
-							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('total_amount')}：<i class="fa icon-question hide"></i></label>
-							<div class="col-sm-8">
-								<#form:input path="totalAmount" maxlength="20" class="form-control digits"/>
-							</div>
-						</div>
-					</div>
-					<div class="col-xs-6">
-						<div class="form-group">
-							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('spend_amount')}：<i class="fa icon-question hide"></i></label>
-							<div class="col-sm-8">
-								<#form:input path="spendAmount" maxlength="20" class="form-control digits"/>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-xs-6">
-						<div class="form-group">
-							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('assign_amount')}：<i class="fa icon-question hide"></i></label>
-							<div class="col-sm-8">
-								<#form:input path="assignAmount" maxlength="20" class="form-control digits"/>
-							</div>
-						</div>
-					</div>
-					<div class="col-xs-6">
-						<div class="form-group">
-							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('unsign_amount')}：<i class="fa icon-question hide"></i></label>
-							<div class="col-sm-8">
-								<#form:input path="unsignAmount" maxlength="255" class="form-control digits"/>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-xs-6">
-						<div class="form-group">
-							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('1.divyy帐户2本地帐户')}：<i class="fa icon-question hide"></i></label>
-							<div class="col-sm-8">
-								<#form:input path="virtual" maxlength="4" class="form-control digits"/>
-							</div>
-						</div>
-					</div>
-					<div class="col-xs-6">
-						<div class="form-group">
-							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('建卡数限制')}：<i class="fa icon-question hide"></i></label>
+								<span class="required hide">*</span> ${text('卡数上限')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
 								<#form:input path="cardCreateLimit" maxlength="11" class="form-control digits"/>
 							</div>
 						</div>
 					</div>
-				</div>
-				<h4 class="form-unit">${text('卡信息')}</h4>
-				<div class="ml10 mr10">
-					<table id="tblCardInfoDataGrid"></table>
-					<% if (hasPermi('budget:tblBudget:edit')){ %>
-						<a href="#" id="tblCardInfoDataGridAddRowBtn" class="btn btn-primary btn-sm mt10 mb10"><i class="fa fa-plus"></i> ${text('增行')}</a>
-					<% } %>
 				</div>
 			</div>
 			<div class="box-footer">
@@ -176,82 +67,6 @@
 	</div>
 </div>
 <% } %>
-<script>
-//初始化卡信息DataGrid对象
-$("#tblCardInfoDataGrid").dataGrid({
-
-	data: ${toJson(tblBudget.tblCardInfoList)},
-	datatype: "local", // 设置本地数据
-	autoGridHeight: function(){return 'auto'}, // 设置自动高度
-	
-	// 设置数据表格列
-	columnModel: [
-		{header:'状态', name:'status', editable:true, hidden:true},
-		{header:'主键', name:'id', editable:true, hidden:true},
-		{header:'${text("卡号")}', name:'cardNum', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'32', 'class':'form-control'}},
-		{header:'${text("budget_id")}', name:'budgetId.id', editable:true, hidden:true},
-		{header:'${text("card_name")}', name:'cardName', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'128', 'class':'form-control'}},
-		{header:'${text("限额度")}', name:'cardLimit', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'20', 'class':'form-control digits'}},
-		{header:'${text("nickname")}', name:'nickname', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'32', 'class':'form-control'}},
-		{header:'${text("卡类型")}', name:'cardType', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'32', 'class':'form-control'}},
-		{header:'${text("上次充值时间")}', name:'lastChargeOn', width:150, editable:true, edittype:'text', editoptions:{'class':'form-control'}},
-		{header:'${text("账单地址")}', name:'billingAddress', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'255', 'class':'form-control'}},
-		{header:'${text("同card_holder")}', name:'cardOwner', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'128', 'class':'form-control'}},
-		{header:'${text("category")}', name:'category', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'128', 'class':'form-control'}},
-		{header:'${text("cvv")}', name:'cvv', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'8', 'class':'form-control'}},
-		{header:'${text("exp")}', name:'exp', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'16', 'class':'form-control'}},
-		{header:'${text("用来获取卡号 cvv 过期时间")}', name:'cardToken', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'128', 'class':'form-control'}},
-		{header:'${text("card_id")}', name:'cardId', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'64', 'class':'form-control'}},
-		{header:'${text("card_usercode")}', name:'cardUsercode', width:150,
-			formatter: function(val, obj, row, act){
-				return js.val(row, 'cardUsercode')+'|'+js.val(row, '');
-			}, editable: true, edittype: "custom", editoptions: {
-				custom_element: function(val, editOptions) {
-					return js.template('treeselectTpl', {
-						id: 'user_'+editOptions.id, title: '用户选择', 
-						name: 'cardUsercode', value: val.split('|')[0], 
-						labelName: '', labelValue: val.split('|')[1],
-						url: '${ctx}/sys/office/treeData?isLoadUser=true', cssClass: ''
-					});
-				}
-			}
-		},
-		{header:'${text("卡面过期时间")}', name:'expiredDate', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'32', 'class':'form-control'}},
-		{header:'${text("卡品牌 master")}', name:'cardBrand', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'32', 'class':'form-control'}},
-		{header:'${text("获取卡号")}', name:'panUrl', width:150, editable:true, edittype:'text', editoptions:{'class':'form-control'}},
-		{header:'${text("user_allocation_id")}', name:'userAllocationId', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'128', 'class':'form-control'}},
-		{header:'${text("操作")}', name:'actions', width:80, sortable:false, fixed:true, formatter: function(val, obj, row, act){
-			var actions = [];
-			if (val == 'new'){
-				actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#tblCardInfoDataGrid\').dataGrid(\'delRowData\',\''+obj.rowId+'\')});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
-			}else{
-				actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#tblCardInfoDataGrid\').dataGrid(\'setRowData\',\''+obj.rowId+'\',null,{display:\'none\'});$(\'#'+obj.rowId+'_status\').val(\''+Global.STATUS_DELETE+'\');});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
-			}
-			return actions.join('');
-		}, editoptions: {defaultValue: 'new'}}
-	],
-	
-	// 编辑表格参数
-	editGrid: true,				// 是否是编辑表格
-	editGridInitRowNum: 1,		// 编辑表格的初始化新增行数
-	editGridAddRowBtn: $('#tblCardInfoDataGridAddRowBtn'),	// 子表增行按钮
-	editGridAddRowInitData: {id: '', status: Global.STATUS_NORMAL},	// 新增行的时候初始化的数据
-	
-	// 编辑表格的提交数据参数
-	editGridInputFormListName: 'tblCardInfoList', // 提交的数据列表名
-	editGridInputFormListAttrs: 'status,id,cardNum,budgetId.id,cardName,cardLimit,nickname,cardType,lastChargeOn,billingAddress,cardOwner,category,cvv,exp,cardToken,cardId,cardUsercode,expiredDate,cardBrand,panUrl,userAllocationId,', // 提交数据列表的属性字段
-	
-	// 加载成功后执行事件
-	ajaxSuccess: function(data){
-		
-	}
-});
-</script>
-<script id="treeselectTpl" type="text/template">//<!--<div>
-<#form:treeselect id="{{d.id}}" title="{{d.title}}" name="{{d.name}}" value="{{d.value}}"
-	labelName="{{d.labelName}}" labelValue="{{d.labelValue}}" url="{{d.url}}"
-	class="{{d.cssClass}}" btnClass="btn-sm" allowClear="true"/>
-</div>//--></script>
 <script>
 $("#inputForm").validate({
 	submitHandler: function(form){

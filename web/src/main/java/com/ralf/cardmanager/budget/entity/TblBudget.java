@@ -8,8 +8,6 @@ import java.util.Date;
 import com.jeesite.common.mybatis.annotation.JoinTable;
 import com.jeesite.common.mybatis.annotation.JoinTable.Type;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.util.List;
-import com.jeesite.common.collect.ListUtils;
 
 import com.jeesite.common.entity.DataEntity;
 import com.jeesite.common.mybatis.annotation.Column;
@@ -19,45 +17,44 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 /**
  * tbl_budgetEntity
  * @author ralfchen
- * @version 2019-08-18
+ * @version 2019-08-20
  */
 @Table(name="tbl_budget", alias="a", columns={
 		@Column(name="id", attrName="id", label="id", isPK=true),
-		@Column(name="name", attrName="name", label="name", queryType=QueryType.LIKE),
-		@Column(name="owner_usercode", attrName="ownerUsercode", label="owner_usercode", isUpdate=false),
-		@Column(name="create_time", attrName="createTime", label="create_time", isUpdate=false),
-		@Column(name="account_id", attrName="accountId", label="account_id", isUpdate=false),
-		@Column(name="card_service_provider", attrName="cardServiceProvider", label="card_service_provider", isUpdate=false),
-		@Column(name="sp_budget_id", attrName="spBudgetId", label="sp_budget_id", isUpdate=false),
-		@Column(name="create_user_code", attrName="createUserCode", label="create_user_code", isUpdate=false),
-		@Column(name="budget_amount", attrName="budgetAmount", label="所有的帐户值都为整数，实际使用除以100", isUpdate=false),
-		@Column(name="total_amount", attrName="totalAmount", label="total_amount", isUpdate=false),
-		@Column(name="spend_amount", attrName="spendAmount", label="spend_amount", isUpdate=false),
-		@Column(name="assign_amount", attrName="assignAmount", label="assign_amount", isUpdate=false),
-		@Column(name="unsign_amount", attrName="unsignAmount", label="unsign_amount", isUpdate=false),
-		@Column(name="status", attrName="status", label="status"),
-		@Column(name="virtual", attrName="virtual", label="1.divyy帐户2本地帐户", isUpdate=false),
-		@Column(name="card_create_limit", attrName="cardCreateLimit", label="建卡数限制", isUpdate=false),
+		@Column(name="name", attrName="name", label="帐户名", queryType=QueryType.LIKE),
+		@Column(name="owner_usercode", attrName="ownerUsercode", label="拥有者"),
+		@Column(name="create_time", attrName="createTime", label="创建时间"),
+		@Column(name="account_id", attrName="accountId", label="帐户id", isQuery=false),
+		@Column(name="card_service_provider", attrName="cardServiceProvider", label="卡服务提供商"),
+		@Column(name="sp_budget_id", attrName="spBudgetId", label="卡服务提供商帐户id", isQuery=false),
+		@Column(name="create_user_code", attrName="createUserCode", label="创建者"),
+		@Column(name="budget_amount", attrName="budgetAmount", label="帐户额度", isQuery=false),
+		@Column(name="total_amount", attrName="totalAmount", label="总额度", isQuery=false),
+		@Column(name="spend_amount", attrName="spendAmount", label="已使用额度", isQuery=false),
+		@Column(name="assign_amount", attrName="assignAmount", label="已分配额度", isQuery=false),
+		@Column(name="unsign_amount", attrName="unsignAmount", label="未分配额度", isQuery=false),
+		@Column(name="status", attrName="status", label="状态", isUpdate=false),
+		@Column(name="virtual", attrName="virtual", label="是否虚拟", isQuery=false),
+		@Column(name="card_create_limit", attrName="cardCreateLimit", label="卡数上限", isQuery=false),
 	}, orderBy="a.id DESC"
 )
 public class TblBudget extends DataEntity<TblBudget> {
 	
 	private static final long serialVersionUID = 1L;
-	private String name;		// name
-	private String ownerUsercode;		// owner_usercode
-	private Date createTime;		// create_time
-	private String accountId;		// account_id
-	private String cardServiceProvider;		// card_service_provider
-	private String spBudgetId;		// sp_budget_id
-	private String createUserCode;		// create_user_code
-	private Long budgetAmount;		// 所有的帐户值都为整数，实际使用除以100
-	private Long totalAmount;		// total_amount
-	private Long spendAmount;		// spend_amount
-	private Long assignAmount;		// assign_amount
-	private Long unsignAmount;		// unsign_amount
-	private Integer virtual;		// 1.divyy帐户2本地帐户
-	private Long cardCreateLimit;		// 建卡数限制
-	private List<TblCardInfo> tblCardInfoList = ListUtils.newArrayList();		// 子表列表
+	private String name;		// 帐户名
+	private String ownerUsercode;		// 拥有者
+	private Date createTime;		// 创建时间
+	private String accountId;		// 帐户id
+	private String cardServiceProvider;		// 卡服务提供商
+	private String spBudgetId;		// 卡服务提供商帐户id
+	private String createUserCode;		// 创建者
+	private Long budgetAmount;		// 帐户额度
+	private Long totalAmount;		// 总额度
+	private Long spendAmount;		// 已使用额度
+	private Long assignAmount;		// 已分配额度
+	private Long unsignAmount;		// 未分配额度
+	private Integer virtual;		// 是否虚拟
+	private Long cardCreateLimit;		// 卡数上限
 	
 	public TblBudget() {
 		this(null);
@@ -67,7 +64,7 @@ public class TblBudget extends DataEntity<TblBudget> {
 		super(id);
 	}
 	
-	@Length(min=0, max=64, message="name长度不能超过 64 个字符")
+	@Length(min=0, max=64, message="帐户名长度不能超过 64 个字符")
 	public String getName() {
 		return name;
 	}
@@ -76,6 +73,7 @@ public class TblBudget extends DataEntity<TblBudget> {
 		this.name = name;
 	}
 	
+	@Length(min=0, max=64, message="拥有者长度不能超过 64 个字符")
 	public String getOwnerUsercode() {
 		return ownerUsercode;
 	}
@@ -93,7 +91,7 @@ public class TblBudget extends DataEntity<TblBudget> {
 		this.createTime = createTime;
 	}
 	
-	@Length(min=0, max=64, message="account_id长度不能超过 64 个字符")
+	@Length(min=0, max=64, message="帐户id长度不能超过 64 个字符")
 	public String getAccountId() {
 		return accountId;
 	}
@@ -102,7 +100,7 @@ public class TblBudget extends DataEntity<TblBudget> {
 		this.accountId = accountId;
 	}
 	
-	@Length(min=0, max=64, message="card_service_provider长度不能超过 64 个字符")
+	@Length(min=0, max=64, message="卡服务提供商长度不能超过 64 个字符")
 	public String getCardServiceProvider() {
 		return cardServiceProvider;
 	}
@@ -111,7 +109,7 @@ public class TblBudget extends DataEntity<TblBudget> {
 		this.cardServiceProvider = cardServiceProvider;
 	}
 	
-	@Length(min=0, max=128, message="sp_budget_id长度不能超过 128 个字符")
+	@Length(min=0, max=128, message="卡服务提供商帐户id长度不能超过 128 个字符")
 	public String getSpBudgetId() {
 		return spBudgetId;
 	}
@@ -120,6 +118,7 @@ public class TblBudget extends DataEntity<TblBudget> {
 		this.spBudgetId = spBudgetId;
 	}
 	
+	@Length(min=0, max=64, message="创建者长度不能超过 64 个字符")
 	public String getCreateUserCode() {
 		return createUserCode;
 	}
@@ -182,14 +181,6 @@ public class TblBudget extends DataEntity<TblBudget> {
 
 	public void setCardCreateLimit(Long cardCreateLimit) {
 		this.cardCreateLimit = cardCreateLimit;
-	}
-	
-	public List<TblCardInfo> getTblCardInfoList() {
-		return tblCardInfoList;
-	}
-
-	public void setTblCardInfoList(List<TblCardInfo> tblCardInfoList) {
-		this.tblCardInfoList = tblCardInfoList;
 	}
 	
 }
