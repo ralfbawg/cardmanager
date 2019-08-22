@@ -16,7 +16,7 @@ import com.ralf.cardmanager.spiderrequest.dao.TblSpiderRequestDao;
 /**
  * tbl_spider_requestService
  * @author ralfchen
- * @version 2019-08-21
+ * @version 2019-08-22
  */
 @Service
 @Transactional(readOnly=true)

@@ -13,7 +13,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 /**
  * tbl_spider_requestEntity
  * @author ralfchen
- * @version 2019-08-21
+ * @version 2019-08-22
  */
 @Table(name="tbl_spider_request", alias="a", columns={
 		@Column(name="id", attrName="id", label="id", isPK=true),

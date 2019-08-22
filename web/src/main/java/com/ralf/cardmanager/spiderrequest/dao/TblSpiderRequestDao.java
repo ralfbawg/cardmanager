@@ -10,7 +10,7 @@ import com.ralf.cardmanager.spiderrequest.entity.TblSpiderRequest;
 /**
  * tbl_spider_requestDAO接口
  * @author ralfchen
- * @version 2019-08-21
+ * @version 2019-08-22
  */
 @MyBatisDao
 public interface TblSpiderRequestDao extends CrudDao<TblSpiderRequest> {
