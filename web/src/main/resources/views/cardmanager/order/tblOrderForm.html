@@ -1,9 +1,9 @@
-<% layout('/layouts/default.html', {title: 'tbl_order管理', libs: ['validate','dataGrid']}){ %>
+<% layout('/layouts/default.html', {title: '订单管理', libs: ['validate','dataGrid']}){ %>
 <div class="main-content">
 	<div class="box box-main">
 		<div class="box-header with-border">
 			<div class="box-title">
-				<i class="fa fa-list-alt"></i> ${text(tblOrder.isNewRecord ? '新增tbl_order' : '编辑tbl_order')}
+				<i class="fa fa-list-alt"></i> ${text(tblOrder.isNewRecord ? '新增订单' : '编辑订单')}
 			</div>
 			<div class="box-tools pull-right">
 				<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
@@ -13,6 +13,26 @@
 			<div class="box-body">
 				<div class="form-unit">${text('基本信息')}</div>
 				<#form:hidden path="id"/>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('订单类型')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="type" dictType="cm_order_type" blankOption="true" class="form-control" />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('支付状态')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="payStatus" dictType="cm_order_pay_status" blankOption="true" class="form-control" />
+							</div>
+						</div>
+					</div>
+				</div>
 				<h4 class="form-unit">${text('订单详情')}</h4>
 				<div class="ml10 mr10">
 					<table id="tblOrderDetailDataGrid"></table>
@@ -49,14 +69,25 @@ $("#tblOrderDetailDataGrid").dataGrid({
 		{header:'主键', name:'id', editable:true, hidden:true},
 		{header:'${text("卡名")}', name:'cardName', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'255', 'class':'form-control'}},
 		{header:'${text("限额")}', name:'limitAmout', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'20', 'class':'form-control digits'}},
-		{header:'${text("卡分类")}', name:'type', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'32', 'class':'form-control'}},
+		{header:'${text("卡分类")}', name:'type', width:100, 
+			editable:true, edittype:'select', editoptions:{'class':'form-control',
+				items: $.merge([{dictLabel:'&nbsp;',dictValue:''}], ${@DictUtils.getDictListJson('cm_card_bank_divvy_type')}),
+				itemLabel: 'dictLabel', itemValue: 'dictValue', dataInit: function(element){
+					$(element).select2().on("change",function(){$(this).resetValid()});
+				}
+			}
+		},
 		{header:'${text("操作")}', name:'actions', width:80, sortable:false, fixed:true, formatter: function(val, obj, row, act){
 			var actions = [];
-			if (val == 'new'){
-				actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#tblOrderDetailDataGrid\').dataGrid(\'delRowData\',\''+obj.rowId+'\')});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
-			}else{
-				actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#tblOrderDetailDataGrid\').dataGrid(\'setRowData\',\''+obj.rowId+'\',null,{display:\'none\'});$(\'#'+obj.rowId+'_status\').val(\''+Global.STATUS_DELETE+'\');});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
-			}
+				if (val == 'new'){
+				<% if(hasPermi('order:tblOrder:edit')){ %>
+						actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#tblOrderDetailDataGrid\').dataGrid(\'delRowData\',\''+obj.rowId+'\')});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+					<% } %>
+				}else{
+				<% if(hasPermi('order:tblOrder:edit')){ %>
+						actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#tblOrderDetailDataGrid\').dataGrid(\'setRowData\',\''+obj.rowId+'\',null,{display:\'none\'});$(\'#'+obj.rowId+'_status\').val(\''+Global.STATUS_DELETE+'\');});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+					<% } %>
+				}
 			return actions.join('');
 		}, editoptions: {defaultValue: 'new'}}
 	],

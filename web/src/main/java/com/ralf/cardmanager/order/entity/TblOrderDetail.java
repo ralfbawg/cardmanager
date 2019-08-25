@@ -11,9 +11,9 @@ import com.jeesite.common.mybatis.annotation.Table;
 import com.jeesite.common.mybatis.mapper.query.QueryType;
 
 /**
- * tbl_orderEntity
+ * 订单Entity
  * @author ralfchen
- * @version 2019-08-20
+ * @version 2019-08-25
  */
 @Table(name="tbl_order_detail", alias="a", columns={
 		@Column(name="id", attrName="id", label="id", isPK=true),

@@ -34,7 +34,7 @@ public class TblCompanyInfoService extends CrudService<TblCompanyInfoDao, TblCom
 	}
 	
 	/**
-	 * 查询分页数据
+	 * 查询分页数据TblCompanyInfoService
 	 * @param tblCompanyInfo 查询条件
 	 * @param tblCompanyInfo.page 分页对象
 	 * @return

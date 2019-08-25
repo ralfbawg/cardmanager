@@ -17,9 +17,9 @@ import com.ralf.cardmanager.order.entity.TblOrderDetail;
 import com.ralf.cardmanager.order.dao.TblOrderDetailDao;
 
 /**
- * tbl_orderService
+ * 订单Service
  * @author ralfchen
- * @version 2019-08-20
+ * @version 2019-08-25
  */
 @Service
 @Transactional(readOnly=true)

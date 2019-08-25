@@ -17,9 +17,9 @@ import com.jeesite.common.mybatis.annotation.Table;
 import com.jeesite.common.mybatis.mapper.query.QueryType;
 
 /**
- * tbl_orderEntity
+ * 订单Entity
  * @author ralfchen
- * @version 2019-08-20
+ * @version 2019-08-25
  */
 @Table(name="tbl_order", alias="a", columns={
 		@Column(name="id", attrName="id", label="id", isPK=true),
@@ -29,8 +29,8 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 		@Column(name="audit_usercode", attrName="auditUsercode", label="审核用户", isQuery=false),
 		@Column(name="audit_time", attrName="auditTime", label="审核时间"),
 		@Column(name="order_amount", attrName="orderAmount", label="订单金额"),
-		@Column(name="pay_status", attrName="payStatus", label="00", comment="00:提交前，01提交待付款02已付款未完成03已付款已完成", isQuery=false),
-		@Column(name="status", attrName="status", label="status"),
+		@Column(name="pay_status", attrName="payStatus", label="支付状态", isQuery=false),
+		@Column(name="status", attrName="status", label="状态"),
 	}, orderBy="a.id DESC"
 )
 public class TblOrder extends DataEntity<TblOrder> {
@@ -42,7 +42,7 @@ public class TblOrder extends DataEntity<TblOrder> {
 	private String auditUsercode;		// 审核用户
 	private Date auditTime;		// 审核时间
 	private Long orderAmount;		// 订单金额
-	private String payStatus;		// 00:提交前，01提交待付款02已付款未完成03已付款已完成
+	private String payStatus;		// 支付状态
 	private List<TblOrderDetail> tblOrderDetailList = ListUtils.newArrayList();		// 子表列表
 	
 	public TblOrder() {
@@ -106,7 +106,7 @@ public class TblOrder extends DataEntity<TblOrder> {
 		this.orderAmount = orderAmount;
 	}
 	
-	@Length(min=0, max=2, message="00长度不能超过 2 个字符")
+	@Length(min=0, max=2, message="支付状态长度不能超过 2 个字符")
 	public String getPayStatus() {
 		return payStatus;
 	}

@@ -8,9 +8,9 @@ import com.jeesite.common.mybatis.annotation.MyBatisDao;
 import com.ralf.cardmanager.order.entity.TblOrder;
 
 /**
- * tbl_orderDAO接口
+ * 订单DAO接口
  * @author ralfchen
- * @version 2019-08-20
+ * @version 2019-08-25
  */
 @MyBatisDao
 public interface TblOrderDao extends CrudDao<TblOrder> {
