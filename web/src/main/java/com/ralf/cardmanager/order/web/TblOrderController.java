@@ -47,7 +47,7 @@ public class TblOrderController extends BaseController {
     private TblOrderService tblOrderService;
 
     @Autowired
-    private DictTypeService dictTypeService;
+    private DictDataService dictDataService;
 
     @Autowired
     private CreateCardByBudget createCardByBudget;
@@ -89,9 +89,6 @@ public class TblOrderController extends BaseController {
     @RequiresPermissions("order:tblOrder:view")
     @RequestMapping(value = "form")
     public String form(TblOrder tblOrder, Model model, HttpServletRequest request) {
-        String usercode = (String) request.getSession().getAttribute("userCode");
-        tblOrder.setCreateDate(new Date());
-        tblOrder.setSubmitUsercode(usercode);
         model.addAttribute("tblOrder", tblOrder);
         return "cardmanager/order/tblOrderForm";
     }
@@ -102,7 +99,19 @@ public class TblOrderController extends BaseController {
     @RequiresPermissions("order:tblOrder:edit")
     @PostMapping(value = "save")
     @ResponseBody
-    public String save(@Validated TblOrder tblOrder) {
+    public String save(@Validated TblOrder tblOrder, HttpServletRequest request) {
+        val queryOrder = new TblOrder();
+        queryOrder.setType_eq("create");
+        Long createOrderCount = tblOrderService.findPage(queryOrder).getCount();
+        if (createOrderCount <= 0 && tblOrder.getType() != "create") {
+            return renderResult(Global.FALSE, text("请先提交创建订单！"));
+        }
+        if (createOrderCount == 1 && tblOrder.getType() == "create") {
+            return renderResult(Global.FALSE, text("只能提交一条创建订单！"));
+        }
+        String usercode = (String) request.getSession().getAttribute("userCode");
+        tblOrder.setCreateDate(new Date());
+        tblOrder.setSubmitUsercode(usercode);
         tblOrderService.save(tblOrder);
         return renderResult(Global.TRUE, text("保存订单成功！"));
     }
@@ -114,15 +123,13 @@ public class TblOrderController extends BaseController {
     @RequestMapping(value = "delete")
     @ResponseBody
     public String delete(TblOrder tblOrder) {
-        val dict = new DictType();
-        dict.setDictType_like("cm_order_pay_status");
-        DictType a = dictTypeService.get(dict);
-
-//        if (tblOrder.getPayStatus() != a..getDictCode()) {
-
-//        }
-
-//        tblOrderService.delete(tblOrder);
+        val dict = new DictData();
+        dict.setDictType("cm_order_pay_status");
+        DictData a = dictDataService.get(dict);
+        if (tblOrder.getPayStatus() != "01") {//编辑中
+            return renderResult(Global.FALSE, text("订单已经提交，不能删除！"));
+        }
+        tblOrderService.delete(tblOrder);
         return renderResult(Global.TRUE, text("删除订单成功！"));
     }
 
@@ -137,6 +144,6 @@ public class TblOrderController extends BaseController {
     @RequestMapping({"audit"})
     public String auditForm(TblOrder tblOrder, Model model) {
         this.tblOrderService.save(tblOrder);
-        return this.renderResult("true", text("审核订单成功！", new String[0]));
+        return this.renderResult(Global.TRUE, text("审核订单成功！"));
     }
 }
