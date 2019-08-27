@@ -6,6 +6,7 @@ package com.ralf.cardmanager.order.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.jeesite.common.lang.StringUtils;
 import com.jeesite.modules.sys.entity.DictData;
 import com.jeesite.modules.sys.entity.DictType;
 import com.jeesite.modules.sys.service.DictDataService;
@@ -126,7 +127,7 @@ public class TblOrderController extends BaseController {
         val dict = new DictData();
         dict.setDictType("cm_order_pay_status");
         DictData a = dictDataService.get(dict);
-        if (tblOrder.getPayStatus() != "01") {//编辑中
+        if (!StringUtils.isEmpty(tblOrder.getPayStatus()) && tblOrder.getPayStatus() != "01") {//编辑中
             return renderResult(Global.FALSE, text("订单已经提交，不能删除！"));
         }
         tblOrderService.delete(tblOrder);
