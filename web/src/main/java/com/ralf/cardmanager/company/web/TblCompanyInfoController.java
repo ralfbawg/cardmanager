@@ -23,9 +23,9 @@ import com.ralf.cardmanager.company.entity.TblCompanyInfo;
 import com.ralf.cardmanager.company.service.TblCompanyInfoService;
 
 /**
- * CompanyInfoController
+ * 公司信息Controller
  * @author ralfchen
- * @version 2019-08-21
+ * @version 2019-08-27
  */
 @Controller
 @RequestMapping(value = "${adminPath}/company/tblCompanyInfo")
@@ -75,25 +75,25 @@ public class TblCompanyInfoController extends BaseController {
 	}
 
 	/**
-	 * 保存company
+	 * 保存公司信息
 	 */
 	@RequiresPermissions("company:tblCompanyInfo:edit")
 	@PostMapping(value = "save")
 	@ResponseBody
 	public String save(@Validated TblCompanyInfo tblCompanyInfo) {
 		tblCompanyInfoService.save(tblCompanyInfo);
-		return renderResult(Global.TRUE, text("保存company成功！"));
+		return renderResult(Global.TRUE, text("保存公司信息成功！"));
 	}
 	
 	/**
-	 * 删除company
+	 * 删除公司信息
 	 */
 	@RequiresPermissions("company:tblCompanyInfo:edit")
 	@RequestMapping(value = "delete")
 	@ResponseBody
 	public String delete(TblCompanyInfo tblCompanyInfo) {
 		tblCompanyInfoService.delete(tblCompanyInfo);
-		return renderResult(Global.TRUE, text("删除company成功！"));
+		return renderResult(Global.TRUE, text("删除公司信息成功！"));
 	}
 	
 }

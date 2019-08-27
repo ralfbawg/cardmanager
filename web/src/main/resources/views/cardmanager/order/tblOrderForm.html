@@ -1,111 +1,124 @@
-<% layout('/layouts/default.html', {title: '订单管理', libs: ['dataGrid']}){ %>
+<% layout('/layouts/default.html', {title: '订单管理', libs: ['validate','dataGrid']}){ %>
 <div class="main-content">
 	<div class="box box-main">
-		<div class="box-header">
+		<div class="box-header with-border">
 			<div class="box-title">
-				<i class="fa fa-list-alt"></i> ${text('订单管理')}
+				<i class="fa fa-list-alt"></i> ${text(tblOrder.isNewRecord ? '新增订单' : '编辑订单')}
 			</div>
 			<div class="box-tools pull-right">
-				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
-				<% if(hasPermi('order:tblOrder:edit')){ %>
-				<a href="${ctx}/order/tblOrder/form" class="btn btn-default btnTool" title="${text('新增订单')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+			</div>
+		</div>
+		<#form:form id="inputForm" model="${tblOrder}" action="${ctx}/order/tblOrder/save" method="post" class="form-horizontal">
+		<div class="box-body">
+			<div class="form-unit">${text('基本信息')}</div>
+			<#form:hidden path="id"/>
+			<div class="row">
+				<div class="col-xs-6">
+					<div class="form-group">
+						<label class="control-label col-sm-4" title="">
+							<span class="required hide">*</span> ${text('订单类型')}：<i class="fa icon-question hide"></i></label>
+						<div class="col-sm-8">
+							<#form:select path="type" dictType="cm_order_type" blankOption="true" class="form-control" />
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-6">
+					<div class="form-group">
+						<label class="control-label col-sm-4" title="">
+							<span class="required hide">*</span> ${text('支付状态')}：<i class="fa icon-question hide"></i></label>
+						<div class="col-sm-8">
+							<#form:select path="payStatus" dictType="cm_order_pay_status" blankOption="true" class="form-control" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<h4 class="form-unit">${text('订单详情')}</h4>
+			<div class="ml10 mr10">
+				<table id="tblOrderDetailDataGrid"></table>
+				<% if (hasPermi('order:tblOrder:edit')){ %>
+				<a href="#" id="tblOrderDetailDataGridAddRowBtn" class="btn btn-primary btn-sm mt10 mb10"><i class="fa fa-plus"></i> ${text('增行')}</a>
 				<% } %>
 			</div>
 		</div>
-		<div class="box-body">
-			<#form:form id="searchForm" model="${tblOrder}" action="${ctx}/order/tblOrder/listData" method="post" class="form-inline hide"
-			data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
-			<div class="form-group">
-				<label class="control-label">${text('订单类型')}：</label>
-				<div class="control-inline width-120">
-					<#form:select path="type" dictType="cm_order_type" blankOption="true" class="form-control"/>
+		<div class="box-footer">
+			<div class="row">
+				<div class="col-sm-offset-2 col-sm-10">
+					<% if (hasPermi('order:tblOrder:edit')){ %>
+					<button type="submit" class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-check"></i> ${text('保 存')}</button>&nbsp;
+					<% } %>
+					<button type="button" class="btn btn-sm btn-default" id="btnCancel" onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}</button>
 				</div>
 			</div>
-			<div class="form-group">
-				<label class="control-label">${text('提交用户')}：</label>
-				<div class="control-inline">
-					<#form:input path="submitUsercode" maxlength="128" class="form-control width-120"/>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="control-label">${text('审核时间')}：</label>
-				<div class="control-inline">
-					<#form:input path="auditTime_gte" readonly="true" maxlength="20" class="form-control Wdate-datetime"
-					dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false,onpicked:function(){auditTime_lte.click()}});"/>
-					&nbsp;--&nbsp;
-					<#form:input path="auditTime_lte" readonly="true" maxlength="20" class="form-control Wdate-datetime"
-					dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="control-label">${text('订单金额')}：</label>
-				<div class="control-inline">
-					<#form:input path="orderAmount" maxlength="20" class="form-control width-120"/>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="control-label">${text('状态')}：</label>
-				<div class="control-inline width-120">
-					<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control"/>
-				</div>
-			</div>
-			<div class="form-group">
-				<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
-				<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
-			</div>
-
-		</#form:form>
-		<table id="dataGrid"></table>
-		<div id="dataGridPage"></div>
-	</div>
+		</div>
+	</#form:form>
 </div>
 </div>
 <% } %>
 <script>
-	// 初始化DataGrid对象
-	$('#dataGrid').dataGrid({
-		searchForm: $("#searchForm"),
+	//初始化订单详情DataGrid对象
+	$("#tblOrderDetailDataGrid").dataGrid({
+
+		data: ${toJson(tblOrder.tblOrderDetailList)},
+		datatype: "local", // 设置本地数据
+		autoGridHeight: function(){return 'auto'}, // 设置自动高度
+
+		// 设置数据表格列
 		columnModel: [
-			{header:'${text("订单类型")}', name:'type', index:'a.type', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
-					return '<a href="${ctx}/order/tblOrder/form?id='+row.id+'" class="btnList" data-title="${text("编辑订单")}">'+js.getDictLabel(${@DictUtils.getDictListJson('cm_order_type')}, val, '${text("未知")}', true)+'</a>';
-				}},
-			{header:'${text("提交时间")}', name:'submitTime', index:'a.submit_time', width:150, align:"center"},
-			{header:'${text("提交用户")}', name:'submitUsercode', index:'a.submit_usercode', width:150, align:"left"},
-			{header:'${text("审核用户")}', name:'auditUsercode', index:'a.audit_usercode', width:150, align:"left"},
-			{header:'${text("审核时间")}', name:'auditTime', index:'a.audit_time', width:150, align:"center"},
-			{header:'${text("订单金额")}', name:'orderAmount', index:'a.order_amount', width:150, align:"center"},
-			{header:'${text("支付状态")}', name:'payStatus', index:'a.pay_status', width:150, align:"center", formatter: function(val, obj, row, act){
-					return js.getDictLabel(${@DictUtils.getDictListJson('cm_order_pay_status')}, val, '${text("未知")}', true);
-				}},
-			{header:'${text("状态")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
-					return js.getDictLabel(${@DictUtils.getDictListJson('sys_search_status')}, val, '${text("未知")}', true);
-				}},
-			{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			{header:'状态', name:'status', editable:true, hidden:true},
+			{header:'主键', name:'id', editable:true, hidden:true},
+			{header:'${text("卡名")}', name:'cardName', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'255', 'class':'form-control'}},
+			{header:'${text("限额")}', name:'limitAmout', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'20', 'class':'form-control digits'}},
+			{header:'${text("卡分类")}', name:'type', width:100,
+				editable:true, edittype:'select', editoptions:{'class':'form-control',
+					items: $.merge([{dictLabel:'&nbsp;',dictValue:''}], ${@DictUtils.getDictListJson('cm_card_bank_divvy_type')}),
+					itemLabel: 'dictLabel', itemValue: 'dictValue', dataInit: function(element){
+						$(element).select2().on("change",function(){$(this).resetValid()});
+					}
+				}
+			},
+			{header:'${text("操作")}', name:'actions', width:80, sortable:false, fixed:true, formatter: function(val, obj, row, act){
 					var actions = [];
-				<% if(hasPermi('order:tblOrder:edit')){ %>
-						actions.push('<a href="${ctx}/order/tblOrder/form?id='+row.id+'" class="btnList" title="${text("编辑订单")}"><i class="fa fa-pencil"></i></a>&nbsp;');
-						actions.push('<a href="${ctx}/order/tblOrder/delete?id='+row.id+'" class="btnList" title="${text("删除订单")}" data-confirm="${text("确认要删除该订单吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
-					<% }  if(hasPermi('order:tblOrder:audit')){ %>
-						actions.push('<a href="${ctx}/order/tblOrder/audit?id='+row.id+'" class="btnList" title="${text("审核订单")}" data-confirm="${text("确认该订单审核并支付成功吗？")}"><i class="fa fa-bookmark"></i></a>&nbsp;');
-						// actions.push('<a href="javascript:;" class="btnList" title="${text("审核订单")}" onclick="test('+row.id+');"><i class="fa fa-bookmark"></i></a>&nbsp;');
-					<% } %>
+					if (val == 'new'){
+					<% if(hasPermi('order:tblOrder:edit')){ %>
+							actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#tblOrderDetailDataGrid\').dataGrid(\'delRowData\',\''+obj.rowId+'\')});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+						<% } %>
+					}else{
+					<% if(hasPermi('order:tblOrder:edit')){ %>
+							actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#tblOrderDetailDataGrid\').dataGrid(\'setRowData\',\''+obj.rowId+'\',null,{display:\'none\'});$(\'#'+obj.rowId+'_status\').val(\''+Global.STATUS_DELETE+'\');});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+						<% } %>
+					}
 					return actions.join('');
-				}}
+				}, editoptions: {defaultValue: 'new'}}
 		],
+
+		// 编辑表格参数
+		editGrid: true,				// 是否是编辑表格
+		editGridInitRowNum: 1,		// 编辑表格的初始化新增行数
+		editGridAddRowBtn: $('#tblOrderDetailDataGridAddRowBtn'),	// 子表增行按钮
+		editGridAddRowInitData: {id: '', status: Global.STATUS_NORMAL},	// 新增行的时候初始化的数据
+
+		// 编辑表格的提交数据参数
+		editGridInputFormListName: 'tblOrderDetailList', // 提交的数据列表名
+		editGridInputFormListAttrs: 'status,id,orderId.id,cardName,limitAmout,type,cardId,', // 提交数据列表的属性字段
+
 		// 加载成功后执行事件
 		ajaxSuccess: function(data){
 
 		}
 	});
-
-	function test(id) {
-		var json=$.merge([{dictLabel:'&nbsp;',dictValue:''}], ${@DictUtils.getDictListJson('cm_order_pay_status')})
-		var select = $("<select></select>");
-		for(i=2;i<4;i++){
-			select.append(new Option(json[i].dictLabel, json[i].dictValue))
+</script>
+<script>
+	$("#inputForm").validate({
+		submitHandler: function(form){
+			js.ajaxSubmitForm($(form), function(data){
+				js.showMessage(data.message);
+				if(data.result == Global.TRUE){
+					js.closeCurrentTabPage(function(contentWindow){
+						contentWindow.page();
+					});
+				}
+			}, "json");
 		}
-		js.confirm(select.get(0).outerHTML, '${ctx}/order/tblOrder/audit', {id: id}, function(data){alert('删除成功')}, 'json', true, '正在删除...')
-
-	}
-
+	});
 </script>

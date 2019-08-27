@@ -15,9 +15,9 @@ import com.ralf.cardmanager.company.dao.TblCompanyInfoDao;
 import com.jeesite.modules.file.utils.FileUploadUtils;
 
 /**
- * CompanyInfoService
+ * 公司信息Service
  * @author ralfchen
- * @version 2019-08-21
+ * @version 2019-08-27
  */
 @Service
 @Transactional(readOnly=true)
@@ -34,7 +34,7 @@ public class TblCompanyInfoService extends CrudService<TblCompanyInfoDao, TblCom
 	}
 	
 	/**
-	 * 查询分页数据TblCompanyInfoService
+	 * 查询分页数据
 	 * @param tblCompanyInfo 查询条件
 	 * @param tblCompanyInfo.page 分页对象
 	 * @return

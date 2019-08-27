@@ -1,9 +1,9 @@
-<% layout('/layouts/default.html', {title: 'company管理', libs: ['validate','fileupload']}){ %>
+<% layout('/layouts/default.html', {title: '公司信息管理', libs: ['validate','fileupload']}){ %>
 <div class="main-content">
 	<div class="box box-main">
 		<div class="box-header with-border">
 			<div class="box-title">
-				<i class="fa fa-list-alt"></i> ${text(tblCompanyInfo.isNewRecord ? '新增company' : '编辑company')}
+				<i class="fa fa-list-alt"></i> ${text(tblCompanyInfo.isNewRecord ? '新增公司信息' : '编辑公司信息')}
 			</div>
 			<div class="box-tools pull-right">
 				<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
@@ -17,7 +17,7 @@
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('name')}：<i class="fa icon-question hide"></i></label>
+								<span class="required hide">*</span> ${text('中文名')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
 								<#form:input path="name" maxlength="255" class="form-control"/>
 							</div>
@@ -26,7 +26,7 @@
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('name_en')}：<i class="fa icon-question hide"></i></label>
+								<span class="required hide">*</span> ${text('英文名')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
 								<#form:input path="nameEn" maxlength="255" class="form-control"/>
 							</div>
@@ -37,7 +37,7 @@
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('manager_usercode')}：<i class="fa icon-question hide"></i></label>
+								<span class="required hide">*</span> ${text('管理员')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
 								<#form:treeselect id="managerUsercode" title="${text('用户选择')}"
 									path="managerUsercode" labelPath=""
@@ -49,7 +49,7 @@
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('manager_first_name')}：<i class="fa icon-question hide"></i></label>
+								<span class="required hide">*</span> ${text('管理员firstName')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
 								<#form:input path="managerFirstName" maxlength="255" class="form-control"/>
 							</div>
@@ -60,7 +60,7 @@
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('manager_last_name')}：<i class="fa icon-question hide"></i></label>
+								<span class="required hide">*</span> ${text('管理员lastName')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
 								<#form:input path="managerLastName" maxlength="255" class="form-control"/>
 							</div>
@@ -69,7 +69,7 @@
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('biz_file_id')}：<i class="fa icon-question hide"></i></label>
+								<span class="required hide">*</span> ${text('文件')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
 								<#form:input path="bizFileId" maxlength="64" class="form-control"/>
 							</div>
