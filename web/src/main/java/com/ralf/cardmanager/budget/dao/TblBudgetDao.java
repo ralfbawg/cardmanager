@@ -8,9 +8,9 @@ import com.jeesite.common.mybatis.annotation.MyBatisDao;
 import com.ralf.cardmanager.budget.entity.TblBudget;
 
 /**
- * tbl_budgetDAO接口
+ * 帐户信息DAO接口
  * @author ralfchen
- * @version 2019-08-20
+ * @version 2019-08-29
  */
 @MyBatisDao
 public interface TblBudgetDao extends CrudDao<TblBudget> {

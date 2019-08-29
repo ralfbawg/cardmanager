@@ -1,9 +1,9 @@
-<% layout('/layouts/default.html', {title: 'tbl_budget管理', libs: ['validate']}){ %>
+<% layout('/layouts/default.html', {title: '帐户信息管理', libs: ['validate']}){ %>
 <div class="main-content">
 	<div class="box box-main">
 		<div class="box-header with-border">
 			<div class="box-title">
-				<i class="fa fa-list-alt"></i> ${text(tblBudget.isNewRecord ? '新增tbl_budget' : '编辑tbl_budget')}
+				<i class="fa fa-list-alt"></i> ${text(tblBudget.isNewRecord ? '新增帐户信息' : '编辑帐户信息')}
 			</div>
 			<div class="box-tools pull-right">
 				<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
@@ -19,35 +19,6 @@
 								<span class="required hide">*</span> ${text('帐户名')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
 								<#form:input path="name" maxlength="64" class="form-control"/>
-							</div>
-						</div>
-					</div>
-					<div class="col-xs-6">
-						<div class="form-group">
-							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('状态')}：<i class="fa icon-question hide"></i></label>
-							<div class="col-sm-8">
-								<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control" />
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-xs-6">
-						<div class="form-group">
-							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('是否虚拟')}：<i class="fa icon-question hide"></i></label>
-							<div class="col-sm-8">
-								<#form:select path="virtual" dictType="" blankOption="true" class="form-control digits" />
-							</div>
-						</div>
-					</div>
-					<div class="col-xs-6">
-						<div class="form-group">
-							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('卡数上限')}：<i class="fa icon-question hide"></i></label>
-							<div class="col-sm-8">
-								<#form:input path="cardCreateLimit" maxlength="11" class="form-control digits"/>
 							</div>
 						</div>
 					</div>

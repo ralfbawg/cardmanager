@@ -15,9 +15,9 @@ import com.jeesite.common.mybatis.annotation.Table;
 import com.jeesite.common.mybatis.mapper.query.QueryType;
 
 /**
- * tbl_budgetEntity
+ * 帐户信息Entity
  * @author ralfchen
- * @version 2019-08-20
+ * @version 2019-08-29
  */
 @Table(name="tbl_budget", alias="a", columns={
 		@Column(name="id", attrName="id", label="id", isPK=true),
@@ -36,6 +36,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 		@Column(name="status", attrName="status", label="状态", isUpdate=false),
 		@Column(name="virtual", attrName="virtual", label="是否虚拟", isQuery=false),
 		@Column(name="card_create_limit", attrName="cardCreateLimit", label="卡数上限", isQuery=false),
+		@Column(name="last_charge_on", attrName="lastChargeOn", label="last_charge_on"),
 	}, orderBy="a.id DESC"
 )
 public class TblBudget extends DataEntity<TblBudget> {
@@ -55,6 +56,7 @@ public class TblBudget extends DataEntity<TblBudget> {
 	private Long unsignAmount;		// 未分配额度
 	private Integer virtual;		// 是否虚拟
 	private Long cardCreateLimit;		// 卡数上限
+	private Date lastChargeOn;		// last_charge_on
 	
 	public TblBudget() {
 		this(null);
@@ -181,6 +183,15 @@ public class TblBudget extends DataEntity<TblBudget> {
 
 	public void setCardCreateLimit(Long cardCreateLimit) {
 		this.cardCreateLimit = cardCreateLimit;
+	}
+	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	public Date getLastChargeOn() {
+		return lastChargeOn;
+	}
+
+	public void setLastChargeOn(Date lastChargeOn) {
+		this.lastChargeOn = lastChargeOn;
 	}
 	
 }

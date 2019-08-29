@@ -1,14 +1,14 @@
-<% layout('/layouts/default.html', {title: 'tbl_budget管理', libs: ['dataGrid']}){ %>
+<% layout('/layouts/default.html', {title: '帐户信息管理', libs: ['dataGrid']}){ %>
 <div class="main-content">
 	<div class="box box-main">
 		<div class="box-header">
 			<div class="box-title">
-				<i class="fa fa-list-alt"></i> ${text('tbl_budget管理')}
+				<i class="fa fa-list-alt"></i> ${text('帐户信息管理')}
 			</div>
 			<div class="box-tools pull-right">
 				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
 				<% if(hasPermi('budget:tblBudget:edit')){ %>
-					<a href="${ctx}/budget/tblBudget/form" class="btn btn-default btnTool" title="${text('新增tbl_budget')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+					<a href="${ctx}/budget/tblBudget/form" class="btn btn-default btnTool" title="${text('新增帐户信息')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
 				<% } %>
 			</div>
 		</div>
@@ -44,14 +44,23 @@
 				</div>
 				<div class="form-group">
 					<label class="control-label">${text('创建者')}：</label>
-					<div class="control-inline">
-						<#form:input path="createUserCode" maxlength="64" class="form-control width-120"/>
+					<div class="control-inline width-120" >
+						<#form:treeselect id="createUserCode" title="${text('用户选择')}"
+							path="createUserCode" labelPath="" 
+							url="${ctx}/sys/office/treeData?isLoadUser=true" allowClear="true"/>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="control-label">${text('状态')}：</label>
 					<div class="control-inline width-120">
 						<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('last_charge_on')}：</label>
+					<div class="control-inline">
+						<#form:input path="lastChargeOn" readonly="true" maxlength="20" class="form-control Wdate-datetime"
+							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
 					</div>
 				</div>
 				<div class="form-group">
@@ -71,7 +80,7 @@ $('#dataGrid').dataGrid({
 	searchForm: $("#searchForm"),
 	columnModel: [
 		{header:'${text("帐户名")}', name:'name', index:'a.name', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
-			return '<a href="${ctx}/budget/tblBudget/form?id='+row.id+'" class="btnList" data-title="${text("编辑tbl_budget")}">'+(val||row.id)+'</a>';
+			return '<a href="${ctx}/budget/tblBudget/form?id='+row.id+'" class="btnList" data-title="${text("编辑帐户信息")}">'+(val||row.id)+'</a>';
 		}},
 		{header:'${text("拥有者")}', name:'', index:'a.owner_usercode', width:150, align:"center"},
 		{header:'${text("创建时间")}', name:'createTime', index:'a.create_time', width:150, align:"center"},
@@ -80,7 +89,7 @@ $('#dataGrid').dataGrid({
 			return js.getDictLabel(${@DictUtils.getDictListJson('cm_card_sp')}, val, '${text("未知")}', true);
 		}},
 		{header:'${text("卡服务提供商帐户id")}', name:'spBudgetId', index:'a.sp_budget_id', width:150, align:"left"},
-		{header:'${text("创建者")}', name:'createUserCode', index:'a.create_user_code', width:150, align:"left"},
+		{header:'${text("创建者")}', name:'', index:'a.create_user_code', width:150, align:"center"},
 		{header:'${text("帐户额度")}', name:'budgetAmount', index:'a.budget_amount', width:150, align:"center"},
 		{header:'${text("总额度")}', name:'totalAmount', index:'a.total_amount', width:150, align:"center"},
 		{header:'${text("已使用额度")}', name:'spendAmount', index:'a.spend_amount', width:150, align:"center"},
@@ -93,11 +102,12 @@ $('#dataGrid').dataGrid({
 			return js.getDictLabel(${@DictUtils.getDictListJson('')}, val, '${text("未知")}', true);
 		}},
 		{header:'${text("卡数上限")}', name:'cardCreateLimit', index:'a.card_create_limit', width:150, align:"center"},
+		{header:'${text("last_charge_on")}', name:'lastChargeOn', index:'a.last_charge_on', width:150, align:"center"},
 		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
 			var actions = [];
 			<% if(hasPermi('budget:tblBudget:edit')){ %>
-				actions.push('<a href="${ctx}/budget/tblBudget/form?id='+row.id+'" class="btnList" title="${text("编辑tbl_budget")}"><i class="fa fa-pencil"></i></a>&nbsp;');
-				actions.push('<a href="${ctx}/budget/tblBudget/delete?id='+row.id+'" class="btnList" title="${text("删除tbl_budget")}" data-confirm="${text("确认要删除该tbl_budget吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/budget/tblBudget/form?id='+row.id+'" class="btnList" title="${text("编辑帐户信息")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/budget/tblBudget/delete?id='+row.id+'" class="btnList" title="${text("删除帐户信息")}" data-confirm="${text("确认要删除该帐户信息吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
 			<% } %>
 			return actions.join('');
 		}}

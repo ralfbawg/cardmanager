@@ -6,9 +6,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-@Scope
 @Service
-@Lazy
+@Scope("prototype")
 public class CreateCardByBudget extends BaseDivvyOperation {
     @Override
     protected void init(String... param) {
@@ -18,23 +17,6 @@ public class CreateCardByBudget extends BaseDivvyOperation {
     @Autowired
     public CreateCardByBudget(DivvyPaySiteConfig config) {
         super(config);
-        //VGFnVmFsdWU6NDA5NTI5:Car Rental
-        //VGFnVmFsdWU6NDA5NTMw:Entertainment
-        //VGFnVmFsdWU6NDA5NTMx:Flights
-        //VGFnVmFsdWU6NDA5NTMy:Food
-        //VGFnVmFsdWU6NDA5NTMz:Fuel
-        //VGFnVmFsdWU6NDA5NTM0:Lodging
-        //VGFnVmFsdWU6NDA5NTM1:Maintenance
-        //VGFnVmFsdWU6NDA5NTM2:Marketing
-        //VGFnVmFsdWU6NDA5NTM3:Meetings
-        //VGFnVmFsdWU6NDA5NTM4:Other
-        //VGFnVmFsdWU6NDA5NTM5:Shipping
-        //VGFnVmFsdWU6NDA5NTQw:Subscriptions
-        //VGFnVmFsdWU6NDA5NTQx:Supplies
-        //VGFnVmFsdWU6NDA5NTQy:Telecom
-        //VGFnVmFsdWU6NDA5NTQz:Training
-        //VGFnVmFsdWU6NDA5NTQ0:Transportation
-
 //        body = "{\"operationName\":\"CreateVirtualCard\",\"variables\":{\"input\":{\"amount\":1,\"budgetId\":\"QnVkZ2V0OjQ5MTQ2\",\"clientMutationId\":\"0\",\"name\":\"testralf\",\"ownerId\":\"VXNlcjo1MTE5OA==\",\"selectedTags\":[{\"tagTypeId\":\"VGFnVHlwZTo3OTQw\",\"tagValueIds\":[\"VGFnVmFsdWU6NDA5NTMy\"]}],\"allocationInterval\":\"MONTHLY\",\"nextAllocation\":1567267200,\"type\":\"RECURRING\"}},\"query\":\"mutation CreateVirtualCard($input: CreateVirtualCardForBudgetInput!) {\\n  createVirtualCardForBudget(input: $input) {\\n    budget {\\n      id\\n      __typename\\n    }\\n    newCardEdge {\\n      node {\\n        id\\n        __typename\\n      }\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}";
         body = "{\"operationName\":\"CreateVirtualCard\",\"variables\":{\"input\":{\"amount\":%s,\"budgetId\":\"%s\",\"clientMutationId\":\"0\",\"name\":\"%s\",\"ownerId\":\"%s\",\"selectedTags\":[{\"tagTypeId\":\"VGFnVHlwZTo3OTQw\",\"tagValueIds\":[\"VGFnVmFsdWU6NDA5NTMy\"]}],\"allocationInterval\":\"MONTHLY\",\"nextAllocation\":1567267200,\"type\":\"RECURRING\"}},\"query\":\"mutation CreateVirtualCard($input: CreateVirtualCardForBudgetInput!) {\\n  createVirtualCardForBudget(input: $input) {\\n    budget {\\n      id\\n      __typename\\n    }\\n    newCardEdge {\\n      node {\\n        id\\n        __typename\\n      }\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}";
         bodyParams = new String[]{"amount", config.getBudgetId(), "cardname", "ownerId"};

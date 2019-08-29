@@ -14,9 +14,9 @@ import com.ralf.cardmanager.budget.entity.TblBudget;
 import com.ralf.cardmanager.budget.dao.TblBudgetDao;
 
 /**
- * tbl_budgetService
+ * 帐户信息Service
  * @author ralfchen
- * @version 2019-08-20
+ * @version 2019-08-29
  */
 @Service
 @Transactional(readOnly=true)
