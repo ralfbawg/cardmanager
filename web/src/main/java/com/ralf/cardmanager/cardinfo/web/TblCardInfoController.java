@@ -23,9 +23,9 @@ import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
 import com.ralf.cardmanager.cardinfo.service.TblCardInfoService;
 
 /**
- * cardInfoController
+ * 卡信息Controller
  * @author ralfchen
- * @version 2019-08-18
+ * @version 2019-08-30
  */
 @Controller
 @RequestMapping(value = "${adminPath}/cardinfo/tblCardInfo")
@@ -75,25 +75,25 @@ public class TblCardInfoController extends BaseController {
 	}
 
 	/**
-	 * 保存tbl_card_info
+	 * 保存卡信息
 	 */
 	@RequiresPermissions("cardinfo:tblCardInfo:edit")
 	@PostMapping(value = "save")
 	@ResponseBody
 	public String save(@Validated TblCardInfo tblCardInfo) {
 		tblCardInfoService.save(tblCardInfo);
-		return renderResult(Global.TRUE, text("保存tbl_card_info成功！"));
+		return renderResult(Global.TRUE, text("保存卡信息成功！"));
 	}
 	
 	/**
-	 * 删除tbl_card_info
+	 * 删除卡信息
 	 */
 	@RequiresPermissions("cardinfo:tblCardInfo:edit")
 	@RequestMapping(value = "delete")
 	@ResponseBody
 	public String delete(TblCardInfo tblCardInfo) {
 		tblCardInfoService.delete(tblCardInfo);
-		return renderResult(Global.TRUE, text("删除tbl_card_info成功！"));
+		return renderResult(Global.TRUE, text("删除卡信息成功！"));
 	}
 	
 }

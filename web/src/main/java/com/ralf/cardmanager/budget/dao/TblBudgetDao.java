@@ -10,7 +10,7 @@ import com.ralf.cardmanager.budget.entity.TblBudget;
 /**
  * 帐户信息DAO接口
  * @author ralfchen
- * @version 2019-08-29
+ * @version 2019-08-30
  */
 @MyBatisDao
 public interface TblBudgetDao extends CrudDao<TblBudget> {

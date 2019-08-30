@@ -8,9 +8,9 @@ import com.jeesite.common.mybatis.annotation.MyBatisDao;
 import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
 
 /**
- * cardInfoDAO接口
+ * 卡信息DAO接口
  * @author ralfchen
- * @version 2019-08-18
+ * @version 2019-08-30
  */
 @MyBatisDao
 public interface TblCardInfoDao extends CrudDao<TblCardInfo> {

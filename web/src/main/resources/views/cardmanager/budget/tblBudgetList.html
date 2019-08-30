@@ -37,7 +37,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label">${text('卡服务提供商')}：</label>
+					<label class="control-label">${text('卡提供商')}：</label>
 					<div class="control-inline width-120">
 						<#form:select path="cardServiceProvider" dictType="cm_card_sp" blankOption="true" class="form-control"/>
 					</div>
@@ -54,13 +54,6 @@
 					<label class="control-label">${text('状态')}：</label>
 					<div class="control-inline width-120">
 						<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control"/>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label">${text('last_charge_on')}：</label>
-					<div class="control-inline">
-						<#form:input path="lastChargeOn" readonly="true" maxlength="20" class="form-control Wdate-datetime"
-							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
 					</div>
 				</div>
 				<div class="form-group">
@@ -85,10 +78,10 @@ $('#dataGrid').dataGrid({
 		{header:'${text("拥有者")}', name:'', index:'a.owner_usercode', width:150, align:"center"},
 		{header:'${text("创建时间")}', name:'createTime', index:'a.create_time', width:150, align:"center"},
 		{header:'${text("帐户id")}', name:'accountId', index:'a.account_id', width:150, align:"left"},
-		{header:'${text("卡服务提供商")}', name:'cardServiceProvider', index:'a.card_service_provider', width:150, align:"center", formatter: function(val, obj, row, act){
+		{header:'${text("卡提供商")}', name:'cardServiceProvider', index:'a.card_service_provider', width:150, align:"center", formatter: function(val, obj, row, act){
 			return js.getDictLabel(${@DictUtils.getDictListJson('cm_card_sp')}, val, '${text("未知")}', true);
 		}},
-		{header:'${text("卡服务提供商帐户id")}', name:'spBudgetId', index:'a.sp_budget_id', width:150, align:"left"},
+		{header:'${text("卡提供商帐户id")}', name:'spBudgetId', index:'a.sp_budget_id', width:150, align:"left"},
 		{header:'${text("创建者")}', name:'', index:'a.create_user_code', width:150, align:"center"},
 		{header:'${text("帐户额度")}', name:'budgetAmount', index:'a.budget_amount', width:150, align:"center"},
 		{header:'${text("总额度")}', name:'totalAmount', index:'a.total_amount', width:150, align:"center"},
@@ -102,7 +95,7 @@ $('#dataGrid').dataGrid({
 			return js.getDictLabel(${@DictUtils.getDictListJson('')}, val, '${text("未知")}', true);
 		}},
 		{header:'${text("卡数上限")}', name:'cardCreateLimit', index:'a.card_create_limit', width:150, align:"center"},
-		{header:'${text("last_charge_on")}', name:'lastChargeOn', index:'a.last_charge_on', width:150, align:"center"},
+		{header:'${text("上次充值时间")}', name:'lastChargeOn', index:'a.last_charge_on', width:150, align:"center"},
 		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
 			var actions = [];
 			<% if(hasPermi('budget:tblBudget:edit')){ %>

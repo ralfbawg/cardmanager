@@ -22,25 +22,23 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label">${text('提交用户')}：</label>
+					<label class="control-label">${text('提交时间')}：</label>
 					<div class="control-inline">
-						<#form:input path="submitUsercode" maxlength="128" class="form-control width-120"/>
+						<#form:input path="submitTime" readonly="true" maxlength="20" class="form-control Wdate-datetime"
+							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="control-label">${text('审核时间')}：</label>
 					<div class="control-inline">
-						<#form:input path="auditTime_gte" readonly="true" maxlength="20" class="form-control Wdate-datetime"
-							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false,onpicked:function(){auditTime_lte.click()}});"/>
-						&nbsp;--&nbsp;
-						<#form:input path="auditTime_lte" readonly="true" maxlength="20" class="form-control Wdate-datetime"
+						<#form:input path="auditTime" readonly="true" maxlength="20" class="form-control Wdate-datetime"
 							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label">${text('订单金额')}：</label>
-					<div class="control-inline">
-						<#form:input path="orderAmount" maxlength="20" class="form-control width-120"/>
+					<label class="control-label">${text('支付状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="payStatus" dictType="cm_order_pay_status" blankOption="true" class="form-control"/>
 					</div>
 				</div>
 				<div class="form-group">
@@ -65,12 +63,16 @@
 $('#dataGrid').dataGrid({
 	searchForm: $("#searchForm"),
 	columnModel: [
-		{header:'${text("订单类型")}', name:'type', index:'a.type', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
-			return '<a href="${ctx}/order/tblOrder/form?id='+row.id+'" class="btnList" data-title="${text("编辑订单")}">'+js.getDictLabel(${@DictUtils.getDictListJson('cm_order_type')}, val, '${text("未知")}', true)+'</a>';
+		{header:'${text("id")}', name:'id', index:'a.id', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			return '<a href="${ctx}/order/tblOrder/form?id='+row.id+'" class="btnList" data-title="${text("编辑订单")}">'+(val||row.id)+'</a>';
 		}},
+		{header:'${text("订单类型")}', name:'type', index:'a.type', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('cm_order_type')}, val, '${text("未知")}', true);
+		}},
+		{header:'${text("充值金额")}', name:'chargeAmount', index:'a.charge_amount', width:150, align:"center"},
 		{header:'${text("提交时间")}', name:'submitTime', index:'a.submit_time', width:150, align:"center"},
 		{header:'${text("提交用户")}', name:'submitUsercode', index:'a.submit_usercode', width:150, align:"left"},
-		{header:'${text("审核用户")}', name:'auditUsercode', index:'a.audit_usercode', width:150, align:"left"},
+		{header:'${text("审核用户")}', name:'', index:'a.audit_usercode', width:150, align:"center"},
 		{header:'${text("审核时间")}', name:'auditTime', index:'a.audit_time', width:150, align:"center"},
 		{header:'${text("订单金额")}', name:'orderAmount', index:'a.order_amount', width:150, align:"center"},
 		{header:'${text("支付状态")}', name:'payStatus', index:'a.pay_status', width:150, align:"center", formatter: function(val, obj, row, act){
@@ -82,17 +84,15 @@ $('#dataGrid').dataGrid({
 		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
 			var actions = [];
 			<% if(hasPermi('order:tblOrder:edit')){ %>
-					actions.push('<a href="${ctx}/order/tblOrder/form?id='+row.id+'" class="btnList" title="${text("编辑订单")}"><i class="fa fa-pencil"></i></a>&nbsp;');
-					actions.push('<a href="${ctx}/order/tblOrder/delete?id='+row.id+'" class="btnList" title="${text("删除订单")}" data-confirm="${text("确认要删除该订单吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
-				<% }  if(hasPermi('order:tblOrder:audit')){ %>
-					actions.push('<a href="${ctx}/order/tblOrder/audit?id='+row.id+'" class="btnList" title="${text("审核订单")}" data-confirm="${text("确认要审核该订单吗？")}"><i class="fa  fa-paypal"></i></a>&nbsp;');
-				<% } %>
+				actions.push('<a href="${ctx}/order/tblOrder/form?id='+row.id+'" class="btnList" title="${text("编辑订单")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/order/tblOrder/delete?id='+row.id+'" class="btnList" title="${text("删除订单")}" data-confirm="${text("确认要删除该订单吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			<% } %>
 			return actions.join('');
 		}}
 	],
 	// 加载成功后执行事件
 	ajaxSuccess: function(data){
-
+		
 	}
 });
 </script>

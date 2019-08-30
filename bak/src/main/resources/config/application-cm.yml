@@ -1,0 +1,27 @@
+cusvar: cm
+cm:
+  spider:
+    enabled: false
+    loginTip:
+      inteval: 30
+      email:
+        fromAddress: 22123971@qq.com
+        username: 22123971@qq.com
+        password: Wwkkvikthh123
+        ssl: true
+        smtpPort: 23
+  budget:
+    id: QnVkZ2V0OjQ3MzAz
+mybatis:
+  #  # @MyBatisDao、Aliases 扫描基础包，如果多个，用“,”分隔
+  scanBasePackage: com.jeesite.modules,com.ralf.cardmanager
+  # TypeHandlers 扫描基础包，如果多个，用“,”分隔
+  scanTypeHandlersPackage: ~
+
+  # Mapper文件刷新线程
+  mapper:
+    refresh:
+      enabled: true
+      delaySeconds: 60
+      sleepSeconds: 3
+      mappingPath: mappings

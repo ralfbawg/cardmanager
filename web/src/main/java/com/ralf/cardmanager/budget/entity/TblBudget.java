@@ -17,7 +17,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 /**
  * 帐户信息Entity
  * @author ralfchen
- * @version 2019-08-29
+ * @version 2019-08-30
  */
 @Table(name="tbl_budget", alias="a", columns={
 		@Column(name="id", attrName="id", label="id", isPK=true),
@@ -25,8 +25,8 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 		@Column(name="owner_usercode", attrName="ownerUsercode", label="拥有者"),
 		@Column(name="create_time", attrName="createTime", label="创建时间"),
 		@Column(name="account_id", attrName="accountId", label="帐户id", isQuery=false),
-		@Column(name="card_service_provider", attrName="cardServiceProvider", label="卡服务提供商"),
-		@Column(name="sp_budget_id", attrName="spBudgetId", label="卡服务提供商帐户id", isQuery=false),
+		@Column(name="card_service_provider", attrName="cardServiceProvider", label="卡提供商"),
+		@Column(name="sp_budget_id", attrName="spBudgetId", label="卡提供商帐户id", isQuery=false),
 		@Column(name="create_user_code", attrName="createUserCode", label="创建者"),
 		@Column(name="budget_amount", attrName="budgetAmount", label="帐户额度", isQuery=false),
 		@Column(name="total_amount", attrName="totalAmount", label="总额度", isQuery=false),
@@ -36,7 +36,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 		@Column(name="status", attrName="status", label="状态", isUpdate=false),
 		@Column(name="virtual", attrName="virtual", label="是否虚拟", isQuery=false),
 		@Column(name="card_create_limit", attrName="cardCreateLimit", label="卡数上限", isQuery=false),
-		@Column(name="last_charge_on", attrName="lastChargeOn", label="last_charge_on"),
+		@Column(name="last_charge_on", attrName="lastChargeOn", label="上次充值时间", isQuery=false),
 	}, orderBy="a.id DESC"
 )
 public class TblBudget extends DataEntity<TblBudget> {
@@ -46,8 +46,8 @@ public class TblBudget extends DataEntity<TblBudget> {
 	private String ownerUsercode;		// 拥有者
 	private Date createTime;		// 创建时间
 	private String accountId;		// 帐户id
-	private String cardServiceProvider;		// 卡服务提供商
-	private String spBudgetId;		// 卡服务提供商帐户id
+	private String cardServiceProvider;		// 卡提供商
+	private String spBudgetId;		// 卡提供商帐户id
 	private String createUserCode;		// 创建者
 	private Long budgetAmount;		// 帐户额度
 	private Long totalAmount;		// 总额度
@@ -56,7 +56,7 @@ public class TblBudget extends DataEntity<TblBudget> {
 	private Long unsignAmount;		// 未分配额度
 	private Integer virtual;		// 是否虚拟
 	private Long cardCreateLimit;		// 卡数上限
-	private Date lastChargeOn;		// last_charge_on
+	private Date lastChargeOn;		// 上次充值时间
 	
 	public TblBudget() {
 		this(null);
@@ -102,7 +102,7 @@ public class TblBudget extends DataEntity<TblBudget> {
 		this.accountId = accountId;
 	}
 	
-	@Length(min=0, max=64, message="卡服务提供商长度不能超过 64 个字符")
+	@Length(min=0, max=64, message="卡提供商长度不能超过 64 个字符")
 	public String getCardServiceProvider() {
 		return cardServiceProvider;
 	}
@@ -111,7 +111,7 @@ public class TblBudget extends DataEntity<TblBudget> {
 		this.cardServiceProvider = cardServiceProvider;
 	}
 	
-	@Length(min=0, max=128, message="卡服务提供商帐户id长度不能超过 128 个字符")
+	@Length(min=0, max=128, message="卡提供商帐户id长度不能超过 128 个字符")
 	public String getSpBudgetId() {
 		return spBudgetId;
 	}

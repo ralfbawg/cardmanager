@@ -15,55 +15,55 @@ import com.jeesite.common.mybatis.annotation.Table;
 import com.jeesite.common.mybatis.mapper.query.QueryType;
 
 /**
- * cardInfoEntity
+ * 卡信息Entity
  * @author ralfchen
- * @version 2019-08-18
+ * @version 2019-08-30
  */
 @Table(name="tbl_card_info", alias="a", columns={
 		@Column(name="id", attrName="id", label="id", isPK=true),
-		@Column(name="card_num", attrName="cardNum", label="卡号", isQuery=false),
+		@Column(name="card_no", attrName="cardNo", label="银行卡号"),
+		@Column(name="cvv", attrName="cvv", label="cvv", isQuery=false),
+		@Column(name="exp", attrName="exp", label="exp", isQuery=false),
 		@Column(name="budget_id", attrName="budgetId", label="帐户id"),
 		@Column(name="card_name", attrName="cardName", label="卡名", queryType=QueryType.LIKE),
 		@Column(name="card_limit", attrName="cardLimit", label="限额度", isQuery=false),
 		@Column(name="nickname", attrName="nickname", label="卡昵称", isQuery=false),
 		@Column(name="card_type", attrName="cardType", label="卡类型", isQuery=false),
+		@Column(name="card_amount", attrName="cardAmount", label="现有额度"),
 		@Column(name="last_charge_on", attrName="lastChargeOn", label="上次充值时间"),
-		@Column(name="billing_address", attrName="billingAddress", label="账单地址", queryType=QueryType.LIKE),
+		@Column(name="card_spend_amount", attrName="cardSpendAmount", label="已使用额度"),
 		@Column(name="card_owner", attrName="cardOwner", label="持卡人"),
-		@Column(name="category", attrName="category", label="卡消费类型"),
-		@Column(name="cvv", attrName="cvv", label="cvv", isQuery=false),
-		@Column(name="exp", attrName="exp", label="exp", isQuery=false),
-		@Column(name="status", attrName="status", label="卡状态", isUpdate=false),
+		@Column(name="card_billing_address", attrName="cardBillingAddress", label="账单地址"),
+		@Column(name="card_category", attrName="cardCategory", label="卡消费分类"),
+		@Column(name="status", attrName="status", label="卡状态"),
 		@Column(name="card_token", attrName="cardToken", label="卡token", isQuery=false),
 		@Column(name="card_id", attrName="cardId", label="card_id"),
-		@Column(name="card_usercode", attrName="cardUsercode", label="card_usercode"),
 		@Column(name="expired_date", attrName="expiredDate", label="卡面过期时间"),
 		@Column(name="card_brand", attrName="cardBrand", label="卡品牌"),
-		@Column(name="pan_url", attrName="panUrl", label="获取卡号", isQuery=false),
 		@Column(name="user_allocation_id", attrName="userAllocationId", label="用户操作码", isQuery=false),
 	}, orderBy="a.id DESC"
 )
 public class TblCardInfo extends DataEntity<TblCardInfo> {
 	
 	private static final long serialVersionUID = 1L;
-	private String cardNum;		// 卡号
+	private String cardNo;		// 银行卡号
+	private String cvv;		// cvv
+	private String exp;		// exp
 	private String budgetId;		// 帐户id
 	private String cardName;		// 卡名
 	private Long cardLimit;		// 限额度
 	private String nickname;		// 卡昵称
 	private String cardType;		// 卡类型
+	private Long cardAmount;		// 现有额度
 	private Date lastChargeOn;		// 上次充值时间
-	private String billingAddress;		// 账单地址
+	private Long cardSpendAmount;		// 已使用额度
 	private String cardOwner;		// 持卡人
-	private String category;		// 卡消费类型
-	private String cvv;		// cvv
-	private String exp;		// exp
+	private String cardBillingAddress;		// 账单地址
+	private String cardCategory;		// 卡消费分类
 	private String cardToken;		// 卡token
 	private String cardId;		// card_id
-	private String cardUsercode;		// card_usercode
 	private String expiredDate;		// 卡面过期时间
 	private String cardBrand;		// 卡品牌
-	private String panUrl;		// 获取卡号
 	private String userAllocationId;		// 用户操作码
 	
 	public TblCardInfo() {
@@ -74,13 +74,31 @@ public class TblCardInfo extends DataEntity<TblCardInfo> {
 		super(id);
 	}
 	
-	@Length(min=0, max=32, message="卡号长度不能超过 32 个字符")
-	public String getCardNum() {
-		return cardNum;
+	@Length(min=0, max=32, message="银行卡号长度不能超过 32 个字符")
+	public String getCardNo() {
+		return cardNo;
 	}
 
-	public void setCardNum(String cardNum) {
-		this.cardNum = cardNum;
+	public void setCardNo(String cardNo) {
+		this.cardNo = cardNo;
+	}
+	
+	@Length(min=0, max=8, message="cvv长度不能超过 8 个字符")
+	public String getCvv() {
+		return cvv;
+	}
+
+	public void setCvv(String cvv) {
+		this.cvv = cvv;
+	}
+	
+	@Length(min=0, max=16, message="exp长度不能超过 16 个字符")
+	public String getExp() {
+		return exp;
+	}
+
+	public void setExp(String exp) {
+		this.exp = exp;
 	}
 	
 	@Length(min=0, max=64, message="帐户id长度不能超过 64 个字符")
@@ -127,6 +145,14 @@ public class TblCardInfo extends DataEntity<TblCardInfo> {
 		this.cardType = cardType;
 	}
 	
+	public Long getCardAmount() {
+		return cardAmount;
+	}
+
+	public void setCardAmount(Long cardAmount) {
+		this.cardAmount = cardAmount;
+	}
+	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	public Date getLastChargeOn() {
 		return lastChargeOn;
@@ -136,13 +162,12 @@ public class TblCardInfo extends DataEntity<TblCardInfo> {
 		this.lastChargeOn = lastChargeOn;
 	}
 	
-	@Length(min=0, max=255, message="账单地址长度不能超过 255 个字符")
-	public String getBillingAddress() {
-		return billingAddress;
+	public Long getCardSpendAmount() {
+		return cardSpendAmount;
 	}
 
-	public void setBillingAddress(String billingAddress) {
-		this.billingAddress = billingAddress;
+	public void setCardSpendAmount(Long cardSpendAmount) {
+		this.cardSpendAmount = cardSpendAmount;
 	}
 	
 	@Length(min=0, max=128, message="持卡人长度不能超过 128 个字符")
@@ -154,31 +179,22 @@ public class TblCardInfo extends DataEntity<TblCardInfo> {
 		this.cardOwner = cardOwner;
 	}
 	
-	@Length(min=0, max=128, message="卡消费类型长度不能超过 128 个字符")
-	public String getCategory() {
-		return category;
+	@Length(min=0, max=255, message="账单地址长度不能超过 255 个字符")
+	public String getCardBillingAddress() {
+		return cardBillingAddress;
 	}
 
-	public void setCategory(String category) {
-		this.category = category;
+	public void setCardBillingAddress(String cardBillingAddress) {
+		this.cardBillingAddress = cardBillingAddress;
 	}
 	
-	@Length(min=0, max=8, message="cvv长度不能超过 8 个字符")
-	public String getCvv() {
-		return cvv;
+	@Length(min=0, max=128, message="卡消费分类长度不能超过 128 个字符")
+	public String getCardCategory() {
+		return cardCategory;
 	}
 
-	public void setCvv(String cvv) {
-		this.cvv = cvv;
-	}
-	
-	@Length(min=0, max=16, message="exp长度不能超过 16 个字符")
-	public String getExp() {
-		return exp;
-	}
-
-	public void setExp(String exp) {
-		this.exp = exp;
+	public void setCardCategory(String cardCategory) {
+		this.cardCategory = cardCategory;
 	}
 	
 	@Length(min=0, max=128, message="卡token长度不能超过 128 个字符")
@@ -199,15 +215,6 @@ public class TblCardInfo extends DataEntity<TblCardInfo> {
 		this.cardId = cardId;
 	}
 	
-	@Length(min=0, max=128, message="card_usercode长度不能超过 128 个字符")
-	public String getCardUsercode() {
-		return cardUsercode;
-	}
-
-	public void setCardUsercode(String cardUsercode) {
-		this.cardUsercode = cardUsercode;
-	}
-	
 	@Length(min=0, max=32, message="卡面过期时间长度不能超过 32 个字符")
 	public String getExpiredDate() {
 		return expiredDate;
@@ -224,14 +231,6 @@ public class TblCardInfo extends DataEntity<TblCardInfo> {
 
 	public void setCardBrand(String cardBrand) {
 		this.cardBrand = cardBrand;
-	}
-	
-	public String getPanUrl() {
-		return panUrl;
-	}
-
-	public void setPanUrl(String panUrl) {
-		this.panUrl = panUrl;
 	}
 	
 	@Length(min=0, max=128, message="用户操作码长度不能超过 128 个字符")

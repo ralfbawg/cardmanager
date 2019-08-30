@@ -1,20 +1,26 @@
-<% layout('/layouts/default.html', {title: '银行卡管理', libs: ['dataGrid']}){ %>
+<% layout('/layouts/default.html', {title: '卡信息管理', libs: ['dataGrid']}){ %>
 <div class="main-content">
 	<div class="box box-main">
 		<div class="box-header">
 			<div class="box-title">
-				<i class="fa fa-list-alt"></i> ${text('银行卡管理')}
+				<i class="fa fa-list-alt"></i> ${text('卡信息管理')}
 			</div>
 			<div class="box-tools pull-right">
 				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
 				<% if(hasPermi('cardinfo:tblCardInfo:edit')){ %>
-					<a href="${ctx}/cardinfo/tblCardInfo/form" class="btn btn-default btnTool" title="${text('新增银行卡')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+					<a href="${ctx}/cardinfo/tblCardInfo/form" class="btn btn-default btnTool" title="${text('新增卡信息')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
 				<% } %>
 			</div>
 		</div>
 		<div class="box-body">
 			<#form:form id="searchForm" model="${tblCardInfo}" action="${ctx}/cardinfo/tblCardInfo/listData" method="post" class="form-inline hide"
 					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<label class="control-label">${text('银行卡号')}：</label>
+					<div class="control-inline">
+						<#form:input path="cardNo" maxlength="32" class="form-control width-120"/>
+					</div>
+				</div>
 				<div class="form-group">
 					<label class="control-label">${text('帐户id')}：</label>
 					<div class="control-inline">
@@ -28,6 +34,12 @@
 					</div>
 				</div>
 				<div class="form-group">
+					<label class="control-label">${text('现有额度')}：</label>
+					<div class="control-inline">
+						<#form:input path="cardAmount" maxlength="20" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
 					<label class="control-label">${text('上次充值时间')}：</label>
 					<div class="control-inline">
 						<#form:input path="lastChargeOn" readonly="true" maxlength="20" class="form-control Wdate-datetime"
@@ -35,9 +47,9 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label">${text('账单地址')}：</label>
+					<label class="control-label">${text('已使用额度')}：</label>
 					<div class="control-inline">
-						<#form:input path="billingAddress" maxlength="255" class="form-control width-120"/>
+						<#form:input path="cardSpendAmount" maxlength="20" class="form-control width-120"/>
 					</div>
 				</div>
 				<div class="form-group">
@@ -47,9 +59,15 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label">${text('卡消费类型')}：</label>
+					<label class="control-label">${text('账单地址')}：</label>
 					<div class="control-inline">
-						<#form:input path="category" maxlength="128" class="form-control width-120"/>
+						<#form:input path="cardBillingAddress" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('卡消费分类')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="cardCategory" dictType="cm_card_catagory" blankOption="true" class="form-control"/>
 					</div>
 				</div>
 				<div class="form-group">
@@ -62,12 +80,6 @@
 					<label class="control-label">${text('card_id')}：</label>
 					<div class="control-inline">
 						<#form:input path="cardId" maxlength="64" class="form-control width-120"/>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label">${text('card_usercode')}：</label>
-					<div class="control-inline">
-						<#form:input path="cardUsercode" maxlength="128" class="form-control width-120"/>
 					</div>
 				</div>
 				<div class="form-group">
@@ -98,34 +110,35 @@
 $('#dataGrid').dataGrid({
 	searchForm: $("#searchForm"),
 	columnModel: [
-		{header:'${text("卡号")}', name:'cardNum', index:'a.card_num', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
-			return '<a href="${ctx}/cardinfo/tblCardInfo/form?id='+row.id+'" class="btnList" data-title="${text("编辑银行卡")}">'+(val||row.id)+'</a>';
+		{header:'${text("银行卡号")}', name:'cardNo', index:'a.card_no', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			return '<a href="${ctx}/cardinfo/tblCardInfo/form?id='+row.id+'" class="btnList" data-title="${text("编辑卡信息")}">'+(val||row.id)+'</a>';
 		}},
-		{header:'${text("帐户id")}', name:'budgetId', index:'a.budget_id', width:150, align:"left"},
+		{header:'${text("cvv")}', name:'cvv', index:'a.cvv', width:150, align:"left"},
+		{header:'${text("exp")}', name:'exp', index:'a.exp', width:150, align:"left"},
 		{header:'${text("卡名")}', name:'cardName', index:'a.card_name', width:150, align:"left"},
 		{header:'${text("限额度")}', name:'cardLimit', index:'a.card_limit', width:150, align:"center"},
 		{header:'${text("卡昵称")}', name:'nickname', index:'a.nickname', width:150, align:"left"},
 		{header:'${text("卡类型")}', name:'cardType', index:'a.card_type', width:150, align:"center", formatter: function(val, obj, row, act){
 			return js.getDictLabel(${@DictUtils.getDictListJson('cm_card_bank_divvy_type')}, val, '${text("未知")}', true);
 		}},
+		{header:'${text("现有额度")}', name:'cardAmount', index:'a.card_amount', width:150, align:"center"},
 		{header:'${text("上次充值时间")}', name:'lastChargeOn', index:'a.last_charge_on', width:150, align:"center"},
-		{header:'${text("账单地址")}', name:'billingAddress', index:'a.billing_address', width:150, align:"left"},
+		{header:'${text("已使用额度")}', name:'cardSpendAmount', index:'a.card_spend_amount', width:150, align:"center"},
 		{header:'${text("持卡人")}', name:'cardOwner', index:'a.card_owner', width:150, align:"left"},
-		{header:'${text("卡消费类型")}', name:'category', index:'a.category', width:150, align:"left"},
-		{header:'${text("cvv")}', name:'cvv', index:'a.cvv', width:150, align:"left"},
-		{header:'${text("exp")}', name:'exp', index:'a.exp', width:150, align:"left"},
+		{header:'${text("账单地址")}', name:'cardBillingAddress', index:'a.card_billing_address', width:150, align:"left"},
+		{header:'${text("卡消费分类")}', name:'cardCategory', index:'a.card_category', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('cm_card_catagory')}, val, '${text("未知")}', true);
+		}},
 		{header:'${text("卡状态")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
 			return js.getDictLabel(${@DictUtils.getDictListJson('sys_search_status')}, val, '${text("未知")}', true);
 		}},
-		{header:'${text("card_id")}', name:'cardId', index:'a.card_id', width:150, align:"left"},
-		{header:'${text("card_usercode")}', name:'cardUsercode', index:'a.card_usercode', width:150, align:"left"},
 		{header:'${text("卡面过期时间")}', name:'expiredDate', index:'a.expired_date', width:150, align:"left"},
 		{header:'${text("卡品牌")}', name:'cardBrand', index:'a.card_brand', width:150, align:"left"},
 		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
 			var actions = [];
 			<% if(hasPermi('cardinfo:tblCardInfo:edit')){ %>
-				actions.push('<a href="${ctx}/cardinfo/tblCardInfo/form?id='+row.id+'" class="btnList" title="${text("编辑银行卡")}"><i class="fa fa-pencil"></i></a>&nbsp;');
-				actions.push('<a href="${ctx}/cardinfo/tblCardInfo/delete?id='+row.id+'" class="btnList" title="${text("删除银行卡")}" data-confirm="${text("确认要删除该银行卡吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/cardinfo/tblCardInfo/form?id='+row.id+'" class="btnList" title="${text("编辑卡信息")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/cardinfo/tblCardInfo/delete?id='+row.id+'" class="btnList" title="${text("删除卡信息")}" data-confirm="${text("确认要删除该卡信息吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
 			<% } %>
 			return actions.join('');
 		}}

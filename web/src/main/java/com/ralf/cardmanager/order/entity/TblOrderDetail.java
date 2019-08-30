@@ -11,15 +11,15 @@ import com.jeesite.common.mybatis.annotation.Table;
 import com.jeesite.common.mybatis.mapper.query.QueryType;
 
 /**
- * 订单Entity
+ * 订单表Entity
  * @author ralfchen
- * @version 2019-08-25
+ * @version 2019-08-30
  */
 @Table(name="tbl_order_detail", alias="a", columns={
 		@Column(name="id", attrName="id", label="id", isPK=true),
 		@Column(name="order_id", attrName="orderId.id", label="order_id", isUpdate=false),
 		@Column(name="card_name", attrName="cardName", label="卡名", isQuery=false),
-		@Column(name="limit_amout", attrName="limitAmout", label="限额", isUpdate=false),
+		@Column(name="limit_amout", attrName="limitAmout", label="限额"),
 		@Column(name="type", attrName="type", label="卡分类", isUpdate=false),
 		@Column(name="card_id", attrName="cardId", label="card_id", isUpdate=false),
 		@Column(name="status", attrName="status", label="status", isUpdate=false),

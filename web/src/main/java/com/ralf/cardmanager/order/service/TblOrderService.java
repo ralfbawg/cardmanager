@@ -13,13 +13,14 @@ import com.jeesite.common.entity.Page;
 import com.jeesite.common.service.CrudService;
 import com.ralf.cardmanager.order.entity.TblOrder;
 import com.ralf.cardmanager.order.dao.TblOrderDao;
+import com.jeesite.modules.file.utils.FileUploadUtils;
 import com.ralf.cardmanager.order.entity.TblOrderDetail;
 import com.ralf.cardmanager.order.dao.TblOrderDetailDao;
 
 /**
- * 订单Service
+ * 订单表Service
  * @author ralfchen
- * @version 2019-08-25
+ * @version 2019-08-30
  */
 @Service
 @Transactional(readOnly=true)
@@ -63,6 +64,8 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
 	@Transactional(readOnly=false)
 	public void save(TblOrder tblOrder) {
 		super.save(tblOrder);
+		// 保存上传附件
+		FileUploadUtils.saveFileUpload(tblOrder.getId(), "tblOrder_file");
 		// 保存 TblOrder子表
 		for (TblOrderDetail tblOrderDetail : tblOrder.getTblOrderDetailList()){
 			if (!TblOrderDetail.STATUS_DELETE.equals(tblOrderDetail.getStatus())){

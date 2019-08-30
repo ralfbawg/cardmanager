@@ -25,7 +25,7 @@ import com.ralf.cardmanager.budget.service.TblBudgetService;
 /**
  * 帐户信息Controller
  * @author ralfchen
- * @version 2019-08-29
+ * @version 2019-08-30
  */
 @Controller
 @RequestMapping(value = "${adminPath}/budget/tblBudget")

@@ -25,3 +25,16 @@ mybatis:
       delaySeconds: 60
       sleepSeconds: 3
       mappingPath: mappings
+session:
+  #
+  #  # 全局会话超时，单位：毫秒， 20m=1200000ms, 30m=1800000ms, 60m=3600000ms, 12h=43200000ms, 1day=86400000ms
+  sessionTimeout: 86400000
+  #
+  #  # 手机APP设备会话超时参数设置，登录请求参数加 param_deviceType=mobileApp 时有效
+  #  mobileAppSessionTimeout: 43200000
+  #
+  #  # 定时清理失效会话，清理用户直接关闭浏览器造成的孤立会话
+  #  sessionTimeoutClean: 1200000
+  #
+  #  # 会话唯一标识SessionId在Cookie中的名称。
+  sessionIdCookieName: jeesite.session.id
