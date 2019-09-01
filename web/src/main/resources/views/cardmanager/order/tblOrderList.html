@@ -63,7 +63,7 @@
 $('#dataGrid').dataGrid({
 	searchForm: $("#searchForm"),
 	columnModel: [
-		{header:'${text("id")}', name:'id', index:'a.id', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+		{header:'${text("id")}', name:'id', index:'a.id', width:150, align:"center", frozen:true, formatter: function(val, obj, row, act){
 			return '<a href="${ctx}/order/tblOrder/form?id='+row.id+'" class="btnList" data-title="${text("编辑订单")}">'+(val||row.id)+'</a>';
 		}},
 		{header:'${text("订单类型")}', name:'type', index:'a.type', width:150, align:"center", formatter: function(val, obj, row, act){
@@ -74,7 +74,12 @@ $('#dataGrid').dataGrid({
 		{header:'${text("提交用户")}', name:'submitUsercode', index:'a.submit_usercode', width:150, align:"left"},
 		{header:'${text("审核用户")}', name:'', index:'a.audit_usercode', width:150, align:"center"},
 		{header:'${text("审核时间")}', name:'auditTime', index:'a.audit_time', width:150, align:"center"},
-		{header:'${text("订单金额")}', name:'orderAmount', index:'a.order_amount', width:150, align:"center"},
+		{header:'${text("订单金额(美元)")}', name:'orderAmount', index:'a.order_amount', width:150, align:"center",formatter: function(val, obj, row, act){
+				return val/100;
+			}},
+		{header:'${text("订单金额(人民币)")}', name:'orderAmount', index:'a.order_amount', width:150, align:"center",formatter: function(val, obj, row, act){
+				return $.TransferUsdToRmb(${@CurrencyUtil.GetUSDToRMBCurrency()}, val);
+			}},
 		{header:'${text("支付状态")}', name:'payStatus', index:'a.pay_status', width:150, align:"center", formatter: function(val, obj, row, act){
 			return js.getDictLabel(${@DictUtils.getDictListJson('cm_order_pay_status')}, val, '${text("未知")}', true);
 		}},
@@ -84,15 +89,23 @@ $('#dataGrid').dataGrid({
 		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
 			var actions = [];
 			<% if(hasPermi('order:tblOrder:edit')){ %>
-				actions.push('<a href="${ctx}/order/tblOrder/form?id='+row.id+'" class="btnList" title="${text("编辑订单")}"><i class="fa fa-pencil"></i></a>&nbsp;');
-				actions.push('<a href="${ctx}/order/tblOrder/delete?id='+row.id+'" class="btnList" title="${text("删除订单")}" data-confirm="${text("确认要删除该订单吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
-			<% } %>
+					actions.push('<a href="${ctx}/order/tblOrder/form?id='+row.id+'" class="btnList" title="${text("编辑订单")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+					actions.push('<a href="${ctx}/order/tblOrder/delete?id='+row.id+'" class="btnList" title="${text("删除订单")}" data-confirm="${text("确认要删除该订单吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+				<% }  if(hasPermi('order:tblOrder:audit')){ %>
+					actions.push('<a href="${ctx}/order/tblOrder/audit?id='+row.id+'" class="btnList" title="${text("审核订单")}" data-confirm="${text("确认要审核该订单吗？")}"><i class="fa  fa-paypal"></i></a>&nbsp;');
+                <% }  if(hasPermi('order:tblOrder:submit')){ %>
+                   if(row.payStatus=='01') {
+                        actions.push('<a href="${ctx}/order/tblOrder/submit?id='+row.id+'" class="btnList" title="${text("提交订单")}" data-confirm="${text("确认要提交该订单吗？")}"><i class="fa  fa-upload"></i></a>&nbsp;');
+                    }
+
+				<% } %>
+
 			return actions.join('');
 		}}
 	],
 	// 加载成功后执行事件
 	ajaxSuccess: function(data){
-		
+
 	}
 });
 </script>

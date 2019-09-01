@@ -3,9 +3,19 @@
  */
 package com.ralf.cardmanager.order.web;
 
+import javax.rmi.CORBA.Util;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.jeesite.modules.sys.entity.DictData;
+import com.jeesite.modules.sys.service.DictDataService;
+import com.jeesite.modules.sys.service.support.DictDataServiceSupport;
+import com.jeesite.modules.sys.utils.UserUtils;
+import com.ralf.cardmanager.order.entity.TblOrderDetail;
+import com.ralf.cardmanager.tblbizparam.entity.TblBizParam;
+import com.ralf.cardmanager.tblbizparam.service.TblBizParamService;
+import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,78 +32,158 @@ import com.jeesite.common.web.BaseController;
 import com.ralf.cardmanager.order.entity.TblOrder;
 import com.ralf.cardmanager.order.service.TblOrderService;
 
+import java.util.Date;
+import java.util.stream.Collectors;
+
 /**
  * 订单表Controller
+ *
  * @author ralfchen
  * @version 2019-08-30
  */
 @Controller
 @RequestMapping(value = "${adminPath}/order/tblOrder")
 public class TblOrderController extends BaseController {
+    public static final String STATUS_DRAFT = "01";
 
-	@Autowired
-	private TblOrderService tblOrderService;
-	
-	/**
-	 * 获取数据
-	 */
-	@ModelAttribute
-	public TblOrder get(String id, boolean isNewRecord) {
-		return tblOrderService.get(id, isNewRecord);
-	}
-	
-	/**
-	 * 查询列表
-	 */
-	@RequiresPermissions("order:tblOrder:view")
-	@RequestMapping(value = {"list", ""})
-	public String list(TblOrder tblOrder, Model model) {
-		model.addAttribute("tblOrder", tblOrder);
-		return "cardmanager/order/tblOrderList";
-	}
-	
-	/**
-	 * 查询列表数据
-	 */
-	@RequiresPermissions("order:tblOrder:view")
-	@RequestMapping(value = "listData")
-	@ResponseBody
-	public Page<TblOrder> listData(TblOrder tblOrder, HttpServletRequest request, HttpServletResponse response) {
-		tblOrder.setPage(new Page<>(request, response));
-		Page<TblOrder> page = tblOrderService.findPage(tblOrder);
-		return page;
-	}
+    public static final String STATUS_WAIT_PAY = "02";
 
-	/**
-	 * 查看编辑表单
-	 */
-	@RequiresPermissions("order:tblOrder:view")
-	@RequestMapping(value = "form")
-	public String form(TblOrder tblOrder, Model model) {
-		model.addAttribute("tblOrder", tblOrder);
-		return "cardmanager/order/tblOrderForm";
-	}
+    public static final String STATUS_AUDIT_PASS_WAIT_PRO = "03";
+    public static final String STATUS_AUDIT_FAIL = "04";
+    public static final String STATUS_AUDIT_PASS_PRO_SUCCESS = "04";
+    public static final String STATUS_AUDIT_PASS_PRO_FAIL = "06";
 
-	/**
-	 * 保存订单
-	 */
-	@RequiresPermissions("order:tblOrder:edit")
-	@PostMapping(value = "save")
-	@ResponseBody
-	public String save(@Validated TblOrder tblOrder) {
-		tblOrderService.save(tblOrder);
-		return renderResult(Global.TRUE, text("保存订单成功！"));
-	}
-	
-	/**
-	 * 删除订单
-	 */
-	@RequiresPermissions("order:tblOrder:edit")
-	@RequestMapping(value = "delete")
-	@ResponseBody
-	public String delete(TblOrder tblOrder) {
-		tblOrderService.delete(tblOrder);
-		return renderResult(Global.TRUE, text("删除订单成功！"));
-	}
-	
+
+    @Autowired
+    private TblOrderService tblOrderService;
+
+    @Autowired
+    private DictDataService dictDataService;
+
+    @Autowired
+    private TblBizParamService bizParamService;
+
+    /**
+     * 获取数据
+     */
+    @ModelAttribute
+    public TblOrder get(String id, boolean isNewRecord) {
+        return tblOrderService.get(id, isNewRecord);
+    }
+
+    /**
+     * 查询列表
+     */
+    @RequiresPermissions("order:tblOrder:view")
+    @RequestMapping(value = {"list", ""})
+    public String list(TblOrder tblOrder, Model model) {
+        model.addAttribute("tblOrder", tblOrder);
+        return "cardmanager/order/tblOrderList";
+    }
+
+    /**
+     * 查询列表数据
+     */
+    @RequiresPermissions("order:tblOrder:view")
+    @RequestMapping(value = "listData")
+    @ResponseBody
+    public Page<TblOrder> listData(TblOrder tblOrder, HttpServletRequest request, HttpServletResponse response) {
+        tblOrder.setPage(new Page<>(request, response));
+        Page<TblOrder> page = tblOrderService.findPage(tblOrder);
+        return page;
+    }
+
+    /**
+     * 查看编辑表单
+     */
+    @RequiresPermissions("order:tblOrder:view")
+    @RequestMapping(value = "form")
+    public String form(TblOrder tblOrder, Model model) {
+        model.addAttribute("tblOrder", tblOrder);
+        return "cardmanager/order/tblOrderForm";
+    }
+
+    /**
+     * 保存订单
+     */
+    @RequiresPermissions("order:tblOrder:edit")
+    @PostMapping(value = "save")
+    @ResponseBody
+    public String save(@Validated TblOrder tblOrder) {
+        val queryOrder = new TblOrder();
+        queryOrder.setType_eq("create");
+        queryOrder.setPageSize(Integer.MAX_VALUE);
+        queryOrder.setSubmitUsercode(UserUtils.getUser().getUserCode());
+        Long createOrderCount = tblOrderService.findPage(queryOrder).getCount();
+        if (createOrderCount <= 0 && !tblOrder.getType().equalsIgnoreCase("create")) {
+            return renderResult(Global.FALSE, text("请先提交创建订单！"));
+        }
+        if (createOrderCount == 1 && tblOrder.getType().equalsIgnoreCase("create") && StringUtils.isEmpty(tblOrder.getId())) {
+            return renderResult(Global.FALSE, text("只能提交一条创建订单！"));
+        }
+        String usercode = UserUtils.getUser().getUserCode();
+        tblOrder.setSubmitTime(new Date());
+        tblOrder.setSubmitUsercode(usercode);
+        tblOrder.setPayStatus(STATUS_DRAFT);
+        long budgetPrice = tblOrder.getTblOrderDetailList().stream().collect(Collectors.summingLong(TblOrderDetail::getLimitAmout)) * 100;
+        val createBizParam = new TblBizParam();
+        createBizParam.setKey("CreateBudgetCost");
+        createBizParam.setPageSize(Integer.MAX_VALUE);
+        val createPrice = Long.valueOf(bizParamService.findPage(createBizParam).getList().get(0).getValue());
+        createBizParam.setKey("PerCardCost");
+        val perCardPrice = Long.valueOf(bizParamService.findPage(createBizParam).getList().get(0).getValue());
+        val cardPrice = tblOrder.getTblOrderDetailList().size() * perCardPrice;
+        val totalPrice = budgetPrice + cardPrice + createPrice;
+        tblOrder.setOrderAmount(totalPrice);
+        tblOrderService.save(tblOrder);
+        return renderResult(Global.TRUE, text("保存订单成功！"));
+    }
+
+    /**
+     * 删除订单
+     */
+    @RequiresPermissions("order:tblOrder:edit")
+    @RequestMapping(value = "delete")
+    @ResponseBody
+    public String delete(TblOrder tblOrder) {
+        val dict = new DictData();
+        dict.setDictType("cm_order_pay_status");
+        DictData a = dictDataService.get(dict);
+        if (!StringUtils.isEmpty(tblOrder.getPayStatus()) && tblOrder.getPayStatus() != "01") {//编辑中
+            return renderResult(Global.FALSE, text("订单已经提交，不能删除！"));
+        }
+        tblOrderService.delete(tblOrder);
+        return renderResult(Global.TRUE, text("删除订单成功！"));
+    }
+
+    /**
+     * 审核订单
+     *
+     * @param tblOrder
+     * @return
+     */
+    @RequiresPermissions({"order:tblOrder:audit"})
+    @RequestMapping({"audit"})
+    public String auditForm(TblOrder tblOrder) {
+        if (tblOrderService.AuditAndProcess(tblOrder)) {
+            return renderResult(Global.TRUE, text("审核订单成功！后台执行中"));
+        } else {
+            return renderResult(Global.FALSE, text("审核订单失败！"));
+        }
+
+    }
+
+    /**
+     * 提交订单
+     */
+    @RequiresPermissions("order:tblOrder:submit")
+    @RequestMapping(value = "submit")
+    @ResponseBody
+    public String submit(TblOrder tblOrder) {
+        tblOrder.setPayStatus(STATUS_WAIT_PAY);
+
+        tblOrderService.update(tblOrder);
+        return renderResult(Global.TRUE, text(" 提交订单成功！"));
+    }
+
 }

@@ -123,6 +123,10 @@ public class TblOrder extends DataEntity<TblOrder> {
 		return payStatus;
 	}
 
+	public void setType_eq(String type) {
+		sqlMap.getWhere().and("type", QueryType.EQ, type);
+	}
+
 	public void setPayStatus(String payStatus) {
 		this.payStatus = payStatus;
 	}

@@ -60,7 +60,7 @@ public class TblBizParamController extends BaseController {
 	@ResponseBody
 	public Page<TblBizParam> listData(TblBizParam tblBizParam, HttpServletRequest request, HttpServletResponse response) {
 		tblBizParam.setPage(new Page<>(request, response));
-		Page<TblBizParam> page = tblBizParamService.findPage(tblBizParam);
+			Page<TblBizParam> page = tblBizParamService.findPage(tblBizParam);
 		return page;
 	}
 
