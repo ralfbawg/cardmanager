@@ -10,7 +10,7 @@ import com.ralf.cardmanager.cardtransaction.entity.TblCardTransaction;
 /**
  * tbl_card_transactionDAO接口
  * @author ralfchen
- * @version 2019-08-18
+ * @version 2019-09-02
  */
 @MyBatisDao
 public interface TblCardTransactionDao extends CrudDao<TblCardTransaction> {

@@ -30,7 +30,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 		@Column(name="submit_usercode", attrName="submitUsercode", label="提交用户", isUpdate=false, isQuery=false),
 		@Column(name="audit_usercode", attrName="auditUsercode", label="审核用户", isUpdate=false, isQuery=false),
 		@Column(name="audit_time", attrName="auditTime", label="审核时间", isUpdate=false),
-		@Column(name="order_amount", attrName="orderAmount", label="订单金额", isUpdate=false, isQuery=false),
+		@Column(name="order_amount", attrName="orderAmount", label="订单金额", isQuery=false),
 		@Column(name="pay_status", attrName="payStatus", label="支付状态"),
 		@Column(name="status", attrName="status", label="状态", isUpdate=false),
 	}, orderBy="a.id DESC"

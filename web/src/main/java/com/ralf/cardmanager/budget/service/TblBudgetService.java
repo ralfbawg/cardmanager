@@ -5,6 +5,7 @@ package com.ralf.cardmanager.budget.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,8 @@ import com.ralf.cardmanager.budget.dao.TblBudgetDao;
 @Service
 @Transactional(readOnly=true)
 public class TblBudgetService extends CrudService<TblBudgetDao, TblBudget> {
+	@Autowired
+	private TblBudgetDao dao;
 	
 	/**
 	 * 获取单条数据
@@ -71,6 +74,11 @@ public class TblBudgetService extends CrudService<TblBudgetDao, TblBudget> {
 	@Transactional(readOnly=false)
 	public void delete(TblBudget tblBudget) {
 		super.delete(tblBudget);
+	}
+
+	@Transactional
+	public int charge(String id,long amount){
+		return dao.charge(id,amount);
 	}
 	
 }

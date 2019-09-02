@@ -1,9 +1,9 @@
-<% layout('/layouts/default.html', {title: '银行卡管理', libs: ['validate']}){ %>
+<% layout('/layouts/default.html', {title: '卡信息管理', libs: ['validate']}){ %>
 <div class="main-content">
 	<div class="box box-main">
 		<div class="box-header with-border">
 			<div class="box-title">
-				<i class="fa fa-list-alt"></i> ${text(tblCardInfo.isNewRecord ? '新增银行卡' : '编辑银行卡')}
+				<i class="fa fa-list-alt"></i> ${text(tblCardInfo.isNewRecord ? '新增卡信息' : '编辑卡信息')}
 			</div>
 			<div class="box-tools pull-right">
 				<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
@@ -14,6 +14,16 @@
 				<div class="form-unit">${text('基本信息')}</div>
 				<#form:hidden path="id"/>
 				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('银行卡号')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="cardNo" maxlength="32" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
 				<div class="row">
 					<div class="col-xs-6">
 						<div class="form-group">
@@ -58,9 +68,38 @@
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('现有额度')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="cardAmount" maxlength="20" class="form-control digits"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('已使用额度')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="cardSpendAmount" maxlength="20" class="form-control digits"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
 								<span class="required hide">*</span> ${text('账单地址')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
-								<#form:input path="billingAddress" maxlength="255" class="form-control"/>
+								<#form:input path="cardBillingAddress" maxlength="255" class="form-control"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('卡消费分类')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="cardCategory" dictType="cm_card_catagory" blankOption="true" class="form-control" />
 							</div>
 						</div>
 					</div>

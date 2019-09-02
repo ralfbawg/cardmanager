@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2013-Now http://jeesite.com All rights reserved.
  */
-package com.ralf.cardmanager.cardinfo.service;
+package main.java.com.ralf.cardmanager.cardinfo.service;
 
 import java.util.List;
 
@@ -14,9 +14,9 @@ import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
 import com.ralf.cardmanager.cardinfo.dao.TblCardInfoDao;
 
 /**
- * cardInfoService
+ * 卡信息Service
  * @author ralfchen
- * @version 2019-08-18
+ * @version 2019-08-30
  */
 @Service
 @Transactional(readOnly=true)

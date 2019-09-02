@@ -13,11 +13,12 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 /**
  * tbl_card_transactionEntity
  * @author ralfchen
- * @version 2019-08-18
+ * @version 2019-09-02
  */
 @Table(name="tbl_card_transaction", alias="a", columns={
 		@Column(name="id", attrName="id", label="id", isPK=true),
 		@Column(name="card_id", attrName="cardId", label="卡id", isQuery=false),
+		@Column(name="sp_transaction_id", attrName="spTransactionId", label="银行流水id"),
 		@Column(name="card_num", attrName="cardNum", label="卡号"),
 		@Column(name="last_vendor", attrName="lastVendor", label="结算商户"),
 		@Column(name="date", attrName="date", label="清算日期"),
@@ -32,6 +33,7 @@ public class TblCardTransaction extends DataEntity<TblCardTransaction> {
 	
 	private static final long serialVersionUID = 1L;
 	private String cardId;		// 卡id
+	private String spTransactionId;		// 银行流水id
 	private String cardNum;		// 卡号
 	private String lastVendor;		// 结算商户
 	private String date;		// 清算日期
@@ -55,6 +57,15 @@ public class TblCardTransaction extends DataEntity<TblCardTransaction> {
 
 	public void setCardId(String cardId) {
 		this.cardId = cardId;
+	}
+	
+	@Length(min=0, max=256, message="银行流水id长度不能超过 256 个字符")
+	public String getSpTransactionId() {
+		return spTransactionId;
+	}
+
+	public void setSpTransactionId(String spTransactionId) {
+		this.spTransactionId = spTransactionId;
 	}
 	
 	@Length(min=0, max=16, message="卡号长度不能超过 16 个字符")

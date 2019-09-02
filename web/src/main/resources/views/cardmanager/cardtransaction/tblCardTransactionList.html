@@ -1,20 +1,26 @@
-<% layout('/layouts/default.html', {title: '交易流水管理', libs: ['dataGrid']}){ %>
+<% layout('/layouts/default.html', {title: 'tbl_card_transaction管理', libs: ['dataGrid']}){ %>
 <div class="main-content">
 	<div class="box box-main">
 		<div class="box-header">
 			<div class="box-title">
-				<i class="fa fa-list-alt"></i> ${text('交易流水管理')}
+				<i class="fa fa-list-alt"></i> ${text('tbl_card_transaction管理')}
 			</div>
 			<div class="box-tools pull-right">
 				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
 				<% if(hasPermi('cardtransaction:tblCardTransaction:edit')){ %>
-					<a href="${ctx}/cardtransaction/tblCardTransaction/form" class="btn btn-default btnTool" title="${text('新增交易流水')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+					<a href="${ctx}/cardtransaction/tblCardTransaction/form" class="btn btn-default btnTool" title="${text('新增tbl_card_transaction')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
 				<% } %>
 			</div>
 		</div>
 		<div class="box-body">
 			<#form:form id="searchForm" model="${tblCardTransaction}" action="${ctx}/cardtransaction/tblCardTransaction/listData" method="post" class="form-inline hide"
 					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<label class="control-label">${text('银行流水id')}：</label>
+					<div class="control-inline">
+						<#form:input path="spTransactionId" maxlength="256" class="form-control width-120"/>
+					</div>
+				</div>
 				<div class="form-group">
 					<label class="control-label">${text('卡号')}：</label>
 					<div class="control-inline">
@@ -80,7 +86,7 @@ $('#dataGrid').dataGrid({
 	searchForm: $("#searchForm"),
 	columnModel: [
 		{header:'${text("卡id")}', name:'cardId', index:'a.card_id', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
-			return '<a href="${ctx}/cardtransaction/tblCardTransaction/form?id='+row.id+'" class="btnList" data-title="${text("编辑交易流水")}">'+(val||row.id)+'</a>';
+			return '<a href="${ctx}/cardtransaction/tblCardTransaction/form?id='+row.id+'" class="btnList" data-title="${text("编辑tbl_card_transaction")}">'+(val||row.id)+'</a>';
 		}},
 		{header:'${text("卡号")}', name:'cardNum', index:'a.card_num', width:150, align:"left"},
 		{header:'${text("结算商户")}', name:'lastVendor', index:'a.last_vendor', width:150, align:"left"},
@@ -97,8 +103,8 @@ $('#dataGrid').dataGrid({
 		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
 			var actions = [];
 			<% if(hasPermi('cardtransaction:tblCardTransaction:edit')){ %>
-				actions.push('<a href="${ctx}/cardtransaction/tblCardTransaction/form?id='+row.id+'" class="btnList" title="${text("编辑交易流水")}"><i class="fa fa-pencil"></i></a>&nbsp;');
-				actions.push('<a href="${ctx}/cardtransaction/tblCardTransaction/delete?id='+row.id+'" class="btnList" title="${text("删除交易流水")}" data-confirm="${text("确认要删除该交易流水吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/cardtransaction/tblCardTransaction/form?id='+row.id+'" class="btnList" title="${text("编辑tbl_card_transaction")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/cardtransaction/tblCardTransaction/delete?id='+row.id+'" class="btnList" title="${text("删除tbl_card_transaction")}" data-confirm="${text("确认要删除该tbl_card_transaction吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
 			<% } %>
 			return actions.join('');
 		}}

@@ -7,8 +7,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.jeesite.common.utils.SpringUtils;
 import com.jeesite.modules.sys.utils.UserUtils;
 import com.ralf.cardmanager.budget.entity.TblBudget;
+import com.ralf.cardmanager.budget.service.TblBudgetService;
+import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
 import com.ralf.cardmanager.system.SpType;
 import com.ralf.cardmanager.tblbizparam.entity.TblBizParam;
 import com.ralf.cardmanager.tblbizparam.service.TblBizParamService;
@@ -48,6 +51,9 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
 
     @Autowired
     private TblBizParamService bizParamService;
+
+    @Autowired
+    private TblBudgetService budgetService;
 
 
     /**
@@ -137,33 +143,68 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
             return false;
         }
         tblOrder.setPayStatus(STATUS_AUDIT_PASS_WAIT_PRO);
-        tblOrder.setSubmitUsercode(UserUtils.getUser().getUserCode());
-        tblOrder.setSubmitTime(new Date());
-
+        tblOrder.setAuditUsercode(UserUtils.getUser().getUserCode());
+        tblOrder.setAuditTime(new Date());
         this.update(tblOrder);
-        new Thread(() -> Process(tblOrder)).start();
+        new Thread(() -> SpringUtils.getBean(TblOrderService.class).Process(tblOrder)).start();
         return true;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void Process(TblOrder tblOrder) {
-        switch (tblOrder.getType()) {
-            case TYPE_CREATE:
-                val budget = new TblBudget();
-                budget.setIsNewRecord(true);
-                budget.setCreateUserCode(UserUtils.getUser().getUserCode());
-                budget.setCardServiceProvider(SpType.DIVVY.toString());
-                budget.setName(UserUtils.get(tblOrder.getSubmitUsercode()).getUserName());
-                budget.setOwnerUsercode(UserUtils.get(tblOrder.getSubmitUsercode()).getUserName());
-                val param = new TblBizParam();
-//                param.
-//                        bizParamService.get()
-                break;
-            case TYPE_CREATE_CARD:
-                break;
-            case TYPE_CHARGE:
-                break;
+        val budget = new TblBudget();
+        budget.setOwnerUsercode(tblOrder.getSubmitUsercode());
+        val budgetList = budgetService.findList(budget);
+        try {
+            switch (tblOrder.getType()) {
+                case TYPE_CREATE:
+                    createBudgetAndCard(tblOrder, budget);
+                    break;
+                case TYPE_CREATE_CARD:
+                    createCard(tblOrder);
+                    break;
+                case TYPE_CHARGE:
+                    if (budgetList.size() == 1) {
+                        int n = budgetService.charge(budgetList.get(0).getId(), tblOrder.getChargeAmount());
+                    }
+                    break;
+            }
+        } catch (Exception e) {
+
+        }
+
+    }
+
+    public void createBudgetAndCard(TblOrder tblOrder, TblBudget budget) throws Exception {
+        budget.setIsNewRecord(true);
+        budget.setCreateUserCode(tblOrder.getAuditUsercode());
+        budget.setCardServiceProvider(SpType.DIVVY.toString());
+        budget.setName(UserUtils.get(tblOrder.getSubmitUsercode()).getUserName() + "的帐户");
+        budget.setOwnerUsercode(UserUtils.get(tblOrder.getSubmitUsercode()).getUserName());
+        Long budgetAmount = tblOrder.getTblOrderDetailList().stream().collect(Collectors.summingLong(TblOrderDetail::getLimitAmout));
+        budget.setBudgetAmount(budgetAmount);
+        budget.setSpendAmount(0l);
+        budget.setAssignAmount(budgetAmount);
+        budget.setUnsignAmount(0l);
+        budget.setLastChargeOn(new Date());
+        budgetService.save(budget);
+        createCard(tblOrder,budget.getId());
+    }
+
+
+    public void createCard(TblOrder tblOrder,String budgetId) {
+
+        if (tblOrder.getTblOrderDetailList().size() > 0) {
+            tblOrder.getTblOrderDetailList().forEach(t ->{
+                val card = new TblCardInfo();
+                card.setIsNewRecord(true);
+                card.setBudgetId(budgetId);
+                card.setCardName(t.getCardName());
+                card.setCardLimit(t.getLimitAmout());
+                card.setStatus("");
+            });
+
         }
     }
+
 
 }

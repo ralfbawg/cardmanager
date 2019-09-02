@@ -25,7 +25,7 @@ import com.ralf.cardmanager.cardtransaction.service.TblCardTransactionService;
 /**
  * tbl_card_transactionController
  * @author ralfchen
- * @version 2019-08-18
+ * @version 2019-09-02
  */
 @Controller
 @RequestMapping(value = "${adminPath}/cardtransaction/tblCardTransaction")

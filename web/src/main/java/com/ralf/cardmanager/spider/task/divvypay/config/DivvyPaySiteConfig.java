@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 @EqualsAndHashCode(callSuper = true)
 @Component("DivvySiteConfig")
 public class DivvyPaySiteConfig extends SiteBaseConfig {
-    @Value("${cm.budget.id}")
+    @Value("${cm.divvy.budget.id}")
     protected String budgetId = "";
+    @Value("${cm.divvy.company.id}")
+    protected String companyId = "";
 }
