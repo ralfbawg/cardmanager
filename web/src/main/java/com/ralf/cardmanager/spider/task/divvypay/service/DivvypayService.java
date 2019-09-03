@@ -35,10 +35,6 @@ public class DivvypayService {
     public void init() {
         log.debug("i am come in");
         divvyConfig.shouldLogin = true;
-        divvyConfig.username = "22123971@qq.com";
-        divvyConfig.password = "Wwkkvikthh1234";
-
-
     }
 
 

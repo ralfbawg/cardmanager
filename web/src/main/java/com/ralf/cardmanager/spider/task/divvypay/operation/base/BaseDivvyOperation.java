@@ -1,7 +1,8 @@
-package com.ralf.cardmanager.spider.task.divvypay.operation;
+package com.ralf.cardmanager.spider.task.divvypay.operation.base;
 
 import com.jeesite.common.lang.StringUtils;
 import com.ralf.cardmanager.spider.task.BaseOperation;
+import com.ralf.cardmanager.spider.task.BaseOperationResp;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.exception.NotInitedException;
 import com.ralf.cardmanager.spider.util.SpringContextUtil;
@@ -10,20 +11,22 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.apache.poi.ss.formula.functions.T;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class BaseDivvyOperation extends BaseOperation {
-    DivvyPaySiteConfig config;
+public abstract class BaseDivvyOperation<T extends BaseDivvyOpertionResp> extends BaseOperation {
+    protected DivvyPaySiteConfig config;
 
     private boolean inited = false;
     protected String body = "";
     protected String[] bodyParams;
     protected String defaultUrl = "https://www.divvypay.co/js/graph";
-    protected String companyId = "Q29tcGFueTozMDI3";
+
+    protected String method = "post";
 
     public static volatile String AWSALB = "";
 
@@ -35,15 +38,16 @@ public abstract class BaseDivvyOperation extends BaseOperation {
 
     protected void init(String... param) {
         bodyParams = param;
+        requestBase = getHttpClient(method, StringUtils.isEmpty(url) ? defaultUrl : url);
         inited = true;
     }
 
     public BaseDivvyOperation(DivvyPaySiteConfig config) {
         this.config = config;
-
     }
 
     protected String defaultUserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3704.400 QQBrowser/10.4.3587.400";
+
     protected Map defaultHeader = new HashMap<String, String>() {{
         put("authority", "app.divvy.co");
         put("method", "POST");
@@ -74,17 +78,21 @@ public abstract class BaseDivvyOperation extends BaseOperation {
     }
 
     @Override
-    public Object execute() throws IOException {
+    public T execute() throws IOException {
         packageParams();
         packageRequest();
         DefaultHttpClient httpClient = new DefaultHttpClient();
         CloseableHttpResponse rsp = httpClient.execute(requestBase);
-        if (rsp.getStatusLine().getStatusCode() >= 200) {
+        if (rsp.getStatusLine().getStatusCode() >= 200 && rsp.getStatusLine().getStatusCode() < 300) {
             AWSALB = getCookie(httpClient.getCookieStore(), "AWSALB");
-            persistent(EntityUtils.toString(rsp.getEntity()));
+            return persistent(EntityUtils.toString(rsp.getEntity()));
         } else {
-
+            return null;
         }
+    }
+
+    @Override
+    public T persistent(String rsp) throws IOException {
         return null;
     }
 

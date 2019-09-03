@@ -1,6 +1,8 @@
-package com.ralf.cardmanager.spider.task.divvypay.operation;
+package com.ralf.cardmanager.spider.task.divvypay.operation.company;
 
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
+import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOperation;
+import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOpertionResp;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Service;
  **/
 @Service
 @Scope("prototype")
-public class GetCompanyBudgets extends BaseDivvyOperation {
+public class GetCompanyBudgets extends BaseDivvyOperation<GetCompanyBudgetsRsp> {
     public GetCompanyBudgets(DivvyPaySiteConfig config) {
         super(config);
 //        this.body = "{\"operationName\":\"GetCompanyBudgets\",\"variables\":{\"companyId\":\"Q29tcGFueTozMDI3\",\"first\":20,\"retired\":false},\"query\":\"query GetCompanyBudgets($after: String, $companyId: ID!, $retired: Boolean, $first: Int, $search: String, $role: String, $sortColumn: String, $sortDirection: String, $type: String) {\\n  node(id: $companyId) {\\n    ... on Company {\\n      id\\n      budgets(first: $first, search: $search, after: $after, role: $role, retired: $retired, sortColumn: $sortColumn, sortDirection: $sortDirection, type: $type) {\\n        pageInfo {\\n          hasNextPage\\n          endCursor\\n          __typename\\n        }\\n        edges {\\n          cursor\\n          node {\\n            id\\n            balance\\n            currentGoal\\n            expiresAt\\n            name\\n            retired\\n            shareBudgetFunds\\n            totalClearedForBudgetPeriod\\n            totalDivviedForBudgetPeriod\\n            totalPendingForBudgetPeriod\\n            totalSpentForBudgetPeriod\\n            availableAmountForBudgetPeriod\\n            totalAvailableToSpend\\n            type\\n            userClearedForBudgetPeriod\\n            userDivviedForBudgetPeriod\\n            userPendingForBudgetPeriod\\n            userSpentForBudgetPeriod\\n            userAvailableToSpend\\n            userRole\\n            totalAllocatedForNextMonth\\n            recurringAmount\\n            __typename\\n          }\\n          __typename\\n        }\\n        __typename\\n      }\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}";
@@ -27,7 +29,10 @@ public class GetCompanyBudgets extends BaseDivvyOperation {
     //需要获取 data.node.budgets.edges[0].node
     //内容
     @Override
-    public void persistent(String rsp) {
-
+    public GetCompanyBudgetsRsp persistent(String rsp) {
+        return null;
     }
+}
+
+class GetCompanyBudgetsRsp extends BaseDivvyOpertionResp {
 }

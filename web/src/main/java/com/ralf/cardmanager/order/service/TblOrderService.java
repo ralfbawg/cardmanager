@@ -220,6 +220,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
                 card.setBudgetId(budgetId);
                 card.setCardName(t.getCardName());
                 card.setCardLimit(t.getLimitAmout());
+                card.setCardAmount(t.getLimitAmout());
                 card.setCardStatus("tobecreate");
                 cardInfoService.insert(card);
             });

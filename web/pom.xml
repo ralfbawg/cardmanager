@@ -47,6 +47,10 @@
             <artifactId>jeesite-module-swagger</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
 
         <!-- Office在线预览 -->
         <dependency>

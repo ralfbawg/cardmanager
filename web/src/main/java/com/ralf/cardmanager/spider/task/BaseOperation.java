@@ -20,7 +20,7 @@ public abstract class BaseOperation<T extends Object> {
 
     public abstract T execute() throws IOException;
 
-    public abstract void persistent(String rsp);
+    public abstract T persistent(String rsp) throws IOException;
 
 
     public String url = "";
@@ -52,7 +52,10 @@ public abstract class BaseOperation<T extends Object> {
     }
 
     protected BaseOperation setBody(String body, ContentType type) {
-        ((HttpPost) requestBase).setEntity(new StringEntity(body, type));
+        if (requestBase instanceof HttpPost){
+            ((HttpPost) requestBase).setEntity(new StringEntity(body, type));
+        }
+
         return this;
     }
 
