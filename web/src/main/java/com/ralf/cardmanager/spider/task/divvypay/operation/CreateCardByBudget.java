@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 @Service
 @Scope("prototype")
 public class CreateCardByBudget extends BaseDivvyOperation {
-    @Override
-    protected void init(String... param) {
-        super.init(param);
+
+    public void init(String amount, String cardname) {
+        super.init(new String[]{
+                amount, config.getBudgetId(), cardname, config.getBudgetOwnerId()
+        });
     }
 
     @Autowired

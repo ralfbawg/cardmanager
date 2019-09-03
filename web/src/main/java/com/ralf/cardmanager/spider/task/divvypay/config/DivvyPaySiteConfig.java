@@ -14,4 +14,10 @@ public class DivvyPaySiteConfig extends SiteBaseConfig {
     protected String budgetId = "";
     @Value("${cm.divvy.company.id}")
     protected String companyId = "";
+    @Value("${cm.divvy.username}")
+    protected String username = "";
+    @Value("${cm.divvy.password}")
+    protected String password = "";
+    @Value("${cm.divvy.budget.ownerId}")
+    protected String budgetOwnerId = "";
 }

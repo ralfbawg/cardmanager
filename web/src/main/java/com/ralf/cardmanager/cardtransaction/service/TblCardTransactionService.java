@@ -15,9 +15,9 @@ import com.ralf.cardmanager.cardtransaction.dao.TblCardTransactionDao;
 import com.jeesite.modules.file.utils.FileUploadUtils;
 
 /**
- * tbl_card_transactionService
+ * 交易流水Service
  * @author ralfchen
- * @version 2019-09-02
+ * @version 2019-09-03
  */
 @Service
 @Transactional(readOnly=true)

@@ -11,8 +11,11 @@ cm:
         ssl: true
         smtpPort: 23
   divvy:
+    username: 22123971@qq.com
+    password: Wwkkvikthh1234
     budget:
       id: QnVkZ2V0OjQ3MzAz
+      owerId: good
     company:
       id: Q29tcGFueTozMDI3
 mybatis:

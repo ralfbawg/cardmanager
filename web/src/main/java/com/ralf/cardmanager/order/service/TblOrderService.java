@@ -12,9 +12,11 @@ import com.jeesite.modules.sys.utils.UserUtils;
 import com.ralf.cardmanager.budget.entity.TblBudget;
 import com.ralf.cardmanager.budget.service.TblBudgetService;
 import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
+import com.ralf.cardmanager.cardinfo.service.TblCardInfoService;
 import com.ralf.cardmanager.system.SpType;
 import com.ralf.cardmanager.tblbizparam.entity.TblBizParam;
 import com.ralf.cardmanager.tblbizparam.service.TblBizParamService;
+import javafx.scene.control.Pagination;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,6 +56,8 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
 
     @Autowired
     private TblBudgetService budgetService;
+    @Autowired
+    private TblCardInfoService cardInfoService;
 
 
     /**
@@ -76,8 +80,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
     /**
      * 查询分页数据
      *
-     * @param tblOrder      查询条件
-     * @param tblOrder.page 分页对象
+     * @param tblOrder 查询条件
      * @return
      */
     @Override
@@ -146,10 +149,11 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
         tblOrder.setAuditUsercode(UserUtils.getUser().getUserCode());
         tblOrder.setAuditTime(new Date());
         this.update(tblOrder);
-        new Thread(() -> SpringUtils.getBean(TblOrderService.class).Process(tblOrder)).start();
+        SpringUtils.getBean(TblOrderService.class).Process(tblOrder);
         return true;
     }
 
+    @Transactional
     public void Process(TblOrder tblOrder) {
         val budget = new TblBudget();
         budget.setOwnerUsercode(tblOrder.getSubmitUsercode());
@@ -160,7 +164,10 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
                     createBudgetAndCard(tblOrder, budget);
                     break;
                 case TYPE_CREATE_CARD:
-                    createCard(tblOrder);
+                    if (budgetList.size() == 1) {
+                        createCard(tblOrder, budgetList.get(0).getId());
+                    }
+
                     break;
                 case TYPE_CHARGE:
                     if (budgetList.size() == 1) {
@@ -174,6 +181,14 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
 
     }
 
+    /**
+     * 创建帐户
+     *
+     * @param tblOrder
+     * @param budget
+     * @throws Exception
+     */
+    @Transactional
     public void createBudgetAndCard(TblOrder tblOrder, TblBudget budget) throws Exception {
         budget.setIsNewRecord(true);
         budget.setCreateUserCode(tblOrder.getAuditUsercode());
@@ -187,20 +202,26 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
         budget.setUnsignAmount(0l);
         budget.setLastChargeOn(new Date());
         budgetService.save(budget);
-        createCard(tblOrder,budget.getId());
+        createCard(tblOrder, budget.getId());
     }
 
-
-    public void createCard(TblOrder tblOrder,String budgetId) {
-
+    /**
+     * 创建卡
+     *
+     * @param tblOrder
+     * @param budgetId
+     */
+    @Transactional
+    public void createCard(TblOrder tblOrder, String budgetId) {
         if (tblOrder.getTblOrderDetailList().size() > 0) {
-            tblOrder.getTblOrderDetailList().forEach(t ->{
+            tblOrder.getTblOrderDetailList().forEach(t -> {
                 val card = new TblCardInfo();
                 card.setIsNewRecord(true);
                 card.setBudgetId(budgetId);
                 card.setCardName(t.getCardName());
                 card.setCardLimit(t.getLimitAmout());
-                card.setStatus("");
+                card.setCardStatus("tobecreate");
+                cardInfoService.insert(card);
             });
 
         }

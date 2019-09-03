@@ -1,5 +1,6 @@
 package com.ralf.cardmanager.spider.task;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -10,6 +11,7 @@ import us.codecraft.webmagic.utils.HttpConstant;
 import java.io.IOException;
 import java.util.Map;
 
+@Slf4j
 public abstract class BaseOperation<T extends Object> {
 
     private String defaultUserAgent = "";
@@ -65,6 +67,7 @@ public abstract class BaseOperation<T extends Object> {
         defaultHeader.forEach((k, v) -> {
             requestBase.setHeader(k, v);
         });
+        log.info("execute url(%s) ,header %s", requestBase.getURI(), defaultHeader);
         return this;
     }
 

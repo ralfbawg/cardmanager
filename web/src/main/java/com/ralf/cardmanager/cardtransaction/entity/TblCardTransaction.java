@@ -11,9 +11,9 @@ import com.jeesite.common.mybatis.annotation.Table;
 import com.jeesite.common.mybatis.mapper.query.QueryType;
 
 /**
- * tbl_card_transactionEntity
+ * 交易流水Entity
  * @author ralfchen
- * @version 2019-09-02
+ * @version 2019-09-03
  */
 @Table(name="tbl_card_transaction", alias="a", columns={
 		@Column(name="id", attrName="id", label="id", isPK=true),

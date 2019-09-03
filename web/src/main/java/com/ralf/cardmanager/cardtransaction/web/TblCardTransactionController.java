@@ -23,9 +23,9 @@ import com.ralf.cardmanager.cardtransaction.entity.TblCardTransaction;
 import com.ralf.cardmanager.cardtransaction.service.TblCardTransactionService;
 
 /**
- * tbl_card_transactionController
+ * 交易流水Controller
  * @author ralfchen
- * @version 2019-09-02
+ * @version 2019-09-03
  */
 @Controller
 @RequestMapping(value = "${adminPath}/cardtransaction/tblCardTransaction")
@@ -75,25 +75,25 @@ public class TblCardTransactionController extends BaseController {
 	}
 
 	/**
-	 * 保存tbl_card_transaction
+	 * 保存交易流水
 	 */
 	@RequiresPermissions("cardtransaction:tblCardTransaction:edit")
 	@PostMapping(value = "save")
 	@ResponseBody
 	public String save(@Validated TblCardTransaction tblCardTransaction) {
 		tblCardTransactionService.save(tblCardTransaction);
-		return renderResult(Global.TRUE, text("保存tbl_card_transaction成功！"));
+		return renderResult(Global.TRUE, text("保存交易流水成功！"));
 	}
 	
 	/**
-	 * 删除tbl_card_transaction
+	 * 删除交易流水
 	 */
 	@RequiresPermissions("cardtransaction:tblCardTransaction:edit")
 	@RequestMapping(value = "delete")
 	@ResponseBody
 	public String delete(TblCardTransaction tblCardTransaction) {
 		tblCardTransactionService.delete(tblCardTransaction);
-		return renderResult(Global.TRUE, text("删除tbl_card_transaction成功！"));
+		return renderResult(Global.TRUE, text("删除交易流水成功！"));
 	}
 	
 }

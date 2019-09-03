@@ -70,9 +70,9 @@ public class DivvyTaskThread extends SpiderBasicThread implements Runnable {
         }
         ChromeDriver chrome = ((ChromeDriver) webDriver);
         chrome.executeScript("document.querySelector('input[name=email]').focus()");
-        chrome.getKeyboard().sendKeys("22123971@qq.com");
+        chrome.getKeyboard().sendKeys(config.getUsername());
         chrome.executeScript("document.querySelector('input[name=password]').focus()");
-        chrome.getKeyboard().sendKeys("Wwkkvikthh1234");
+        chrome.getKeyboard().sendKeys(config.getPassword());
         chrome.executeScript("document.querySelector('button.auth0-lock-submit').click();");
         while (!SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("i.SideNavigation-header-logo.Icon.Icon-logoSmall"))) {
 //            service.sendShouldLoginByHandEmail();
