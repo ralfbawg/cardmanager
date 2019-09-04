@@ -3,7 +3,11 @@ package com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOperation;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOpertionResp;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
+@Service
+@Scope("prototype")
 public class SetBudgetCardRecurring2 extends BaseDivvyOperation<SetBudgetCardRecurring2Rsp> {
     public SetBudgetCardRecurring2(DivvyPaySiteConfig config) {
         super(config);

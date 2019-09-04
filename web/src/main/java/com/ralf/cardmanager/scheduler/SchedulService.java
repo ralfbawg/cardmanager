@@ -4,17 +4,33 @@ import com.jeesite.common.utils.SpringUtils;
 import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
 import com.ralf.cardmanager.cardinfo.service.TblCardInfoService;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.CreateCardByBudget;
+import com.ralf.cardmanager.spider.task.divvypay.operation.cardtranscation.GetCardTransactionsByCompanyId;
+import com.ralf.cardmanager.spider.task.divvypay.operation.cardtranscation.GetCompanyTransactionsTotalCount;
+import com.ralf.cardmanager.tblbizparam.entity.TblBizParam;
+import com.ralf.cardmanager.tblbizparam.service.TblBizParamService;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.stream.Collectors;
 
 @Service
 public class SchedulService {
+    private Long LastTransactionTotal = 0l;
+
     @Autowired
     TblCardInfoService cardInfoService;
+
+    @Autowired
+    TblBizParamService tblBizParamService;
+
+    @Autowired
+    GetCardTransactionsByCompanyId getCardTransactionsByCompanyId;
+
+    @Autowired
+    GetCompanyTransactionsTotalCount getCompanyTransactionsTotalCount;
 
     //更新卡的allcocation
     @Scheduled(cron = "* * * 1 * *")
@@ -50,4 +66,21 @@ public class SchedulService {
     public void KeepSession() {
 
     }
+
+    @Scheduled(cron = "* 20 * * * *")
+    public void GetCardTransactions() throws IOException {
+        if (LastTransactionTotal <= 0) {
+            val param = new TblBizParam();
+            param.setKey("TransactionsTotal");
+            val list = tblBizParamService.findList(param);
+            if (list != null && list.size() == 1) {
+                LastTransactionTotal = Long.valueOf(list.get(0).getValue());
+            }
+        }
+        val rsp = getCardTransactionsByCompanyId.init("", null, null, null).execute();
+
+
+    }
+
+
 }

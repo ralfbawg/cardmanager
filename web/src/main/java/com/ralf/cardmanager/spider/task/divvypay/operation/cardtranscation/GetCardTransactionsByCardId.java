@@ -3,8 +3,12 @@ package com.ralf.cardmanager.spider.task.divvypay.operation.cardtranscation;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOperation;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOpertionResp;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
-public class GetCardTransactionsByCardId extends BaseDivvyOperation<GetCardTransactionsByCardIdRsp>{
+@Service
+@Scope("prototype")
+public class GetCardTransactionsByCardId extends BaseDivvyOperation<GetCardTransactionsByCardIdRsp> {
     private String pageParam = "arrayconnection:%s";
 
     public GetCardTransactionsByCardId(DivvyPaySiteConfig config) {
@@ -24,6 +28,7 @@ public class GetCardTransactionsByCardId extends BaseDivvyOperation<GetCardTrans
         return null;
     }
 }
-class GetCardTransactionsByCardIdRsp extends BaseDivvyOpertionResp{
+
+class GetCardTransactionsByCardIdRsp extends BaseDivvyOpertionResp {
 
 }

@@ -6,6 +6,8 @@ import com.ralf.cardmanager.spider.task.BaseOperationResp;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.exception.NotInitedException;
 import com.ralf.cardmanager.spider.util.SpringContextUtil;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.cookie.Cookie;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public abstract class BaseDivvyOperation<T extends BaseDivvyOpertionResp> extends BaseOperation {
     protected DivvyPaySiteConfig config;
 
@@ -85,9 +88,18 @@ public abstract class BaseDivvyOperation<T extends BaseDivvyOpertionResp> extend
         CloseableHttpResponse rsp = httpClient.execute(requestBase);
         if (rsp.getStatusLine().getStatusCode() >= 200 && rsp.getStatusLine().getStatusCode() < 300) {
             AWSALB = getCookie(httpClient.getCookieStore(), "AWSALB");
-            return persistent(EntityUtils.toString(rsp.getEntity()));
+            val rspStr = EntityUtils.toString(rsp.getEntity());
+            if (rspStr.startsWith("{\"data\":")) {
+                val result = persistent(EntityUtils.toString(rsp.getEntity()));
+                log.info(result.toString());
+                return result;
+            } else {
+                config.shouldLogin = true;
+                config.setLogined(false);
+                throw new IOException("返回内容错误:" + rspStr);
+            }
         } else {
-            return null;
+            throw new IOException("http statusCode error:" + rsp.getStatusLine().getStatusCode());
         }
     }
 
