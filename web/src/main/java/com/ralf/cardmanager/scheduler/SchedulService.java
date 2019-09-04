@@ -4,6 +4,7 @@ import com.jeesite.common.utils.SpringUtils;
 import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
 import com.ralf.cardmanager.cardinfo.service.TblCardInfoService;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.CreateCardByBudget;
+import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.UnfreezedCard;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardtranscation.GetCardTransactionsByCompanyId;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardtranscation.GetCompanyTransactionsTotalCount;
 import com.ralf.cardmanager.tblbizparam.entity.TblBizParam;
@@ -32,6 +33,9 @@ public class SchedulService {
     @Autowired
     GetCompanyTransactionsTotalCount getCompanyTransactionsTotalCount;
 
+    @Autowired
+    UnfreezedCard unfreezedCard;
+
     //更新卡的allcocation
     @Scheduled(cron = "* * * 1 * *")
     public void updateCardAllocationId() {
@@ -39,7 +43,7 @@ public class SchedulService {
     }
 
     //创建卡
-    @Scheduled(fixedDelay = 1 * 30 * 1000)
+    @Scheduled(fixedRate = 1 * 30 * 1000)
     public void createCard() {
         val cardQuery = new TblCardInfo();
         cardQuery.setCardStatus("tobecreate");
@@ -52,15 +56,50 @@ public class SchedulService {
         cardQuery.setId_in(ids);
         cardInfoService.update(cardQuery);
         list.stream().forEach(t -> {
-            SpringUtils.getBean(CreateCardByBudget.class).init(String.valueOf(t.getCardAmount()), t.getCardName());
+            try {
+                val rsp = SpringUtils.getBean(CreateCardByBudget.class).init(String.valueOf(t.getCardAmount()), t.getCardName()).execute();
+                t.setBudgetId(rsp.getBudgetId());
+                t.setCardId(rsp.getCardId());
+                t.setCardStatus(rsp.getStep2Resp().getCardStatus());
+                t.setCardToken(rsp.getStep2Resp().getCardToken());
+                t.setCardBrand(rsp.getStep2Resp().getBrand());
+                t.setCardNo(rsp.getStep2Resp().getStep3GetPanUrlRsp().getCardinfoRsp().getCardNo());
+                t.setCvv(rsp.getStep2Resp().getStep3GetPanUrlRsp().getCardinfoRsp().getCvv());
+                t.setExp(rsp.getStep2Resp().getStep3GetPanUrlRsp().getCardinfoRsp().getExp());
+                t.setExpiredDate(rsp.getStep2Resp().getExpirationDate());
+                t.setUserAllocationId(rsp.getStep2Resp().getUserAllocation());
+                t.setCardType(rsp.getStep2Resp().getCardType());
+                t.setIsNewRecord(false);
+                cardInfoService.save(t);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
     }
 
     //自动解冻卡
-    @Scheduled(cron = "* * * 28 * *")
+    @Scheduled(cron = "0/30 * * * * *")
     public void UnfreezedCard() {
-
+        val cardQuery = new TblCardInfo();
+        cardQuery.setCardStatus("freezed");
+        val list = cardInfoService.findList(cardQuery);
+        val ids = list.stream().forEach(t -> {
+            try {
+                unfreezedCard(t.getCardId(), 0);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
+
+    private void unfreezedCard(String cardId, int retry) throws IOException {
+        val rsp = unfreezedCard.init(cardId).execute();
+        if (rsp.isFrozen() && retry < 5) {
+            retry++;
+            unfreezedCard(cardId, retry++);
+        }
+    }
+
 
     @Scheduled(cron = "* 20 * * * *")
     public void KeepSession() {
@@ -78,7 +117,9 @@ public class SchedulService {
             }
         }
         val rsp = getCardTransactionsByCompanyId.init("", null, null, null).execute();
+        rsp.getList().stream().forEach(t -> {
 
+        });
 
     }
 

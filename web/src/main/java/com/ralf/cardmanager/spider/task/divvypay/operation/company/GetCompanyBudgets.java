@@ -1,10 +1,19 @@
 package com.ralf.cardmanager.spider.task.divvypay.operation.company;
 
+import com.google.gson.JsonParser;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOperation;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOpertionResp;
+import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.CreateCardStep2;
+import com.ralf.cardmanager.spider.util.Base64Util;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.val;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @program: cardmanager
@@ -29,10 +38,42 @@ public class GetCompanyBudgets extends BaseDivvyOperation<GetCompanyBudgetsRsp> 
     //需要获取 data.node.budgets.edges[0].node
     //内容
     @Override
-    public GetCompanyBudgetsRsp persistent(String rsp) {
-        return null;
+    public CreateCardStep2.CreateCardStep2Resp persistent(String rsp) {
+        val jsonObject = new JsonParser().parse(rsp).getAsJsonObject().get("data").getAsJsonObject().get("node").getAsJsonObject().get("budgets").getAsJsonObject();
+        val arr = jsonObject.get("edges").getAsJsonArray();
+        val list = new ArrayList<Budget>();
+        arr.forEach(t -> {
+            list.add(new Budget(t.getAsJsonObject().get("id").getAsString(),
+                    t.getAsJsonObject().get("name").getAsString(),
+                    t.getAsJsonObject().get("type").getAsString(),
+                    t.getAsJsonObject().get("balance").getAsLong(),
+                    t.getAsJsonObject().get("totalAvailableToSpend").getAsLong(),
+                    t.getAsJsonObject().get("currentGoal").getAsLong())
+
+            );
+        });
+        return new GetCompanyBudgetsRsp(jsonObject.get("pageInfo").getAsJsonObject().get("hasNextPage").getAsBoolean(), Base64Util.toNameValuePair(jsonObject.get("pageInfo").getAsJsonObject().get("endCursor").getAsString()).getValue(), list);
     }
+
+
 }
 
+@Data
+@AllArgsConstructor
 class GetCompanyBudgetsRsp extends BaseDivvyOpertionResp {
+    private boolean hasNextPage;
+    private String endCursor;
+    private List<Budget> list;
+}
+
+@Data
+@AllArgsConstructor
+class Budget {
+    private String id;
+    private String name;
+    private String type;
+    private Long balance;
+    private Long totalAvailableToSpend;
+    private Long currentGoal;
+
 }

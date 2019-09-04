@@ -19,7 +19,7 @@ public class SetBudgetCardRecurring2 extends BaseDivvyOperation<SetBudgetCardRec
     }
 
     @Override
-    public SetBudgetCardRecurring2Rsp persistent(String rsp) {
+    public CreateCardStep2.CreateCardStep2Resp persistent(String rsp) {
         return null;
     }
 }

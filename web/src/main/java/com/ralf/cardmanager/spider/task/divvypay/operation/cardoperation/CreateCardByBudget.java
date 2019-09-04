@@ -2,7 +2,6 @@ package com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.jeesite.common.utils.SpringUtils;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOperation;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOpertionResp;
@@ -51,12 +50,4 @@ public class CreateCardByBudget extends BaseDivvyOperation<CreateCardByBudgetRes
     }
 
 
-}
-
-@Data
-@AllArgsConstructor
-class CreateCardByBudgetResponse extends BaseDivvyOpertionResp {
-    private String cardId;
-    private String budgetId;
-    private CreateCardStep2Resp step2Resp;
 }

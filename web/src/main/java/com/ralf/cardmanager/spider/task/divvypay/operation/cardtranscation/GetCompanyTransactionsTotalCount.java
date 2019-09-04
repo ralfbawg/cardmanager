@@ -4,6 +4,7 @@ import com.google.gson.JsonParser;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOperation;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOpertionResp;
+import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.CreateCardStep2;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.val;
@@ -33,7 +34,7 @@ public class GetCompanyTransactionsTotalCount extends BaseDivvyOperation<GetComp
     }
 
     @Override
-    public GetCompanyTransactionsTotalCountRsp persistent(String rsp) throws IOException {
+    public CreateCardStep2.CreateCardStep2Resp persistent(String rsp) throws IOException {
         val jsonObject = new JsonParser().parse(rsp).getAsJsonObject().get("data").getAsJsonObject().get("node").getAsJsonObject();
         return new GetCompanyTransactionsTotalCountRsp(jsonObject.get("transactionsTotalCount").getAsLong());
     }

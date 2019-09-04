@@ -50,20 +50,12 @@ public class CreateCardStep2 extends BaseDivvyOperation<CreateCardStep2Resp> {
         String expirationDate = jsonObject.get("expirationDate").toString();
         String brand = jsonObject.get("brand").toString();
         String cardStatus = jsonObject.get("activationStatus").toString();
+        String activationStatus = jsonObject.get("activationStatus").toString();
         String allocationId = jsonObject.get("userAllocation").getAsJsonObject().get("id").getAsString();
-        val rsp2 = new CreateCardStep2Resp(token, cardType, expirationDate, brand, cardStatus, allocationId,step3GetPanUrl.init(token).execute());
+        val rsp2 = new CreateCardStep2Resp(token, cardType, expirationDate, brand, cardStatus, activationStatus, allocationId, step3GetPanUrl.init(token).execute());
         return rsp2;
     }
+
+
 }
 
-@Data
-@AllArgsConstructor
-class CreateCardStep2Resp extends BaseDivvyOpertionResp {
-    private String cardToken;
-    private String cardType;
-    private String expirationDate;
-    private String brand;
-    private String cardStatus;
-    private String userAllocation;
-    private CreateCardStep3GetPanUrlRsp step3GetPanUrlRsp;
-}

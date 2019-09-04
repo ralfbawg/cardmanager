@@ -1,20 +1,17 @@
 package com.ralf.cardmanager.spider.task.divvypay.operation.cardtranscation;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOperation;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOpertionResp;
-import com.ralf.cardmanager.spider.util.Base64Util;
+import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.CreateCardStep2;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.val;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -38,7 +35,7 @@ public class GetTransaction_Details_Merchant extends BaseDivvyOperation<GetTrans
     //{"data":{"node":{"type":"AUTHORIZATION","transactedAmount":-100,"status":"OPEN","reviews":[],"parentTransactionId":null,"occurredAt":1567591592,"merchantName":"FACEBK QF2O","isReconciled":false,"isParent":false,"id":"VHJhbnNhY3Rpb246ODY1YmVjZGUtYjA5Mi00YjE5LTk0ZDUtMTA5OTdiYjc4ZDYy","fees":0,"declineReason":null,"clearedAt":1567591592,"childTransactions":{"totalCount":0,"edges":[],"__typename":"TransactionConnection"},"card":{"user":{"id":"VXNlcjo2MjgzMA==","displayName":"Steven Wong","avatarUrl":null,"__typename":"User"},"name":"B9-4zzg1","lastFour":"0094","id":"Q2FyZDo0MDkyMzU=","deleted":false,"cardType":"SUBSCRIPTION","__typename":"Card"},"budget":{"name":"mystery0804","id":"QnVkZ2V0OjQ4OTEy","__typename":"Budget"},"amount":-100,"accountingIntegrationTransactions":null,"__typename":"Transaction"}}}
 
     @Override
-    public GetTransaction_Details_MerchantRsp persistent(String rsp) throws IOException {
+    public CreateCardStep2.CreateCardStep2Resp persistent(String rsp) throws IOException {
         JsonObject t = new JsonParser().parse(rsp).getAsJsonObject().get("data").getAsJsonObject().get("node").getAsJsonObject();
         Long occurredAt = t.getAsJsonObject().get("occurredAt").getAsLong();
         Long amount = t.getAsJsonObject().get("amount").getAsLong();

@@ -40,10 +40,3 @@ public class GetCardinfo extends BaseDivvyOperation<GetCardinfoRsp> {
     }
 }
 
-@Data
-@AllArgsConstructor
-class GetCardinfoRsp extends BaseDivvyOpertionResp {
-    private String cvv;
-    private String exp;
-    private String cardNo;
-}

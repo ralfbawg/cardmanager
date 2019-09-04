@@ -43,12 +43,6 @@ public class CreateCardStep3GetPanUrl extends BaseDivvyOperation<CreateCardStep3
         String panUrl = jsonObject.get("data").getAsJsonObject().get("getPanUrl").getAsString();
         return new CreateCardStep3GetPanUrlRsp(getCardinfo.init(panUrl).execute(), panUrl);
     }
-}
 
-@Data
-@AllArgsConstructor
-class CreateCardStep3GetPanUrlRsp extends BaseDivvyOpertionResp {
-    private GetCardinfoRsp cardinfoRsp;
-    private String panUrl;
 
 }

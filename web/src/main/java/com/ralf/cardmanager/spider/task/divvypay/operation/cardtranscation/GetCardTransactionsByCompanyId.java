@@ -7,6 +7,7 @@ import com.jeesite.common.lang.StringUtils;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOperation;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOpertionResp;
+import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.CreateCardStep2;
 import com.ralf.cardmanager.spider.util.Base64Util;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -72,23 +73,3 @@ public class GetCardTransactionsByCompanyId extends BaseDivvyOperation<GetCardTr
     }
 }
 
-@Data
-@AllArgsConstructor
-class GetCardTransactionsByCompanyIdRsp extends BaseDivvyOpertionResp {
-    private boolean hasNextPage;
-    private String endCursor;//解码后
-    private List<GetCardTransactionsByCompanyIdRspDetail> list;
-
-}
-
-@Data
-@AllArgsConstructor
-class GetCardTransactionsByCompanyIdRspDetail {
-    private String transactionId;
-    private String type;
-    private String status;
-    private String merchantName;
-    private Long amount;
-    private Date clearDate;
-    private Date occurredDate;
-}

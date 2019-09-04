@@ -29,7 +29,7 @@ public class GetVirtualCardDetailsInfo extends BaseDivvyOperation<GetVirtualCard
 
     //返回 {"data":{"node":{"userAllocation":{"id":"VXNlckFsbG9jYXRpb246NDY3ODcz","budget":{"name":"ceshi","id":"QnVkZ2V0OjQ3MzAz","__typename":"Budget"},"__typename":"UserAllocation"},"user":{"id":"VXNlcjo1MTIzNg==","displayName":"MING SITK","company":{"id":"Q29tcGFueTozMDI3","address":{"zipCode":"91701","street2":null,"street1":"7029 Novara Pl","state":"CA","city":"Rancho Cucamonga","__typename":"Address"},"__typename":"Company"},"avatarUrl":null,"__typename":"User"},"name":"cavy","id":"Q2FyZDozNjMzMDU=","frozen":false,"deleted":false,"budget":{"name":"ceshi","id":"QnVkZ2V0OjQ3MzAz","__typename":"Budget"},"assignedTagValues":{"edges":[{"node":{"tagValue":{"value":"Entertainment","id":"VGFnVmFsdWU6NDA5NTMw","__typename":"TagValue"},"tagType":{"name":"Category","id":"VGFnVHlwZTo3OTQw","deleted":false,"__typename":"TagType"},"id":"Q2FyZFRhZ1ZhbHVlQXNzaWdubWVudDozNzI0Mjg=","__typename":"CardTagValueAssignment"},"__typename":"CardTagValueAssignmentEdge"}],"__typename":"CardTagValueAssignmentConnection"},"__typename":"Card"}}}
     @Override
-    public GetVirtualCardDetailsInfoRsp persistent(String rsp) throws IOException {
+    public CreateCardStep2.CreateCardStep2Resp persistent(String rsp) throws IOException {
         JsonObject jsonObject = new JsonParser().parse(rsp).getAsJsonObject().get("data").getAsJsonObject().get("node").getAsJsonObject();
         boolean deleted = jsonObject.get("frozen").getAsBoolean();
         boolean frozen = jsonObject.get("frozen").getAsBoolean();

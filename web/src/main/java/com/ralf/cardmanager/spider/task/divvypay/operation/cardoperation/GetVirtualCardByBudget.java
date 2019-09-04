@@ -1,18 +1,11 @@
 package com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation;
 
-import com.jeesite.common.lang.StringUtils;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOperation;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOpertionResp;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
 
 @Service
 @Scope("prototype")
@@ -31,7 +24,7 @@ public class GetVirtualCardByBudget extends BaseDivvyOperation<GetVCardsByBudget
 
 
     @Override
-    public GetVCardsByBudgetIdRsp persistent(String rsp) {
+    public CreateCardStep2.CreateCardStep2Resp persistent(String rsp) {
         return null;
     }
 
