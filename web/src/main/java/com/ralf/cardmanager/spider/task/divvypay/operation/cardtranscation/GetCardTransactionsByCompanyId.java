@@ -25,7 +25,7 @@ import java.util.List;
 public class GetCardTransactionsByCompanyId extends BaseDivvyOperation<GetCardTransactionsByCompanyIdRsp> {
     private String pageSizeStr = "arrayconnection:%s";
 
-    public GetCardTransactionsByCompanyId init(String cardId, Date dateEnd, Date dateStart, Long pageSize, Long start) {
+    public GetCardTransactionsByCompanyId init(String cardId, Date dateEnd, Date dateStart, Long pageSize, Long start) throws Exception{
         val params = new String[]{
                 config.getCompanyId(),
                 StringUtils.isEmpty(cardId) ? "null" : "\"" + cardId + "\"",

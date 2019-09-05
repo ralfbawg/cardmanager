@@ -17,7 +17,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 /**
  * 银行卡信息Entity
  * @author ralfchen
- * @version 2019-09-03
+ * @version 2019-09-06
  */
 @Table(name="tbl_card_info", alias="a", columns={
 		@Column(name="id", attrName="id", label="id", isPK=true),
@@ -25,7 +25,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 		@Column(name="budget_id", attrName="budgetId", label="帐户id"),
 		@Column(name="card_name", attrName="cardName", label="卡名", queryType=QueryType.LIKE),
 		@Column(name="card_limit", attrName="cardLimit", label="限额度", isQuery=false),
-		@Column(name="nickname", attrName="nickname", label="卡昵称"),
+		@Column(name="nickname", attrName="nickname", label="卡昵称", isQuery=false),
 		@Column(name="card_type", attrName="cardType", label="卡类型", isQuery=false),
 		@Column(name="card_amount", attrName="cardAmount", label="现有额度", isQuery=false),
 		@Column(name="last_charge_on", attrName="lastChargeOn", label="上次充值时间", isQuery=false),
@@ -41,6 +41,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 		@Column(name="card_brand", attrName="cardBrand", label="卡品牌"),
 		@Column(name="user_allocation_id", attrName="userAllocationId", label="用户操作码", isQuery=false),
 		@Column(name="card_status", attrName="cardStatus", label="卡状态"),
+		@Column(name="card_activated_status", attrName="cardActivatedStatus", label="卡激活状态"),
 	}, orderBy="a.id DESC"
 )
 public class TblCardInfo extends DataEntity<TblCardInfo> {
@@ -66,6 +67,7 @@ public class TblCardInfo extends DataEntity<TblCardInfo> {
 	private String cardBrand;		// 卡品牌
 	private String userAllocationId;		// 用户操作码
 	private String cardStatus;		// 卡状态
+	private String cardActivatedStatus;		// 卡激活状态
 	
 	public TblCardInfo() {
 		this(null);
@@ -250,6 +252,15 @@ public class TblCardInfo extends DataEntity<TblCardInfo> {
 
 	public void setCardStatus(String cardStatus) {
 		this.cardStatus = cardStatus;
+	}
+	
+	@Length(min=0, max=255, message="卡激活状态长度不能超过 255 个字符")
+	public String getCardActivatedStatus() {
+		return cardActivatedStatus;
+	}
+
+	public void setCardActivatedStatus(String cardActivatedStatus) {
+		this.cardActivatedStatus = cardActivatedStatus;
 	}
 	
 }

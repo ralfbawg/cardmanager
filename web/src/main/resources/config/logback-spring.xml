@@ -8,7 +8,7 @@
 	<include resource="config/logger-core.xml"/>
 	
 	<!-- Project level setting -->
-<!-- 	<logger name="your.package" level="DEBUG" /> -->
+ 	<logger name="com.ralf.cardmanager" level="DEBUG" />
 	
 	<!-- Console log output -->
 	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
@@ -52,7 +52,7 @@
 	</appender>
 
 	<!-- Level: FATAL 0  ERROR 3  WARN 4  INFO 6  DEBUG 7 -->
-	<root level="WARN">
+	<root level="DEBUG">
 		<appender-ref ref="console" />
 		<appender-ref ref="debug" />
 		<appender-ref ref="error" />

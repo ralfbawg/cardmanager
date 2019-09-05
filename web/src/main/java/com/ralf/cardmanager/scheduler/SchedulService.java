@@ -76,13 +76,14 @@ public class SchedulService {
                 t.setCardNo(rsp.getStep2Resp().getStep3GetPanUrlRsp().getCardinfoRsp().getCardNo());
                 t.setCvv(rsp.getStep2Resp().getStep3GetPanUrlRsp().getCardinfoRsp().getCvv());
                 t.setExp(rsp.getStep2Resp().getStep3GetPanUrlRsp().getCardinfoRsp().getExp());
+                t.setCardSpendAmount(0l);
                 t.setExpiredDate(rsp.getStep2Resp().getExpirationDate());
                 t.setUserAllocationId(rsp.getStep2Resp().getUserAllocation());
                 t.setCardType(rsp.getStep2Resp().getCardType());
                 t.setNickname(timestamp);
                 t.setIsNewRecord(false);
                 cardInfoService.save(t);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
@@ -94,16 +95,16 @@ public class SchedulService {
         val cardQuery = new TblCardInfo();
         cardQuery.setCardStatus("freezed");
         val list = cardInfoService.findList(cardQuery);
-        val ids = list.stream().forEach(t -> {
+        list.forEach(t -> {
             try {
                 unfreezedCard(t.getCardId(), 0);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
     }
 
-    private void unfreezedCard(String cardId, int retry) throws IOException {
+    private void unfreezedCard(String cardId, int retry) throws Exception {
         val rsp = unfreezedCard.init(cardId).execute();
         if (rsp.isFrozen() && retry < 5) {
             retry++;
@@ -123,7 +124,7 @@ public class SchedulService {
      * @throws IOException
      */
     @Scheduled(cron = "* 20 * * * *")
-    public void GetCardTransactions() throws IOException {
+    public void GetCardTransactions() throws Exception {
         if (LastTransactionTotal <= 0) {
             val param = new TblBizParam();
             param.setKey("TransactionsTotal");
@@ -164,7 +165,7 @@ public class SchedulService {
     }
 
     @Scheduled(cron = "* 20 * * * *")
-    public void GetAllCards() throws IOException {
+    public void GetAllCards() throws Exception {
         val query = new TblCardInfo();
         query.setOrderBy("nickname desc");
         query.setPageSize(1);

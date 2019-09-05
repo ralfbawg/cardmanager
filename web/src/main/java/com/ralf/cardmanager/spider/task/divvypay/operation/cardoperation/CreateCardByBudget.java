@@ -22,7 +22,7 @@ public class CreateCardByBudget extends BaseDivvyOperation<CreateCardByBudgetRes
     @Autowired
     CreateCardStep2 createCardStep2;
 
-    public CreateCardByBudget init(String amount, String cardname) {
+    public CreateCardByBudget init(String amount, String cardname) throws Exception{
         super.init(new String[]{
                 amount, config.getBudgetId(), cardname, config.getBudgetOwnerId(), String.valueOf(new DateTime().plusYears(3).getMillis() / 1000)
         });
@@ -40,11 +40,13 @@ public class CreateCardByBudget extends BaseDivvyOperation<CreateCardByBudgetRes
 
 
     //返回 {"data":{"createVirtualCardForBudget":{"newCardEdge":{"node":{"id":"Q2FyZDozNjA2ODY=","__typename":"Card"},"__typename":"CardEdge"},"budget":{"id":"QnVkZ2V0OjQ5MTQ2","__typename":"Budget"},"__typename":"CreateVirtualCardForBudgetPayload"}}}
+    //返回 {"data":{"createVirtualCardForBudget":{"newCardEdge":{"node":{"user":{"id":"VXNlcjo1MTIzNg==","__typename":"User"},"token":"001.R.20190905115635631956","name":"1567702590920","lastFour":"5804","id":"Q2FyZDo0MTIyODQ=","expirationDate":"09/22","__typename":"Card"},"__typename":"CardEdge"},"budget":{"id":"QnVkZ2V0OjQ3MzAz","__typename":"Budget"},"__typename":"CreateVirtualCardForBudgetPayload"}}}
     //需要获取card_id
     @Override
-    public CreateCardByBudgetResponse persistent(String rsp) throws IOException {
-        JsonObject jsonObject = new JsonParser().parse(rsp).getAsJsonObject().get("data").getAsJsonObject().get("createVirtualCardForBudget").getAsJsonObject().get("newCardEdge").getAsJsonObject();
-        val cardId = jsonObject.get("node").getAsJsonObject().get("id").getAsString();
+    public CreateCardByBudgetResponse persistent(String rsp) throws Exception {
+        JsonObject jsonObject = new JsonParser().parse(rsp).getAsJsonObject().get("data").getAsJsonObject().get("createVirtualCardForBudget").getAsJsonObject();
+        val carinfo = jsonObject.get("newCardEdge").getAsJsonObject();
+        val cardId = carinfo.get("node").getAsJsonObject().get("id").getAsString();
         val budgetId = jsonObject.get("budget").getAsJsonObject().get("id").getAsString();
         return new CreateCardByBudgetResponse(cardId, budgetId, createCardStep2.init(cardId).execute());
     }

@@ -24,10 +24,10 @@ public class GetCompanyVirtualCards extends BaseDivvyOperation<GetCompanyVirtual
     private String size = "20";
     private String start = "0";
 
-    public GetCompanyVirtualCards init(String sizeParam, String startParam) {
+    public GetCompanyVirtualCards init(String sizeParam, String startParam) throws Exception {
         val sizeParam2 = Base64Util.encodeStr(StringUtils.isEmpty(sizeParam) ? size : sizeParam);
         val startParam2 = Base64Util.encodeStr(StringUtils.isEmpty(startParam) ? start : startParam);
-        super.init(new String[]{config.getCompanyId(), sizeParam2,startParam2});
+        super.init(new String[]{config.getCompanyId(), sizeParam2, startParam2});
         return this;
     }
 

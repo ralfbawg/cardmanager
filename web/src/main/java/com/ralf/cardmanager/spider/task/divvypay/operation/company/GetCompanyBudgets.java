@@ -38,7 +38,7 @@ public class GetCompanyBudgets extends BaseDivvyOperation<GetCompanyBudgetsRsp> 
     //需要获取 data.node.budgets.edges[0].node
     //内容
     @Override
-    public CreateCardStep2.CreateCardStep2Resp persistent(String rsp) {
+    public GetCompanyBudgetsRsp persistent(String rsp) {
         val jsonObject = new JsonParser().parse(rsp).getAsJsonObject().get("data").getAsJsonObject().get("node").getAsJsonObject().get("budgets").getAsJsonObject();
         val arr = jsonObject.get("edges").getAsJsonArray();
         val list = new ArrayList<Budget>();
@@ -58,22 +58,3 @@ public class GetCompanyBudgets extends BaseDivvyOperation<GetCompanyBudgetsRsp> 
 
 }
 
-@Data
-@AllArgsConstructor
-class GetCompanyBudgetsRsp extends BaseDivvyOpertionResp {
-    private boolean hasNextPage;
-    private String endCursor;
-    private List<Budget> list;
-}
-
-@Data
-@AllArgsConstructor
-class Budget {
-    private String id;
-    private String name;
-    private String type;
-    private Long balance;
-    private Long totalAvailableToSpend;
-    private Long currentGoal;
-
-}

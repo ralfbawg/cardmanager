@@ -126,9 +126,9 @@ public class TblOrderController extends BaseController {
         tblOrder.setSubmitUsercode(usercode);
         tblOrder.setPayStatus(STATUS_DRAFT);
         tblOrder.getTblOrderDetailList().forEach(t -> {
-            t.setLimitAmout(t.getLimitAmout() * 100);
+            t.setLimitAmount(t.getLimitAmount() * 100);
         });
-        long budgetPrice = tblOrder.getTblOrderDetailList().stream().collect(Collectors.summingLong(TblOrderDetail::getLimitAmout));
+        long budgetPrice = tblOrder.getTblOrderDetailList().stream().collect(Collectors.summingLong(TblOrderDetail::getLimitAmount));
         val createBizParam = new TblBizParam();
         createBizParam.setKey("CreateBudgetCost");
         createBizParam.setPageSize(Integer.MAX_VALUE);

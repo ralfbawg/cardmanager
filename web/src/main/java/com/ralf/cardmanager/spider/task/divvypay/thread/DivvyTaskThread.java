@@ -43,7 +43,6 @@ public class DivvyTaskThread extends SpiderBasicThread implements Runnable {
         }};
         webDriverPool = new WebDriverPool();
         webDriver = webDriverPool.getNew(WebDriverPool.DRIVER_CHROME);
-        webDriver.get(config.loginUrl);
     }
 
     @Override
@@ -52,7 +51,6 @@ public class DivvyTaskThread extends SpiderBasicThread implements Runnable {
             while (!config.Logined) {
                 login();
             }
-
             try {
                 Thread.sleep(60 * 1000);
             } catch (InterruptedException e) {
@@ -66,17 +64,23 @@ public class DivvyTaskThread extends SpiderBasicThread implements Runnable {
     public void doLogin() throws Exception {
         int loginTry = 3;
         while (!checkLoginStatus(--loginTry)) {
-            Thread.sleep(10 * 1000);
+            webDriver.get(config.loginUrl);
+            Thread.sleep(2 * 1000);
         }
         ChromeDriver chrome = ((ChromeDriver) webDriver);
         chrome.executeScript("document.querySelector('input[name=email]').focus()");
+        Thread.sleep(500);
         chrome.getKeyboard().sendKeys(config.getUsername());
+        Thread.sleep(500);
         chrome.executeScript("document.querySelector('input[name=password]').focus()");
+        Thread.sleep(500);
         chrome.getKeyboard().sendKeys(config.getPassword());
+        Thread.sleep(500);
         chrome.executeScript("document.querySelector('button.auth0-lock-submit').click();");
-        while (!SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("i.SideNavigation-header-logo.Icon.Icon-logoSmall"))) {
+        int count = 3;
+        while (!SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("i.SideNavigation-header-logo.Icon.Icon-logoSmall")) && count-- > 0) {
 //            service.sendShouldLoginByHandEmail();
-            Thread.sleep(Long.valueOf(SpringContextUtil.getBean(DivvypayService.class).emailInterval) * 1000);
+            Thread.sleep(3 * 1000);
         }
         config.authToken = StringUtils.isEmpty(((ChromeDriver) webDriver).getSessionStorage().getItem("id_token")) ? ((ChromeDriver) webDriver).getLocalStorage().getItem("id_token") : ((ChromeDriver) webDriver).getSessionStorage().getItem("id_token");
         config.getRequestHead().put("authorization", "Bearer " + config.authToken);

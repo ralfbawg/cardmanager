@@ -19,7 +19,7 @@ public class CreateCardStep3GetPanUrl extends BaseDivvyOperation<CreateCardStep3
     @Autowired
     GetCardinfo getCardinfo;
 
-    protected CreateCardStep3GetPanUrl init(String cardToken) {
+    protected CreateCardStep3GetPanUrl init(String cardToken) throws Exception {
         super.init();
         bodyParams = new String[]{
                 cardToken
@@ -29,6 +29,7 @@ public class CreateCardStep3GetPanUrl extends BaseDivvyOperation<CreateCardStep3
 
     public CreateCardStep3GetPanUrl(DivvyPaySiteConfig config) {
         super(config);
+        defaultHeader.put("referer", "https://app.divvy.co/cards");
 //        body="{\"operationName\":\"FetchPanUrl\",\"variables\":{\"input\":{\"cardToken\":\"001.R.20190725123000679671\",\"clientMutationId\":\"0\"}},\"query\":\"mutation FetchPanUrl($input: GetPanUrlInput!) {\\n  getPanUrl(input: $input) {\\n    url\\n    __typename\\n  }\\n}\\n\"}";
         body = "{\"operationName\":\"FetchPanUrl\",\"variables\":{\"input\":{\"cardToken\":\"%s\",\"clientMutationId\":\"0\"}},\"query\":\"mutation FetchPanUrl($input: GetPanUrlInput!) {\\n  getPanUrl(input: $input) {\\n    url\\n    __typename\\n  }\\n}\\n\"}";
 
@@ -38,9 +39,9 @@ public class CreateCardStep3GetPanUrl extends BaseDivvyOperation<CreateCardStep3
     //通过url获取卡号
     //返回 {"expirationDate":"202408","cvv":"378","cardNumber":"5532320925504902"}
     @Override
-    public CreateCardStep3GetPanUrlRsp persistent(String rsp) throws IOException {
+    public CreateCardStep3GetPanUrlRsp persistent(String rsp) throws Exception {
         JsonObject jsonObject = new JsonParser().parse(rsp).getAsJsonObject();
-        String panUrl = jsonObject.get("data").getAsJsonObject().get("getPanUrl").getAsString();
+        String panUrl = jsonObject.get("data").getAsJsonObject().get("getPanUrl").getAsJsonObject().get("url").getAsString();
         return new CreateCardStep3GetPanUrlRsp(getCardinfo.init(panUrl).execute(), panUrl);
     }
 

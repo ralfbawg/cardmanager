@@ -1,9 +1,9 @@
 cusvar: cm
 cm:
   spider:
-    enabled: false
+    enabled: true
     loginTip:
-      inteval: 30
+      inteval: 10
       email:
         fromAddress: 22123971@qq.com
         username: 22123971@qq.com

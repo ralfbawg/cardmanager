@@ -11,15 +11,15 @@ import com.jeesite.common.mybatis.annotation.Table;
 import com.jeesite.common.mybatis.mapper.query.QueryType;
 
 /**
- * 订单表Entity
+ * 订单信息Entity
  * @author ralfchen
- * @version 2019-08-30
+ * @version 2019-09-06
  */
 @Table(name="tbl_order_detail", alias="a", columns={
 		@Column(name="id", attrName="id", label="id", isPK=true),
 		@Column(name="order_id", attrName="orderId.id", label="order_id", isUpdate=false),
 		@Column(name="card_name", attrName="cardName", label="卡名", isQuery=false),
-		@Column(name="limit_amout", attrName="limitAmout", label="限额"),
+		@Column(name="limit_amount", attrName="limitAmount", label="限额", isQuery=false),
 		@Column(name="type", attrName="type", label="卡分类", isUpdate=false),
 		@Column(name="card_id", attrName="cardId", label="card_id", isUpdate=false),
 		@Column(name="status", attrName="status", label="status", isUpdate=false),
@@ -30,7 +30,7 @@ public class TblOrderDetail extends DataEntity<TblOrderDetail> {
 	private static final long serialVersionUID = 1L;
 	private TblOrder orderId;		// order_id 父类
 	private String cardName;		// 卡名
-	private Long limitAmout;		// 限额
+	private Long limitAmount;		// 限额
 	private String type;		// 卡分类
 	private String cardId;		// card_id
 	
@@ -61,12 +61,12 @@ public class TblOrderDetail extends DataEntity<TblOrderDetail> {
 		this.cardName = cardName;
 	}
 	
-	public Long getLimitAmout() {
-		return limitAmout;
+	public Long getLimitAmount() {
+		return limitAmount;
 	}
 
-	public void setLimitAmout(Long limitAmout) {
-		this.limitAmout = limitAmout;
+	public void setLimitAmount(Long limitAmount) {
+		this.limitAmount = limitAmount;
 	}
 	
 	@Length(min=0, max=32, message="卡分类长度不能超过 32 个字符")

@@ -23,7 +23,7 @@ import java.util.Date;
 @Service
 @Scope("prototype")
 public class GetTransaction_Details_Merchant extends BaseDivvyOperation<GetTransaction_Details_MerchantRsp> {
-    public GetTransaction_Details_Merchant init(String transactionId) {
+    public GetTransaction_Details_Merchant init(String transactionId) throws Exception{
         super.init(new String[]{transactionId});
         return this;
     }
@@ -35,7 +35,7 @@ public class GetTransaction_Details_Merchant extends BaseDivvyOperation<GetTrans
     //{"data":{"node":{"type":"AUTHORIZATION","transactedAmount":-100,"status":"OPEN","reviews":[],"parentTransactionId":null,"occurredAt":1567591592,"merchantName":"FACEBK QF2O","isReconciled":false,"isParent":false,"id":"VHJhbnNhY3Rpb246ODY1YmVjZGUtYjA5Mi00YjE5LTk0ZDUtMTA5OTdiYjc4ZDYy","fees":0,"declineReason":null,"clearedAt":1567591592,"childTransactions":{"totalCount":0,"edges":[],"__typename":"TransactionConnection"},"card":{"user":{"id":"VXNlcjo2MjgzMA==","displayName":"Steven Wong","avatarUrl":null,"__typename":"User"},"name":"B9-4zzg1","lastFour":"0094","id":"Q2FyZDo0MDkyMzU=","deleted":false,"cardType":"SUBSCRIPTION","__typename":"Card"},"budget":{"name":"mystery0804","id":"QnVkZ2V0OjQ4OTEy","__typename":"Budget"},"amount":-100,"accountingIntegrationTransactions":null,"__typename":"Transaction"}}}
 
     @Override
-    public CreateCardStep2.CreateCardStep2Resp persistent(String rsp) throws IOException {
+    public GetTransaction_Details_MerchantRsp persistent(String rsp) throws Exception {
         JsonObject t = new JsonParser().parse(rsp).getAsJsonObject().get("data").getAsJsonObject().get("node").getAsJsonObject();
         Long occurredAt = t.getAsJsonObject().get("occurredAt").getAsLong();
         Long amount = t.getAsJsonObject().get("amount").getAsLong();
@@ -48,14 +48,3 @@ public class GetTransaction_Details_Merchant extends BaseDivvyOperation<GetTrans
     }
 }
 
-@Data
-@AllArgsConstructor
-class GetTransaction_Details_MerchantRsp extends BaseDivvyOpertionResp {
-    private String transactionId;
-    private String type;
-    private String status;
-    private String merchantName;
-    private Long amount;
-    private Date clearDate;
-    private Date occurredDate;
-}

@@ -13,7 +13,7 @@ import java.util.Date;
 @Service
 @Scope("prototype")
 public class UpdateVirtualCard extends BaseDivvyOperation<UpdateVirtualCardRsp> {
-    public UpdateVirtualCard init(Long amount, String cardId, String cardName, Date expiredDate) {
+    public UpdateVirtualCard init(Long amount, String cardId, String cardName, Date expiredDate) throws Exception{
         super.init(new String[]{amount.toString(), config.getBudgetId(), cardId, cardName, String.valueOf(expiredDate.getTime() / 1000)});
         return this;
     }

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Scope("prototype")
 public class GetCardinfo extends BaseDivvyOperation<GetCardinfoRsp> {
 
-    public GetCardinfo init(String url) {
+    public GetCardinfo init(String url) throws Exception{
         super.url = url;
         defaultHeader.put("path", url.replace("https://app.divvy.co", ""));
         method = "get";

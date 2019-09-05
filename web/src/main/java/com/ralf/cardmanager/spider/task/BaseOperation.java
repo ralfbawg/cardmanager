@@ -18,9 +18,9 @@ public abstract class BaseOperation<T extends Object> {
 
     private String defaultUrl = "";
 
-    public abstract T execute() throws IOException;
+    public abstract T execute() throws IOException, Exception;
 
-    public abstract T persistent(String rsp) throws IOException;
+    public abstract T persistent(String rsp) throws IOException, Exception;
 
 
     public String url = "";
@@ -41,8 +41,10 @@ public abstract class BaseOperation<T extends Object> {
         switch (type.toUpperCase()) {
             case "GET":
             default:
+                defaultHeader.put("method", "GET");
                 return new HttpGet(url);
             case "POST":
+                defaultHeader.put("method", "POST");
                 return new HttpPost(url);
         }
     }
@@ -52,10 +54,9 @@ public abstract class BaseOperation<T extends Object> {
     }
 
     protected BaseOperation setBody(String body, ContentType type) {
-        if (requestBase instanceof HttpPost){
+        if (requestBase instanceof HttpPost) {
             ((HttpPost) requestBase).setEntity(new StringEntity(body, type));
         }
-
         return this;
     }
 

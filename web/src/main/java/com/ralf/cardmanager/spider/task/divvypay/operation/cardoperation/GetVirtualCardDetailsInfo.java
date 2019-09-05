@@ -17,7 +17,7 @@ import java.io.IOException;
  * @create: 2019-09-04 10:59
  **/
 public class GetVirtualCardDetailsInfo extends BaseDivvyOperation<GetVirtualCardDetailsInfoRsp> {
-    public GetVirtualCardDetailsInfo init(String cardId) {
+    public GetVirtualCardDetailsInfo init(String cardId) throws Exception{
         super.init(new String[]{cardId});
         return this;
     }

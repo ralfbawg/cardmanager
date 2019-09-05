@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Scope("prototype")
 public class UnfreezedCard extends BaseDivvyOperation<UnfreezedCardRsp> {
-    public UnfreezedCard init(String cardId) {
+    public UnfreezedCard init(String cardId) throws Exception {
         super.init(new String[]{cardId});
         return this;
     }
@@ -40,6 +40,6 @@ public class UnfreezedCard extends BaseDivvyOperation<UnfreezedCardRsp> {
         String activationStatus = jsonObject.get("activationStatus").getAsString();
         boolean frozen = jsonObject.get("frozen").getAsBoolean();
         String allocationId = jsonObject.get("userAllocation").getAsJsonObject().get("id").getAsString();
-        return new UnfreezedCardRsp(token, cardType, expirationDate, brand, frozen,frozen ? "freezed" : "actived", activationStatus, allocationId);
+        return new UnfreezedCardRsp(token, cardType, expirationDate, brand, frozen, frozen ? "freezed" : "actived", activationStatus, allocationId);
     }
 }

@@ -26,7 +26,8 @@ public abstract class BaseDivvyOperation<T extends BaseDivvyOpertionResp> extend
     private boolean inited = false;
     protected String body = "";
     protected String[] bodyParams;
-    protected String defaultUrl = "https://www.divvypay.co/js/graph";
+    //    protected String defaultUrl = "https://www.divvypay.co/js/graph";
+    protected String defaultUrl = "https://app.divvy.co/je/graphql";
 
     protected String method = "post";
 
@@ -38,33 +39,42 @@ public abstract class BaseDivvyOperation<T extends BaseDivvyOpertionResp> extend
         }
     }
 
-    protected void init(String... param) {
+    protected void init(String... param) throws Exception {
+        int retry = 3;
+        while (!config.getLogined()) {
+            if (retry-- <= 0) {
+                throw new Exception("超时");
+            }
+            Thread.sleep(10 * 1000);
+
+        }
         bodyParams = param;
         requestBase = getHttpClient(method, StringUtils.isEmpty(url) ? defaultUrl : url);
         inited = true;
+
     }
 
     public BaseDivvyOperation(DivvyPaySiteConfig config) {
         this.config = config;
+        defaultHeader = new HashMap<String, String>() {{
+            put("authority", "app.divvy.co");
+            put("method", "POST");
+            put("path", "/je/graphql");
+            put("scheme", "https");
+            put("accept", "*/*");
+            put("accept-encoding", "gzip, deflate, br");
+            put("accept-language", "zh-CN,zh;q=0.9");
+            put("authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2RpdnZ5LXByZC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWNmOGQ4NDcwN2RiYmUwYzY5NWVlY2VmIiwiYXVkIjoiaHR0cHM6Ly9iYWNrZW5kLmRpdnZ5cGF5LmNvbS9ncmFwaHFsIiwiaWF0IjoxNTY0NTk1OTU1LCJleHAiOjE1NjQ2MDMxNTUsImF6cCI6IjYwYVdpZmpybGFLTHpIcEhYVVhwZE5nVVIwanpueng3Iiwic2NvcGUiOiIifQ.U20GLp3F5ziZrwUH8bsya1mZ3y3yTKCVkxq2hK3kooI");
+            put("content-type", " application/json");
+            put("cookie", " _ga=GA1.2.87993226.1563987455; _pendo_accountId.063f9b98-4d82-4b70-48d1-1e82e1fa3973=Q29tcGFueTozMDI3; _pendo_visitorId.063f9b98-4d82-4b70-48d1-1e82e1fa3973=VXNlcjo1MTIzNg%3D%3D; _gid=GA1.2.734103677.1564589193; _pendo_meta.063f9b98-4d82-4b70-48d1-1e82e1fa3973=1986949279; _gat=1; AWSALB=9Uefnz6V2WIyaTkqAU7CooRCOxPQYKQyTg8ZEeYD00bytbUYM1N0d2HSfRoH0Ug8gpQ0erzieOpyPefixfs37spf1zF3jaxxHiH6MldBX+1uXdbqJElcBOo1ltgw2ZouehsjeffW4NmbMASZMOEB5I2JKAKXqGSl6Iff95WhdVRXCZUJ7F0SBFInPx94tGDe23tmI5IBUSp7umV9ZkKJavCD99Sj20uJyg3OMVltiyzIWpoRPOJiqPnE8bbc3IU=; intercom-session-gh17um10=TXZQWUxDdEM4VEZvbkdyQnMwREFRLysrNHpQOHMxRXBrSjBURkQ3bUszWnNBRGw2V0pSb0p6a2kwdE1oOGlySS0tUk02Rm92ZmhyVGNhUGVJQlBnaG1mdz09--dbce332ab9c07930d71e7e2d33e9722a4393b682");
+            put("origin", " https://app.divvy.co");
+            put("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3704.400 QQBrowser/10.4.3587.400");
+            put("x-api-version", " 2");
+        }};
     }
 
     protected String defaultUserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3704.400 QQBrowser/10.4.3587.400";
 
-    protected Map defaultHeader = new HashMap<String, String>() {{
-        put("authority", "app.divvy.co");
-        put("method", "POST");
-        put("path", "/je/graphql");
-        put("scheme", "https");
-        put("accept", "*/*");
-        put("accept-encoding", "gzip, deflate, br");
-        put("accept-language", "zh-CN,zh;q=0.9");
-        put("authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2RpdnZ5LXByZC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWNmOGQ4NDcwN2RiYmUwYzY5NWVlY2VmIiwiYXVkIjoiaHR0cHM6Ly9iYWNrZW5kLmRpdnZ5cGF5LmNvbS9ncmFwaHFsIiwiaWF0IjoxNTY0NTk1OTU1LCJleHAiOjE1NjQ2MDMxNTUsImF6cCI6IjYwYVdpZmpybGFLTHpIcEhYVVhwZE5nVVIwanpueng3Iiwic2NvcGUiOiIifQ.U20GLp3F5ziZrwUH8bsya1mZ3y3yTKCVkxq2hK3kooI");
-        put("content-type", " application/json");
-        put("cookie", " _ga=GA1.2.87993226.1563987455; _pendo_accountId.063f9b98-4d82-4b70-48d1-1e82e1fa3973=Q29tcGFueTozMDI3; _pendo_visitorId.063f9b98-4d82-4b70-48d1-1e82e1fa3973=VXNlcjo1MTIzNg%3D%3D; _gid=GA1.2.734103677.1564589193; _pendo_meta.063f9b98-4d82-4b70-48d1-1e82e1fa3973=1986949279; _gat=1; AWSALB=9Uefnz6V2WIyaTkqAU7CooRCOxPQYKQyTg8ZEeYD00bytbUYM1N0d2HSfRoH0Ug8gpQ0erzieOpyPefixfs37spf1zF3jaxxHiH6MldBX+1uXdbqJElcBOo1ltgw2ZouehsjeffW4NmbMASZMOEB5I2JKAKXqGSl6Iff95WhdVRXCZUJ7F0SBFInPx94tGDe23tmI5IBUSp7umV9ZkKJavCD99Sj20uJyg3OMVltiyzIWpoRPOJiqPnE8bbc3IU=; intercom-session-gh17um10=TXZQWUxDdEM4VEZvbkdyQnMwREFRLysrNHpQOHMxRXBrSjBURkQ3bUszWnNBRGw2V0pSb0p6a2kwdE1oOGlySS0tUk02Rm92ZmhyVGNhUGVJQlBnaG1mdz09--dbce332ab9c07930d71e7e2d33e9722a4393b682");
-        put("origin", " https://app.divvy.co");
-        put("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3704.400 QQBrowser/10.4.3587.400");
-        put("x-api-version", " 2");
-    }};
 
     @Override
     public void packageParams() {
@@ -80,16 +90,17 @@ public abstract class BaseDivvyOperation<T extends BaseDivvyOpertionResp> extend
     }
 
     @Override
-    public T execute() throws IOException {
+    public T execute() throws Exception {
         packageParams();
         packageRequest();
         DefaultHttpClient httpClient = new DefaultHttpClient();
         CloseableHttpResponse rsp = httpClient.execute(requestBase);
+        val rspStr = EntityUtils.toString(rsp.getEntity());
+        log.info("request url:%s,response:%s", requestBase.getURI().toString(), rspStr);
         if (rsp.getStatusLine().getStatusCode() >= 200 && rsp.getStatusLine().getStatusCode() < 300) {
             AWSALB = getCookie(httpClient.getCookieStore(), "AWSALB");
-            val rspStr = EntityUtils.toString(rsp.getEntity());
-            if (rspStr.startsWith("{\"data\":")) {
-                val result = persistent(EntityUtils.toString(rsp.getEntity()));
+            if (rspStr.startsWith("{\"data\":") || !requestBase.getFirstHeader("path").equals("/je/graphql")) {
+                val result = persistent(rspStr);
                 log.info(result.toString());
                 return result;
             } else {
@@ -103,7 +114,7 @@ public abstract class BaseDivvyOperation<T extends BaseDivvyOpertionResp> extend
     }
 
     @Override
-    public T persistent(String rsp) throws IOException {
+    public T persistent(String rsp) throws Exception {
         return null;
     }
 
