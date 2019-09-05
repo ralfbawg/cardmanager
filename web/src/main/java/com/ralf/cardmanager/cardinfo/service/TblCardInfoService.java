@@ -72,5 +72,5 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
 	public void delete(TblCardInfo tblCardInfo) {
 		super.delete(tblCardInfo);
 	}
-	
+
 }

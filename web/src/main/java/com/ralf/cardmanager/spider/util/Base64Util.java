@@ -1,8 +1,10 @@
 package com.ralf.cardmanager.spider.util;
 
 import io.netty.handler.codec.base64.Base64Decoder;
+import io.netty.handler.codec.base64.Base64Encoder;
 import org.apache.http.message.BasicNameValuePair;
 import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 import java.io.IOException;
 
@@ -26,5 +28,10 @@ public class Base64Util {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static String encodeStr(String str) {
+        return new BASE64Encoder().encode(str.getBytes());
+
     }
 }

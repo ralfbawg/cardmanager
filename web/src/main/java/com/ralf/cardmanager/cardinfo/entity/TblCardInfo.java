@@ -25,7 +25,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 		@Column(name="budget_id", attrName="budgetId", label="帐户id"),
 		@Column(name="card_name", attrName="cardName", label="卡名", queryType=QueryType.LIKE),
 		@Column(name="card_limit", attrName="cardLimit", label="限额度", isQuery=false),
-		@Column(name="nickname", attrName="nickname", label="卡昵称", isQuery=false),
+		@Column(name="nickname", attrName="nickname", label="卡昵称"),
 		@Column(name="card_type", attrName="cardType", label="卡类型", isQuery=false),
 		@Column(name="card_amount", attrName="cardAmount", label="现有额度", isQuery=false),
 		@Column(name="last_charge_on", attrName="lastChargeOn", label="上次充值时间", isQuery=false),

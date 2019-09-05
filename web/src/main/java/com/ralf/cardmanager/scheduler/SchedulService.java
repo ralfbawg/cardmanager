@@ -3,13 +3,17 @@ package com.ralf.cardmanager.scheduler;
 import com.jeesite.common.utils.SpringUtils;
 import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
 import com.ralf.cardmanager.cardinfo.service.TblCardInfoService;
+import com.ralf.cardmanager.cardtransaction.entity.TblCardTransaction;
+import com.ralf.cardmanager.cardtransaction.service.TblCardTransactionService;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.CreateCardByBudget;
+import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.GetCompanyVirtualCards;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.UnfreezedCard;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardtranscation.GetCardTransactionsByCompanyId;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardtranscation.GetCompanyTransactionsTotalCount;
 import com.ralf.cardmanager.tblbizparam.entity.TblBizParam;
 import com.ralf.cardmanager.tblbizparam.service.TblBizParamService;
 import lombok.val;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -25,6 +29,9 @@ public class SchedulService {
     TblCardInfoService cardInfoService;
 
     @Autowired
+    TblCardTransactionService transactionService;
+
+    @Autowired
     TblBizParamService tblBizParamService;
 
     @Autowired
@@ -35,6 +42,8 @@ public class SchedulService {
 
     @Autowired
     UnfreezedCard unfreezedCard;
+    @Autowired
+    GetCompanyVirtualCards getCompanyVirtualCards;
 
     //更新卡的allcocation
     @Scheduled(cron = "* * * 1 * *")
@@ -57,7 +66,8 @@ public class SchedulService {
         cardInfoService.update(cardQuery);
         list.stream().forEach(t -> {
             try {
-                val rsp = SpringUtils.getBean(CreateCardByBudget.class).init(String.valueOf(t.getCardAmount()), t.getCardName()).execute();
+                String timestamp = String.valueOf(System.currentTimeMillis());
+                val rsp = SpringUtils.getBean(CreateCardByBudget.class).init(String.valueOf(t.getCardAmount()), String.valueOf(System.currentTimeMillis())).execute();//实际卡名用时间戳，好排序
                 t.setBudgetId(rsp.getBudgetId());
                 t.setCardId(rsp.getCardId());
                 t.setCardStatus(rsp.getStep2Resp().getCardStatus());
@@ -69,6 +79,7 @@ public class SchedulService {
                 t.setExpiredDate(rsp.getStep2Resp().getExpirationDate());
                 t.setUserAllocationId(rsp.getStep2Resp().getUserAllocation());
                 t.setCardType(rsp.getStep2Resp().getCardType());
+                t.setNickname(timestamp);
                 t.setIsNewRecord(false);
                 cardInfoService.save(t);
             } catch (IOException e) {
@@ -106,6 +117,11 @@ public class SchedulService {
 
     }
 
+    /**
+     * 获取流水
+     *
+     * @throws IOException
+     */
     @Scheduled(cron = "* 20 * * * *")
     public void GetCardTransactions() throws IOException {
         if (LastTransactionTotal <= 0) {
@@ -116,12 +132,51 @@ public class SchedulService {
                 LastTransactionTotal = Long.valueOf(list.get(0).getValue());
             }
         }
-        val rsp = getCardTransactionsByCompanyId.init("", null, null, null).execute();
-        rsp.getList().stream().forEach(t -> {
+        val transactionTotal = getCompanyTransactionsTotalCount.init().execute();
+        if (transactionTotal.getTotalCount() != LastTransactionTotal) {
+            val size = transactionTotal.getTotalCount() - LastTransactionTotal;
+//            if (size > 20) {
+//                for (int i = 0; i < size / 20; i++) {
+//                    val rsp = getCardTransactionsByCompanyId.init("", null, null, size, i*20l).execute();
+//                    rsp.getList()
+//                    val transaction = new TblCardTransaction();
+//                    transaction.setIsNewRecord(true);
+//                    transaction.setSpTransactionId();
+//
+//
+//                }
+//            }
+            val rsp = getCardTransactionsByCompanyId.init("", null, null, size, 0l).execute();
+            rsp.getList().forEach(t -> {
+                val transaction = new TblCardTransaction();
+                transaction.setIsNewRecord(true);
+                transaction.setSpTransactionId(t.getTransactionId());
+                transaction.setAmount(t.getAmount());
+                transaction.setCardId(t.getCardId());
+                transaction.setDate(new DateTime(t.getOccurredDate()).toString("yyyy-MM-dd HH:mm:ss"));
+                transaction.setLastVendor(t.getMerchantName());
+                transaction.setTransactionStatus(t.getStatus());
+                transactionService.save(transaction);
+            });
 
-        });
+        }
 
     }
 
+    @Scheduled(cron = "* 20 * * * *")
+    public void GetAllCards() throws IOException {
+        val query = new TblCardInfo();
+        query.setOrderBy("nickname desc");
+        query.setPageSize(1);
+        val lastList = cardInfoService.findPage(query);
+        val count = cardInfoService.findCount(new TblCardInfo());
+        val rsp = getCompanyVirtualCards.init("10", "0").execute();
+//        if (rsp.getCardTotalCount() != count) {
+//            for (int i = 0; i < rsp.getList().size(); i++) {
+//                rsp.getList().get(i).getName()==
+//            }
+//            );
+//        }
+    }
 
 }

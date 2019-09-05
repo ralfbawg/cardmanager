@@ -24,13 +24,10 @@ public class GetVirtualCardByBudget extends BaseDivvyOperation<GetVCardsByBudget
 
 
     @Override
-    public CreateCardStep2.CreateCardStep2Resp persistent(String rsp) {
+    public GetVCardsByBudgetIdRsp persistent(String rsp) {
         return null;
     }
 
 
 }
 
-class GetVCardsByBudgetIdRsp extends BaseDivvyOpertionResp {
-
-}

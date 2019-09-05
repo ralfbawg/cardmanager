@@ -15,4 +15,6 @@ public class GetCardTransactionsByCompanyIdRspDetail {
     private Long amount;
     private Date clearDate;
     private Date occurredDate;
+    private String declineReason;
+    private String cardId;
 }

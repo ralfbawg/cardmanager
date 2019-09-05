@@ -15,13 +15,8 @@ public class KeepSession extends BaseDivvyOperation<KeepSessionRsp> {
     }
 
     @Override
-    public CreateCardStep2.CreateCardStep2Resp persistent(String rsp) {
+    public KeepSessionRsp persistent(String rsp) {
         return null;
     }
 }
 
-@Data
-@AllArgsConstructor
-class KeepSessionRsp extends BaseDivvyOpertionResp {
-
-}

@@ -34,14 +34,9 @@ public class GetCompanyTransactionsTotalCount extends BaseDivvyOperation<GetComp
     }
 
     @Override
-    public CreateCardStep2.CreateCardStep2Resp persistent(String rsp) throws IOException {
+    public GetCompanyTransactionsTotalCountRsp persistent(String rsp) throws IOException {
         val jsonObject = new JsonParser().parse(rsp).getAsJsonObject().get("data").getAsJsonObject().get("node").getAsJsonObject();
         return new GetCompanyTransactionsTotalCountRsp(jsonObject.get("transactionsTotalCount").getAsLong());
     }
 }
 
-@Data
-@AllArgsConstructor
-class GetCompanyTransactionsTotalCountRsp extends BaseDivvyOpertionResp {
-    private Long totalCount;
-}
