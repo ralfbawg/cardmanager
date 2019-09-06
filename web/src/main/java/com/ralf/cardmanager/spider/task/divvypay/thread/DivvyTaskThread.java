@@ -13,6 +13,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.html5.LocalStorage;
+import org.openqa.selenium.html5.WebStorage;
+import org.openqa.selenium.remote.Augmenter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,8 +44,9 @@ public class DivvyTaskThread extends SpiderBasicThread implements Runnable {
             put("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3704.400 QQBrowser/10.4.3587.400");
             //TODO 差cookie useragent content-length
         }};
-        webDriverPool = new WebDriverPool();
-        webDriver = webDriverPool.getNew(WebDriverPool.DRIVER_CHROME);
+//        webDriverPool = new WebDriverPool();
+//        webDriver = webDriverPool.getNew(WebDriverPool.DRIVER_CHROME);
+        webDriver = createSingalWebDriver(WebDriverPool.DRIVER_CHROME);
     }
 
     @Override
@@ -63,19 +67,20 @@ public class DivvyTaskThread extends SpiderBasicThread implements Runnable {
     @Override
     public void doLogin() throws Exception {
         int loginTry = 3;
-        while (!checkLoginStatus(--loginTry)) {
+
+        do {
+            Thread.sleep(1 * 1000);
             webDriver.get(config.loginUrl);
-            Thread.sleep(2 * 1000);
-        }
+            Thread.sleep(3 * 1000);
+        } while (!checkLoginStatus(--loginTry));
+
         ChromeDriver chrome = ((ChromeDriver) webDriver);
-        chrome.executeScript("document.querySelector('input[name=email]').focus()");
-        Thread.sleep(500);
-        chrome.getKeyboard().sendKeys(config.getUsername());
-        Thread.sleep(500);
-        chrome.executeScript("document.querySelector('input[name=password]').focus()");
-        Thread.sleep(500);
-        chrome.getKeyboard().sendKeys(config.getPassword());
-        Thread.sleep(500);
+//        chrome.executeScript("document.querySelector('input[name=email]').focus()");
+        Thread.sleep(200);
+        chrome.findElement(new By.ByCssSelector("input[name=email]")).sendKeys(config.getUsername());
+        Thread.sleep(200);
+//        chrome.executeScript("document.querySelector('input[name=password]').focus()");
+        chrome.findElement(new By.ByCssSelector("input[name=password]")).sendKeys(config.getPassword());
         chrome.executeScript("document.querySelector('button.auth0-lock-submit').click();");
         int count = 3;
         while (!SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("i.SideNavigation-header-logo.Icon.Icon-logoSmall")) && count-- > 0) {

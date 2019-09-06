@@ -11,10 +11,14 @@ cm:
         ssl: true
         smtpPort: 23
   divvy:
-    username: 22123971@qq.com
-    password: Wwkkvikthh1234
+#    username: 22123971@qq.com
+    username: 2673794381@qq.com
+#    password: Wwkkvikthh1234
+    password: Cavy996633!
     budget:
+#      id: QnVkZ2V0OjQ3MzAz
       id: QnVkZ2V0OjQ3MzAz
+#      ownerId: VXNlcjo1MTIzNg==
       ownerId: VXNlcjo1MTIzNg==
     company:
       id: Q29tcGFueTozMDI3

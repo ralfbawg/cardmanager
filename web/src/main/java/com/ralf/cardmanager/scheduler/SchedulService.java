@@ -9,6 +9,7 @@ import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.CreateC
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.GetCompanyVirtualCards;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.UnfreezedCard;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardtranscation.GetCardTransactionsByCompanyId;
+import com.ralf.cardmanager.spider.task.divvypay.operation.cardtranscation.GetCardTransactionsByCompanyIdRsp;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardtranscation.GetCompanyTransactionsTotalCount;
 import com.ralf.cardmanager.tblbizparam.entity.TblBizParam;
 import com.ralf.cardmanager.tblbizparam.service.TblBizParamService;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class SchedulService {
+    public static final Long pageSize = 20l;
+
     private Long LastTransactionTotal = 0l;
 
     @Autowired
@@ -123,46 +126,50 @@ public class SchedulService {
      *
      * @throws IOException
      */
-    @Scheduled(cron = "* 20 * * * *")
+    @Scheduled(cron = "* 1 * * * *")
     public void GetCardTransactions() throws Exception {
-        if (LastTransactionTotal <= 0) {
-            val param = new TblBizParam();
-            param.setKey("TransactionsTotal");
-            val list = tblBizParamService.findList(param);
-            if (list != null && list.size() == 1) {
-                LastTransactionTotal = Long.valueOf(list.get(0).getValue());
-            }
+        val param = new TblBizParam();
+        param.setKey("TransactionsTotal");
+        val list = tblBizParamService.findList(param);
+        if (list != null && list.size() == 1) {
+            LastTransactionTotal = Long.valueOf(list.get(0).getValue());
         }
         val transactionTotal = getCompanyTransactionsTotalCount.init().execute();
         if (transactionTotal.getTotalCount() != LastTransactionTotal) {
             val size = transactionTotal.getTotalCount() - LastTransactionTotal;
-//            if (size > 20) {
-//                for (int i = 0; i < size / 20; i++) {
-//                    val rsp = getCardTransactionsByCompanyId.init("", null, null, size, i*20l).execute();
-//                    rsp.getList()
-//                    val transaction = new TblCardTransaction();
-//                    transaction.setIsNewRecord(true);
-//                    transaction.setSpTransactionId();
-//
-//
-//                }
-//            }
-            val rsp = getCardTransactionsByCompanyId.init("", null, null, size, 0l).execute();
-            rsp.getList().forEach(t -> {
-                val transaction = new TblCardTransaction();
-                transaction.setIsNewRecord(true);
-                transaction.setSpTransactionId(t.getTransactionId());
-                transaction.setAmount(t.getAmount());
-                transaction.setCardId(t.getCardId());
-                transaction.setDate(new DateTime(t.getOccurredDate()).toString("yyyy-MM-dd HH:mm:ss"));
-                transaction.setLastVendor(t.getMerchantName());
-                transaction.setTransactionStatus(t.getStatus());
-                transactionService.save(transaction);
-            });
-
+            if (size > pageSize) {
+                for (int i = 0; i < (size % pageSize > 0 ? 1 : 0) + size / pageSize; i++) {
+                    val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, i * pageSize).execute();
+                    saveTransaction(rsp);
+                }
+            } else {
+                val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, 0l).execute();
+                saveTransaction(rsp);
+            }
+            if (list != null && list.size() == 1) {
+                val tmp = list.get(0);
+                tmp.setValue(String.valueOf(transactionTotal.getTotalCount()));
+                tblBizParamService.update(tmp);
+            }
         }
 
     }
+
+    private void saveTransaction(GetCardTransactionsByCompanyIdRsp rsp) {
+        rsp.getList().forEach(t -> {
+            val transaction = new TblCardTransaction();
+            transaction.setIsNewRecord(true);
+            transaction.setSpTransactionId(t.getTransactionId());
+            transaction.setStatus(t.getType());
+            transaction.setAmount(t.getAmount());
+            transaction.setCardId(t.getCardId());
+            transaction.setDate(new DateTime(t.getOccurredDate()).toString("yyyy-MM-dd HH:mm:ss"));
+            transaction.setLastVendor(t.getMerchantName());
+            transaction.setTransactionStatus(t.getStatus());
+            transactionService.save(transaction);
+        });
+    }
+
 
     @Scheduled(cron = "* 20 * * * *")
     public void GetAllCards() throws Exception {

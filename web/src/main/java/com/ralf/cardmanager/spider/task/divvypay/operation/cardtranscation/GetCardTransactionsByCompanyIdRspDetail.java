@@ -17,4 +17,5 @@ public class GetCardTransactionsByCompanyIdRspDetail {
     private Date occurredDate;
     private String declineReason;
     private String cardId;
+    private Long fee;
 }

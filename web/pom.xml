@@ -25,7 +25,7 @@
         <!-- environment setting -->
         <eclipse-plugin-download-sources>false</eclipse-plugin-download-sources>
         <eclipse-plugin-download-javadocs>false</eclipse-plugin-download-javadocs>
-
+        <selenium.version>3.141.59</selenium.version>
         <!-- docker service -->
         <docker.registryUrl>http://192.168.56.102:2375</docker.registryUrl>
         <docker.imageName>${project.groupId}/${project.artifactId}:4.1</docker.imageName>
@@ -106,14 +106,26 @@
         <dependency>
             <groupId>us.codecraft</groupId>
             <artifactId>webmagic-selenium</artifactId>
-            <version>0.6.1</version>
-            <exclusions>
-            </exclusions>
+            <version>0.7.3</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>3.9.1</version>
+            <version>3.141.59</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-chrome-driver</artifactId>
+            <version>3.141.59</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-remote-driver</artifactId>
+            <version>3.141.59</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
 
         <!-- 自定义jar依赖包演示

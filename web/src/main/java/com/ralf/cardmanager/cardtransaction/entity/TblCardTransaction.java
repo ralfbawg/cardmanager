@@ -86,7 +86,7 @@ public class TblCardTransaction extends DataEntity<TblCardTransaction> {
 		this.lastVendor = lastVendor;
 	}
 	
-	@Length(min=0, max=16, message="清算日期长度不能超过 16 个字符")
+	@Length(min=0, max=32, message="清算日期长度不能超过 32 个字符")
 	public String getDate() {
 		return date;
 	}
