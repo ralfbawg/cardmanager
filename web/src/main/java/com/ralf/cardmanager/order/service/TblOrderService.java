@@ -195,11 +195,12 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
         budget.setCardServiceProvider(SpType.DIVVY.toString());
         budget.setName(UserUtils.get(tblOrder.getSubmitUsercode()).getUserName() + "的帐户");
         budget.setOwnerUsercode(UserUtils.get(tblOrder.getSubmitUsercode()).getUserName());
-        Long budgetAmount = tblOrder.getTblOrderDetailList().stream().collect(Collectors.summingLong(TblOrderDetail::getLimitAmount));
+        Long budgetAmount = (tblOrder.getTblOrderDetailList() != null && tblOrder.getTblOrderDetailList().size() > 0) ? tblOrder.getTblOrderDetailList().stream().collect(Collectors.summingLong(TblOrderDetail::getLimitAmount)) : 0l;
         budget.setBudgetAmount(budgetAmount);
         budget.setSpendAmount(0l);
         budget.setAssignAmount(budgetAmount);
         budget.setUnsignAmount(0l);
+        budget.setTotalAmount(budgetAmount);
         budget.setLastChargeOn(new Date());
         budgetService.save(budget);
         createCard(tblOrder, budget.getId());
@@ -218,6 +219,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
                 val card = new TblCardInfo();
                 card.setIsNewRecord(true);
                 card.setBudgetId(budgetId);
+                card.setCardOwner(tblOrder.getSubmitUsercode());
                 card.setCardName(t.getCardName());
                 card.setCardLimit(t.getLimitAmount());
                 card.setCardAmount(t.getLimitAmount());

@@ -386,7 +386,7 @@ state:
         mappingPath: mappings
 
   # Web 相关
-  #web:
+  web:
   #
   #  # MVC 视图相关
   #  view:
@@ -397,7 +397,9 @@ state:
   #    themeName: default
   #
   #  # MVC 拦截器
-  #  interceptor:
+#    interceptor:
+#      site:
+#        switch: true
   #
   #    # 后台管理日志记录拦截器
   #    log:

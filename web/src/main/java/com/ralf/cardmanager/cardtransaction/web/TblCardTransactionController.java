@@ -6,6 +6,7 @@ package com.ralf.cardmanager.cardtransaction.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.jeesite.modules.sys.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,7 +26,7 @@ import com.ralf.cardmanager.cardtransaction.service.TblCardTransactionService;
 /**
  * 交易流水Controller
  * @author ralfchen
- * @version 2019-09-03
+ * @version 2019-09-07
  */
 @Controller
 @RequestMapping(value = "${adminPath}/cardtransaction/tblCardTransaction")
@@ -60,6 +61,9 @@ public class TblCardTransactionController extends BaseController {
 	@ResponseBody
 	public Page<TblCardTransaction> listData(TblCardTransaction tblCardTransaction, HttpServletRequest request, HttpServletResponse response) {
 		tblCardTransaction.setPage(new Page<>(request, response));
+		if (!UserUtils.getUser().isAdmin()&&!UserUtils.getUser().isSuperAdmin()){
+			tblCardTransaction.setCardOwner(UserUtils.getUser().getUserCode());
+		}
 		Page<TblCardTransaction> page = tblCardTransactionService.findPage(tblCardTransaction);
 		return page;
 	}
@@ -83,17 +87,6 @@ public class TblCardTransactionController extends BaseController {
 	public String save(@Validated TblCardTransaction tblCardTransaction) {
 		tblCardTransactionService.save(tblCardTransaction);
 		return renderResult(Global.TRUE, text("保存交易流水成功！"));
-	}
-	
-	/**
-	 * 删除交易流水
-	 */
-	@RequiresPermissions("cardtransaction:tblCardTransaction:edit")
-	@RequestMapping(value = "delete")
-	@ResponseBody
-	public String delete(TblCardTransaction tblCardTransaction) {
-		tblCardTransactionService.delete(tblCardTransaction);
-		return renderResult(Global.TRUE, text("删除交易流水成功！"));
 	}
 	
 }

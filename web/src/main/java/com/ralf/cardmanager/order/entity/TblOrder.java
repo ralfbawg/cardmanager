@@ -27,7 +27,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 		@Column(name="type", attrName="type", label="订单类型"),
 		@Column(name="charge_amount", attrName="chargeAmount", label="充值金额", isQuery=false),
 		@Column(name="submit_time", attrName="submitTime", label="提交时间", isUpdate=false),
-		@Column(name="submit_usercode", attrName="submitUsercode", label="提交用户", isUpdate=false, isQuery=false),
+		@Column(name="submit_usercode", attrName="submitUsercode", label="提交用户", isUpdate=false),
 		@Column(name="audit_usercode", attrName="auditUsercode", label="审核用户", isUpdate=false, isQuery=false),
 		@Column(name="audit_time", attrName="auditTime", label="审核时间", isUpdate=false),
 		@Column(name="order_amount", attrName="orderAmount", label="订单金额", isQuery=false),

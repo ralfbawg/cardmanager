@@ -80,5 +80,10 @@ public class TblBudgetService extends CrudService<TblBudgetDao, TblBudget> {
 	public int charge(String id,long amount){
 		return dao.charge(id,amount);
 	}
+
+	@Transactional
+	public int minus(String id,long amount){
+		return dao.minus(id,amount);
+	}
 	
 }

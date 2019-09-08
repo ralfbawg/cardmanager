@@ -16,6 +16,12 @@
 			<#form:form id="searchForm" model="${tblCardTransaction}" action="${ctx}/cardtransaction/tblCardTransaction/listData" method="post" class="form-inline hide"
 					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
 				<div class="form-group">
+					<label class="control-label">${text('卡id')}：</label>
+					<div class="control-inline">
+						<#form:input path="cardId" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
 					<label class="control-label">${text('银行流水id')}：</label>
 					<div class="control-inline">
 						<#form:input path="spTransactionId" maxlength="256" class="form-control width-120"/>
@@ -24,25 +30,19 @@
 				<div class="form-group">
 					<label class="control-label">${text('卡号')}：</label>
 					<div class="control-inline">
-						<#form:input path="cardNum" maxlength="16" class="form-control width-120"/>
+						<#form:input path="cardNo" maxlength="32" class="form-control width-120"/>
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label">${text('结算商户')}：</label>
+					<label class="control-label">${text('持卡用户')}：</label>
 					<div class="control-inline">
-						<#form:input path="lastVendor" maxlength="128" class="form-control width-120"/>
+						<#form:input path="cardOwner" maxlength="64" class="form-control width-120"/>
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label">${text('清算日期')}：</label>
+					<label class="control-label">${text('清算商户')}：</label>
 					<div class="control-inline">
-						<#form:input path="date" maxlength="16" class="form-control width-120"/>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label">${text('状态')}：</label>
-					<div class="control-inline width-120">
-						<#form:select path="status" dictType="cm_common_status" blankOption="true" class="form-control"/>
+						<#form:input path="clearedMerchant" maxlength="128" class="form-control width-120"/>
 					</div>
 				</div>
 				<div class="form-group">
@@ -52,9 +52,33 @@
 					</div>
 				</div>
 				<div class="form-group">
+					<label class="control-label">${text('商户')}：</label>
+					<div class="control-inline">
+						<#form:input path="merchantLogo" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
 					<label class="control-label">${text('交易状态')}：</label>
 					<div class="control-inline width-120">
 						<#form:select path="transactionStatus" dictType="cm_trancaction_status" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('发生日期')}：</label>
+					<div class="control-inline">
+						<#form:input path="occurredDate" maxlength="32" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('清算日期')}：</label>
+					<div class="control-inline">
+						<#form:input path="clearedDate" maxlength="32" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('标签')}：</label>
+					<div class="control-inline">
+						<#form:input path="label" maxlength="32" class="form-control width-120"/>
 					</div>
 				</div>
 				<div class="form-group">
@@ -64,9 +88,21 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label">${text('标签')}：</label>
+					<label class="control-label">${text('流水类型')}：</label>
 					<div class="control-inline">
-						<#form:input path="label" maxlength="32" class="form-control width-120"/>
+						<#form:input path="transactionType" maxlength="32" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('税费')}：</label>
+					<div class="control-inline">
+						<#form:input path="fee" maxlength="20" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('发卡商')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="spType" dictType="cm_card_sp" blankOption="true" class="form-control"/>
 					</div>
 				</div>
 				<div class="form-group">
@@ -85,26 +121,30 @@
 $('#dataGrid').dataGrid({
 	searchForm: $("#searchForm"),
 	columnModel: [
-		{header:'${text("卡id")}', name:'cardId', index:'a.card_id', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+		{header:'${text("卡号")}', name:'cardNo', index:'a.card_no', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
 			return '<a href="${ctx}/cardtransaction/tblCardTransaction/form?id='+row.id+'" class="btnList" data-title="${text("编辑交易流水")}">'+(val||row.id)+'</a>';
 		}},
-		{header:'${text("卡号")}', name:'cardNum', index:'a.card_num', width:150, align:"left"},
-		{header:'${text("结算商户")}', name:'lastVendor', index:'a.last_vendor', width:150, align:"left"},
-		{header:'${text("清算日期")}', name:'date', index:'a.date', width:150, align:"left"},
-		{header:'${text("状态")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
-			return js.getDictLabel(${@DictUtils.getDictListJson('cm_common_status')}, val, '${text("未知")}', true);
-		}},
-		{header:'${text("消费金额")}', name:'amount', index:'a.amount', width:150, align:"center"},
+		{header:'${text("清算商户")}', name:'clearedMerchant', index:'a.cleared_merchant', width:150, align:"left"},
+		{header:'${text("消费金额")}', name:'amount', index:'a.amount', width:150, align:"center",formatter:function (val, obj, row, act) {
+			    var price = val/100
+				return (price<0?"-":"")+("$"+price).replace("-","");
+			}},
+		// {header:'${text("商户")}', name:'merchantLogo', index:'a.merchant_logo', width:90, align:"center",formatter:function (val, obj, row, act) {
+		// 		return val!=undefined?'<img src="'+val+'" style="width: 20px;height: 20px">':"";
+		// 	}},
 		{header:'${text("交易状态")}', name:'transactionStatus', index:'a.transaction_status', width:150, align:"center", formatter: function(val, obj, row, act){
 			return js.getDictLabel(${@DictUtils.getDictListJson('cm_trancaction_status')}, val, '${text("未知")}', true);
 		}},
-		{header:'${text("注释")}', name:'note', index:'a.note', width:150, align:"left"},
+		{header:'${text("发生日期")}', name:'occurredDate', index:'a.occurred_date', width:150, align:"left"},
+		{header:'${text("清算日期")}', name:'clearedDate', index:'a.cleared_date', width:150, align:"left"},
 		{header:'${text("标签")}', name:'label', index:'a.label', width:150, align:"left"},
+		{header:'${text("注释")}', name:'note', index:'a.note', width:150, align:"left"},
+		{header:'${text("流水类型")}', name:'transactionType', index:'a.transaction_type', width:150, align:"left"},
+		{header:'${text("税费")}', name:'fee', index:'a.fee', width:150, align:"center"},
 		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
 			var actions = [];
 			<% if(hasPermi('cardtransaction:tblCardTransaction:edit')){ %>
 				actions.push('<a href="${ctx}/cardtransaction/tblCardTransaction/form?id='+row.id+'" class="btnList" title="${text("编辑交易流水")}"><i class="fa fa-pencil"></i></a>&nbsp;');
-				actions.push('<a href="${ctx}/cardtransaction/tblCardTransaction/delete?id='+row.id+'" class="btnList" title="${text("删除交易流水")}" data-confirm="${text("确认要删除该交易流水吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
 			<% } %>
 			return actions.join('');
 		}}

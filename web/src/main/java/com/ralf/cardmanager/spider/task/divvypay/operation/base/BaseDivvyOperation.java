@@ -4,7 +4,6 @@ import com.jeesite.common.lang.StringUtils;
 import com.ralf.cardmanager.spider.task.BaseOperation;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.exception.NotInitedException;
-import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.CreateCardStep2;
 import com.ralf.cardmanager.spider.util.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -41,9 +40,9 @@ public abstract class BaseDivvyOperation<T extends BaseDivvyOpertionResp> extend
 
     protected void init(String... param) throws Exception {
         int retry = 3;
-        while (!config.getLogined()) {
+        while (!config.getLogined() || StringUtils.isEmpty(config.authToken)) {
             if (retry-- <= 0) {
-                throw new Exception("超时");
+                throw new Exception("等待登录超时");
             }
             Thread.sleep(10 * 1000);
 
@@ -96,7 +95,7 @@ public abstract class BaseDivvyOperation<T extends BaseDivvyOpertionResp> extend
         DefaultHttpClient httpClient = new DefaultHttpClient();
         CloseableHttpResponse rsp = httpClient.execute(requestBase);
         val rspStr = EntityUtils.toString(rsp.getEntity());
-        log.info("request url:%s,response:%s", requestBase.getURI().toString(), rspStr);
+        log.info("request url:{},response:{}", requestBase.getURI().toString(), rspStr);
         if (rsp.getStatusLine().getStatusCode() >= 200 && rsp.getStatusLine().getStatusCode() < 300) {
             AWSALB = getCookie(httpClient.getCookieStore(), "AWSALB");
             if (rspStr.startsWith("{\"data\":") || !requestBase.getFirstHeader("path").equals("/je/graphql")) {
@@ -109,6 +108,10 @@ public abstract class BaseDivvyOperation<T extends BaseDivvyOpertionResp> extend
                 throw new IOException("返回内容错误:" + rspStr);
             }
         } else {
+            if (rsp.getStatusLine().getStatusCode()==401||rsp.getStatusLine().getReasonPhrase().equals("Unauthorized")||rspStr.contains("Auth Token Expired")){
+                config.shouldLogin = true;
+                config.setLogined(false);
+            }
             throw new IOException("http statusCode error:" + rsp.getStatusLine().getStatusCode());
         }
     }

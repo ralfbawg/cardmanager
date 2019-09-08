@@ -1,7 +1,7 @@
 cusvar: cm
 cm:
   spider:
-    enabled: true
+    enabled: false
     loginTip:
       inteval: 10
       email:

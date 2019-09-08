@@ -6,8 +6,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class GetVirtualCardDetailsInfoRsp extends BaseDivvyOpertionResp {
-    private boolean frozen;
-    private boolean deleted;
-    private String allocationId;
+public class DeleteCardRsp extends BaseDivvyOpertionResp {
+    private String deleteCardId;
 }

@@ -7,6 +7,7 @@ import javax.rmi.CORBA.Util;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.jeesite.common.cache.CacheUtils;
 import com.jeesite.modules.sys.entity.DictData;
 import com.jeesite.modules.sys.service.DictDataService;
 import com.jeesite.modules.sys.service.support.DictDataServiceSupport;
@@ -112,9 +113,8 @@ public class TblOrderController extends BaseController {
     public String save(@Validated TblOrder tblOrder) {
         val queryOrder = new TblOrder();
         queryOrder.setType_eq("create");
-        queryOrder.setPageSize(Integer.MAX_VALUE);
         queryOrder.setSubmitUsercode(UserUtils.getUser().getUserCode());
-        Long createOrderCount = tblOrderService.findPage(queryOrder).getCount();
+        Long createOrderCount = tblOrderService.findCount(queryOrder);
         if (createOrderCount <= 0 && !tblOrder.getType().equalsIgnoreCase("create")) {
             return renderResult(Global.FALSE, text("请先提交创建订单！"));
         }
@@ -125,18 +125,29 @@ public class TblOrderController extends BaseController {
         tblOrder.setSubmitTime(new Date());
         tblOrder.setSubmitUsercode(usercode);
         tblOrder.setPayStatus(STATUS_DRAFT);
-        tblOrder.getTblOrderDetailList().forEach(t -> {
-            t.setLimitAmount(t.getLimitAmount() * 100);
-        });
-        long budgetPrice = tblOrder.getTblOrderDetailList().stream().collect(Collectors.summingLong(TblOrderDetail::getLimitAmount));
-        val createBizParam = new TblBizParam();
-        createBizParam.setKey("CreateBudgetCost");
-        createBizParam.setPageSize(Integer.MAX_VALUE);
-        val createPrice = Long.valueOf(bizParamService.findPage(createBizParam).getList().get(0).getValue());
-        createBizParam.setKey("PerCardCost");
-        val perCardPrice = Long.valueOf(bizParamService.findPage(createBizParam).getList().get(0).getValue());
-        val cardPrice = tblOrder.getTblOrderDetailList().size() * perCardPrice;
-        val totalPrice = budgetPrice + cardPrice + createPrice;
+        long budgetPrice = 0;
+        long cardPrice = 0;
+        long cardAmountPrice = 0;
+        long chargePrice = tblOrder.getChargeAmount() == null ? 0 : tblOrder.getChargeAmount();//充值金额
+        val BizParam = new TblBizParam();
+        //创建帐户金额
+        if (tblOrder.getType().equalsIgnoreCase("create")) {
+            BizParam.setKey("CreateBudgetCost");
+            BizParam.setPageSize(Integer.MAX_VALUE);
+            budgetPrice = Long.valueOf(bizParamService.findList(BizParam).get(0).getValue());
+        }
+        //建卡金额
+        if (tblOrder.getTblOrderDetailList() != null && tblOrder.getTblOrderDetailList().size() > 0) {
+            BizParam.setKey("PerCardCost");
+            val perCardPrice = Long.valueOf(bizParamService.findList(BizParam).get(0).getValue());
+            cardPrice = tblOrder.getTblOrderDetailList().size() * perCardPrice;
+            tblOrder.getTblOrderDetailList().forEach(t -> {
+                t.setLimitAmount(t.getLimitAmount() * 100);
+            });
+            cardAmountPrice = tblOrder.getTblOrderDetailList().stream().collect(Collectors.summingLong(TblOrderDetail::getLimitAmount));//卡内额度金额
+        }
+
+        val totalPrice = budgetPrice + cardPrice + cardAmountPrice + chargePrice;
         tblOrder.setOrderAmount(totalPrice);
         tblOrderService.save(tblOrder);
         return renderResult(Global.TRUE, text("保存订单成功！"));

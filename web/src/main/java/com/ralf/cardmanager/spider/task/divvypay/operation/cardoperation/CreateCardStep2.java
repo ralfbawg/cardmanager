@@ -4,15 +4,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOperation;
-import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOpertionResp;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
 
 @Service
 @Scope("prototype")

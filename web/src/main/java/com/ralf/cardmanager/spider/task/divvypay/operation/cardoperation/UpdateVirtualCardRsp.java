@@ -7,5 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class UpdateVirtualCardRsp extends BaseDivvyOpertionResp {
-
+    private String updateCardId;
 }

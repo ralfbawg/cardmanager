@@ -88,7 +88,7 @@ public class TblBudgetController extends BaseController {
 	/**
 	 * 删除帐户信息
 	 */
-	@RequiresPermissions("budget:tblBudget:edit")
+	@RequiresPermissions("budget:tblBudget:delete")
 	@RequestMapping(value = "delete")
 	@ResponseBody
 	public String delete(TblBudget tblBudget) {

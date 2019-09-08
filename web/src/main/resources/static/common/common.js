@@ -28,3 +28,13 @@ $.extend({
         }
     }
 });
+function addRow(id,obj) {
+    // 选中行rowid
+    var rowId = $("#"+id).dataGrid('getGridParam', 'selrow');
+
+    // 选中行实际表示的位置
+    var ind = $("#"+id).getInd(rowId);
+    // 新插入行的位置
+    var newInd = ind + 1;
+    $("#"+id).addRowData(rowId + 1, obj, newInd);
+}

@@ -6,19 +6,13 @@ import com.google.gson.JsonParser;
 import com.jeesite.common.lang.StringUtils;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOperation;
-import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOpertionResp;
-import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.CreateCardStep2;
 import com.ralf.cardmanager.spider.util.Base64Util;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.val;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import sun.misc.BASE64Encoder;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Service
 @Scope("prototype")
@@ -67,12 +61,14 @@ public class GetCardTransactionsByCompanyId extends BaseDivvyOperation<GetCardTr
             String transactionId = node.get("id").getAsString();
             String status = node.get("status").getAsString();
             String type = node.get("type").getAsString();
+            String merchantLogo = node.get("merchantLogoUrl").getAsString();
             String merchantName = node.get("merchantName").getAsString();
+            String clearMerchantName = node.get("cleanedMerchantName").getAsString();
             String declineReason = node.get("declineReason").isJsonNull() ? "" : node.get("declineReason").getAsString();
-            Long fee = node.get("fee").isJsonNull() ? 0l : node.get("fee").getAsLong();
+            Long fee = node.get("fees").isJsonNull() ? 0l : node.get("fees").getAsLong();
             String cardId = node.get("card").getAsJsonObject().get("id").getAsString();
             list.add(new GetCardTransactionsByCompanyIdRspDetail(
-                    transactionId, type, status, merchantName, amount, new Date(clearedAt * 1000), new Date(occurredAt * 1000), declineReason, cardId, fee
+                    transactionId, type, status, clearMerchantName, amount, new Date(clearedAt * 1000), new Date(occurredAt * 1000), declineReason, cardId, fee,merchantLogo,merchantName
             ));
         });
         val hasNextPage = jsonObject.get("pageInfo").getAsJsonObject().get("hasNextPage").getAsBoolean();

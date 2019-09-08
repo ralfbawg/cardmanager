@@ -17,7 +17,7 @@ import com.jeesite.modules.file.utils.FileUploadUtils;
 /**
  * 交易流水Service
  * @author ralfchen
- * @version 2019-09-03
+ * @version 2019-09-07
  */
 @Service
 @Transactional(readOnly=true)
@@ -52,8 +52,8 @@ public class TblCardTransactionService extends CrudService<TblCardTransactionDao
 	@Transactional(readOnly=false)
 	public void save(TblCardTransaction tblCardTransaction) {
 		super.save(tblCardTransaction);
-		// 保存上传附件
-		FileUploadUtils.saveFileUpload(tblCardTransaction.getId(), "tblCardTransaction_file");
+		// 保存上传图片
+		FileUploadUtils.saveFileUpload(tblCardTransaction.getId(), "tblCardTransaction_image");
 	}
 	
 	/**

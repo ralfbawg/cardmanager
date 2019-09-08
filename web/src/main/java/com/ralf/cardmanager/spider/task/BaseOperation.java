@@ -71,7 +71,7 @@ public abstract class BaseOperation<T extends Object> {
         defaultHeader.forEach((k, v) -> {
             requestBase.setHeader(k, v);
         });
-        log.info("execute url(%s) ,header %s", requestBase.getURI(), defaultHeader);
+        log.info("execute url({}) ,header {}", requestBase.getURI(), defaultHeader);
         return this;
     }
 
