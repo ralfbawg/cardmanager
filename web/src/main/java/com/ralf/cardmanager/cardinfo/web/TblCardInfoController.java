@@ -138,8 +138,6 @@ public class TblCardInfoController extends BaseController {
         val budgetQuery = new TblBudget();
         budgetQuery.setOwnerUsercode(UserUtils.getUser().getUserCode());
         val budget = budgetService.get(budgetQuery);
-
-
         if (budget != null) {
             if (budget.getBudgetAmount() < amount) {
                 return renderResult(Global.FALSE, text("帐户余额不足，请先充值帐户！"));
@@ -147,8 +145,13 @@ public class TblCardInfoController extends BaseController {
             val cardQuery = new TblCardInfo();
             cardQuery.setId(id);
             cardQuery.setBudgetId(budget.getId());
-            val card = tblCardInfoService.get(cardQuery);
+            val cardList = tblCardInfoService.findList(cardQuery);
+            if (cardList==null||cardList.size()<=0){
+                log.error("没找到卡");
+                return renderResult(Global.FALSE, text("卡充值失败！请联系管理员"));
+            }
             try {
+                val card = cardList.get(0);
                 if (tblCardInfoService.chargeCard(card, amount)) {
                     return renderResult(Global.TRUE, text("卡充值成功！"));
                 } else {

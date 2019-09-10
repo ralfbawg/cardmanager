@@ -97,7 +97,10 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
 
     @Transactional(rollbackFor = Exception.class)
     public boolean chargeCard(TblCardInfo card, Long amount) throws Exception {
-        budgetService.minus(card.getBudgetId(), amount);
+        val result = budgetService.minus(card.getBudgetId(), amount);
+        if (result<=0){
+            throw new Exception();
+        }
         SpringUtils.getBean(TblCardInfoService.class).charge(card.getId(), amount);
         val rsp = updateVirtualCard.init(amount, card.getCardId(), card.getCardName()).execute();
         return rsp.getUpdateCardId().equals(card.getCardId());
