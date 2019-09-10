@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>jeesite-web</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <name>JeeSite Web</name>
     <url>http://jeesite.com</url>
@@ -19,7 +19,7 @@
 
     <properties>
 
-        <finalName>web</finalName><!-- war包的名称 -->
+        <finalName>carmanager</finalName><!-- war包的名称 -->
         <start-class>com.jeesite.modules.Application</start-class>
 
         <!-- environment setting -->

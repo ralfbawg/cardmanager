@@ -1,7 +1,7 @@
 cusvar: cm
 cm:
   spider:
-    enabled: false
+    enabled: true
     loginTip:
       inteval: 10
       email:
@@ -48,3 +48,14 @@ session:
   #
   #  # 会话唯一标识SessionId在Cookie中的名称。
   sessionIdCookieName: jeesite.session.id
+#======================================#
+#========== Server settings ===========#
+#======================================#
+
+server:
+
+  port: 80
+  servlet:
+    context-path: /
+  tomcat:
+    uri-encoding: UTF-8
