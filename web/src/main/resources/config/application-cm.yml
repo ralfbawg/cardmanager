@@ -1,5 +1,7 @@
 cusvar: cm
 cm:
+  env: dev
+#  env: prod
   spider:
     enabled: true
     loginTip:

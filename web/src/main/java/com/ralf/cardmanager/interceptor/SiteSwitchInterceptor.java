@@ -38,7 +38,10 @@ public class SiteSwitchInterceptor extends BaseService implements HandlerInterce
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
-        String switcher = (String) CacheUtils.get(CommonService.SITE_SWITCH_CACHE, CommonService.SITE_SWITCH_CACHE_KEY);
+        if (request.getRequestURI().contains("/system/siteSwitch")) {
+            return true;
+        }
+        String switcher = CacheUtils.get(CommonService.SITE_SWITCH_CACHE, CommonService.SITE_SWITCH_CACHE_KEY);
         if (StringUtils.isEmpty(switcher) || switcher.equals("0") || switcher.equals("off")) {
             response.setContentType("text/html;charset=UTF-8");
             response.getWriter().write(message);

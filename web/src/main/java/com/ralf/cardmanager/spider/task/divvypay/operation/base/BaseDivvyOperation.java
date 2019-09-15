@@ -95,7 +95,7 @@ public abstract class BaseDivvyOperation<T extends BaseDivvyOpertionResp> extend
         DefaultHttpClient httpClient = new DefaultHttpClient();
         CloseableHttpResponse rsp = httpClient.execute(requestBase);
         val rspStr = EntityUtils.toString(rsp.getEntity());
-        log.info("request url:{},response:{}", requestBase.getURI().toString(), rspStr);
+        log.info("request url: {}, response: {}", requestBase.getURI().toString(),rspStr);
         if (rsp.getStatusLine().getStatusCode() >= 200 && rsp.getStatusLine().getStatusCode() < 300) {
             AWSALB = getCookie(httpClient.getCookieStore(), "AWSALB");
             if (rspStr.startsWith("{\"data\":") || !requestBase.getFirstHeader("path").equals("/je/graphql")) {

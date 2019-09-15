@@ -1,5 +1,7 @@
 package com.ralf.cardmanager.spider.task;
 
+import com.jeesite.common.lang.StringUtils;
+import com.jeesite.common.utils.SpringUtils;
 import com.ralf.cardmanager.spider.util.WebDriverPool;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -10,6 +12,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.springframework.core.io.DefaultResourceLoader;
+import sun.security.provider.ConfigFile;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,7 +31,7 @@ public abstract class SpiderBasicThread {
 
     public static Properties webDriverConfig = new Properties();
 
-    public static final String CONFIG_FILE = "config.ini";
+    public static String CONFIG_FILE = "config.ini";
 
     static {
         try {
@@ -42,6 +45,15 @@ public abstract class SpiderBasicThread {
 
 
     public SpiderBasicThread(SiteBaseConfig config) {
+        String a = SpringUtils.getApplicationContext().getEnvironment().getProperty("cm.env");
+        if (!StringUtils.isEmpty(a) && a.equalsIgnoreCase("dev")) {
+            CONFIG_FILE = "config-dev.ini";
+        }
+        try {
+            webDriverConfig.load(new InputStreamReader(new DefaultResourceLoader().getResource(CONFIG_FILE).getInputStream(), "UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         this.config = config;
     }
 

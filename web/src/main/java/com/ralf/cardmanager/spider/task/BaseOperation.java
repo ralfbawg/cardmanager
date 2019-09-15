@@ -56,6 +56,7 @@ public abstract class BaseOperation<T extends Object> {
     protected BaseOperation setBody(String body, ContentType type) {
         if (requestBase instanceof HttpPost) {
             ((HttpPost) requestBase).setEntity(new StringEntity(body, type));
+            log.info("execute url: {} ,body: {}", requestBase.getURI(), body);
         }
         return this;
     }

@@ -5,6 +5,8 @@ package com.ralf.cardmanager.budget.service;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,74 +18,86 @@ import com.ralf.cardmanager.budget.dao.TblBudgetDao;
 
 /**
  * 帐户信息Service
+ *
  * @author ralfchen
  * @version 2019-08-30
  */
 @Service
-@Transactional(readOnly=true)
+@Transactional(readOnly = true)
+@Slf4j
 public class TblBudgetService extends CrudService<TblBudgetDao, TblBudget> {
-	@Autowired
-	private TblBudgetDao dao;
-	
-	/**
-	 * 获取单条数据
-	 * @param tblBudget
-	 * @return
-	 */
-	@Override
-	public TblBudget get(TblBudget tblBudget) {
-		return super.get(tblBudget);
-	}
-	
-	/**
-	 * 查询分页数据
-	 * @param tblBudget 查询条件
-	 * @param tblBudget.page 分页对象
-	 * @return
-	 */
-	@Override
-	public Page<TblBudget> findPage(TblBudget tblBudget) {
-		return super.findPage(tblBudget);
-	}
-	
-	/**
-	 * 保存数据（插入或更新）
-	 * @param tblBudget
-	 */
-	@Override
-	@Transactional(readOnly=false)
-	public void save(TblBudget tblBudget) {
-		super.save(tblBudget);
-	}
-	
-	/**
-	 * 更新状态
-	 * @param tblBudget
-	 */
-	@Override
-	@Transactional(readOnly=false)
-	public void updateStatus(TblBudget tblBudget) {
-		super.updateStatus(tblBudget);
-	}
-	
-	/**
-	 * 删除数据
-	 * @param tblBudget
-	 */
-	@Override
-	@Transactional(readOnly=false)
-	public void delete(TblBudget tblBudget) {
-		super.delete(tblBudget);
-	}
+    @Autowired
+    private TblBudgetDao dao;
 
-	@Transactional
-	public int charge(String id,long amount){
-		return dao.charge(id,amount);
-	}
+    /**
+     * 获取单条数据
+     *
+     * @param tblBudget
+     * @return
+     */
+    @Override
+    public TblBudget get(TblBudget tblBudget) {
+        return super.get(tblBudget);
+    }
 
-	@Transactional
-	public int minus(String id,long amount){
-		return dao.minus(id,amount);
-	}
-	
+    /**
+     * 查询分页数据
+     *
+     * @param tblBudget      查询条件
+     * @param tblBudget.page 分页对象
+     * @return
+     */
+    @Override
+    public Page<TblBudget> findPage(TblBudget tblBudget) {
+        return super.findPage(tblBudget);
+    }
+
+    /**
+     * 保存数据（插入或更新）
+     *
+     * @param tblBudget
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public void save(TblBudget tblBudget) {
+        super.save(tblBudget);
+    }
+
+    /**
+     * 更新状态
+     *
+     * @param tblBudget
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public void updateStatus(TblBudget tblBudget) {
+        super.updateStatus(tblBudget);
+    }
+
+    /**
+     * 删除数据
+     *
+     * @param tblBudget
+     */
+    @Override
+    @Transactional(readOnly = false)
+    public void delete(TblBudget tblBudget) {
+        super.delete(tblBudget);
+    }
+
+    @Transactional
+    public int charge(String id, long amount) {
+        return dao.charge(id, amount);
+    }
+
+    @Transactional
+    public int minus(String id, long amount) {
+        val budget = get(id);
+        if (budget.getBudgetAmount() < amount) {
+            log.error("账户{}现有余额{}不足以扣减{}", id, budget.getBudgetAmount(), amount);
+            return 0;
+        }
+        return dao.minus(id, amount);
+    }
+
 }

@@ -11,6 +11,7 @@ import com.ralf.cardmanager.spider.task.divvypay.operation.cardtranscation.GetCa
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardtranscation.GetCardTransactionsByCompanyIdRsp;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardtranscation.GetCompanyTransactionsTotalCount;
 import com.ralf.cardmanager.system.CommonService;
+import com.ralf.cardmanager.system.SpType;
 import com.ralf.cardmanager.tblbizparam.entity.TblBizParam;
 import com.ralf.cardmanager.tblbizparam.service.TblBizParamService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,13 +29,13 @@ import java.util.stream.Collectors;
 
 import static com.ralf.cardmanager.system.CommonService.SITE_SWITCH_CACHE;
 import static com.ralf.cardmanager.system.CommonService.SITE_SWITCH_CACHE_KEY;
+import static com.ralf.cardmanager.system.Constants.PROC_STATUS_FINISH;
+import static com.ralf.cardmanager.system.Constants.PROC_STATUS_WAIT;
 
 @Service
 @Slf4j
 public class SchedulerService {
-    public static final Long pageSize = 20l;
-
-    private Long LastTransactionTotal = 0l;
+    public static final Long pageSize = 30l;
 
     public static final int getCardDetailCount = 100;
 
@@ -112,26 +113,73 @@ public class SchedulerService {
 
     //自动激活卡
     @Scheduled(cron = "0/30 * * * * *")
-    public void UnfreezedCard() {
-        val cardQuery = new TblCardInfo();
-        cardQuery.setCardStatus("frozen");
-        val list = cardInfoService.findList(cardQuery);
-        list.forEach(t -> {
-            try {
-                unfreezedCard(t.getCardId(), 0);
-            } catch (Exception e) {
-                e.printStackTrace();
+    public void UnfreezedCard() throws Exception {
+        val declineTransaction = new TblCardTransaction();
+        declineTransaction.setProcStatus(PROC_STATUS_WAIT);
+        declineTransaction.setTransactionType("DECLINE");
+        val list = transactionService.findList(declineTransaction);
+        if (list != null && list.size() > 0) {
+            for (TblCardTransaction tblCardTransaction : list) {
+                val cardInfo = new TblCardInfo();
+                cardInfo.setCardId(tblCardTransaction.getCardId());
+                val cardList = cardInfoService.findList(cardInfo);
+                if (cardList != null && cardList.size() > 0) {
+                    val card = cardList.get(0);
+                    val rsp = getVirtualCardDetailsInfo.init(card.getCardId()).execute();
+                    var result = false;
+                    if (rsp.isFrozen()) {
+                        result = unfreezedCard(cardInfo, 0);
+                    }
+                    if (result && tblCardTransaction.getDeclineReason().equalsIgnoreCase("exceeds_vc_balance")) {//如果是超过余额，需要自动充值
+//                        autoCharge(cardList.get(0), Math.abs(tblCardTransaction.getAmount())+1);
+                        autoCharge(cardList.get(0), commonService.getAutoChargeAmount());
+                    }
+                    if (result && tblCardTransaction.getDeclineReason().equalsIgnoreCase("exceeds_vc_limit")) {//todo 如果是超过限额
+//                        autoCharge(cardList.get(0), Math.abs(tblCardTransaction.getAmount())+1);
+//                        autoCharge(cardList.get(0), commonService.getAutoChargeAmount());
+                    }
+                }
+
+
             }
-        });
+
+        }
+
     }
 
-    private void unfreezedCard(String cardId, int retry) throws Exception {
-        val rsp = unfreezedCard.init(cardId).execute();
+    private boolean unfreezedCard(TblCardInfo cardinfo, int retry) throws Exception {
+        val rsp = unfreezedCard.init(cardinfo.getCardId()).execute();
         if (rsp.isFrozen() && retry < 5) {
             retry++;
-            unfreezedCard(cardId, retry++);
+            unfreezedCard(cardinfo, retry++);
+        } else {
+            if (!rsp.isFrozen()) {
+                cardinfo.setCardStatus("actived");
+                cardInfoService.update(cardinfo);
+                return true;
+            } else {
+                return false;
+            }
         }
+        return false;
     }
+
+    /**
+     * 自动充值
+     *
+     * @param cardinfo
+     * @throws Exception
+     */
+    private void autoCharge(TblCardInfo cardinfo, Long amount) {
+        try {
+            cardInfoService.chargeCard(cardinfo, amount);
+        } catch (Exception e) {
+            log.error("card({})自动充值({})失败", cardinfo.getId(), amount);
+            e.printStackTrace();
+        }
+
+    }
+
 
     //自动更新余额与状态
     @Scheduled(cron = "0/5 * * * * *")
@@ -174,29 +222,68 @@ public class SchedulerService {
     }
 
     /**
-     * 获取流水
+     * 获取正常流水
      *
      * @throws IOException
      */
-//    @Scheduled(cron = "0 0/1 * * * *")//每分钟一次
-    @Scheduled(cron = "0/30 * * * * *")//每分钟一次
+//    @Scheduled(fixedDelay = 60*1000)//每分钟一次
+    @Scheduled(fixedDelay = 30 * 1000)//每分钟一次
     public void GetCardTransactions() throws Exception {
+        Long dbTransactionCount = 0l;
         val param = new TblBizParam();
         param.setKey("TransactionsTotal");
         val list = tblBizParamService.findList(param);
         if (list != null && list.size() == 1) {
-            LastTransactionTotal = Long.valueOf(list.get(0).getValue());
+            dbTransactionCount = Long.valueOf(list.get(0).getValue());
+
         }
-        val transactionTotal = getCompanyTransactionsTotalCount.init().execute();
-        if (transactionTotal.getTotalCount() != LastTransactionTotal) {
-            val size = transactionTotal.getTotalCount() - LastTransactionTotal;
+        val transactionTotal = getCompanyTransactionsTotalCount.init(null).execute();
+        if (transactionTotal.getTotalCount() != dbTransactionCount) {
+            val size = transactionTotal.getTotalCount() - dbTransactionCount;
             if (size > pageSize) {
                 for (int i = 0; i < (size % pageSize > 0 ? 1 : 0) + size / pageSize; i++) {
-                    val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, i * pageSize).execute();
+                    val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, i * pageSize, null).execute();
                     saveTransaction(rsp);
                 }
             } else {
-                val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, 0l).execute();
+                val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, 0l, null).execute();
+                saveTransaction(rsp);
+            }
+
+            if (list != null && list.size() == 1) {
+                val tmp = list.get(0);
+                tmp.setValue(String.valueOf(transactionTotal.getTotalCount()));
+                tblBizParamService.update(tmp);
+            }
+        }
+
+    }
+
+    /**
+     * 获取异常流水
+     *
+     * @throws IOException
+     */
+//    @Scheduled(fixedDelay = 60*1000)//每分钟一次
+    @Scheduled(fixedDelay = 30 * 1000)//每分钟一次
+    public void GetCardDeclineTransactions() throws Exception {
+        Long dbDeclineTransactionCount = 0l;
+        val param = new TblBizParam();
+        param.setKey("DeclineTransactionsTotal");
+        val list = tblBizParamService.findList(param);
+        if (list != null && list.size() == 1) {
+            dbDeclineTransactionCount = Long.valueOf(list.get(0).getValue());
+        }
+        val transactionTotal = getCompanyTransactionsTotalCount.init("decline").execute();
+        if (transactionTotal.getTotalCount() != dbDeclineTransactionCount) {
+            val size = transactionTotal.getTotalCount() - dbDeclineTransactionCount;
+            if (size > pageSize) {
+                for (int i = 0; i < (size % pageSize > 0 ? 1 : 0) + size / pageSize; i++) {
+                    val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, i * pageSize, "decline").execute();
+                    saveTransaction(rsp);
+                }
+            } else {
+                val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, 0l, "decline").execute();
                 saveTransaction(rsp);
             }
             if (list != null && list.size() == 1) {
@@ -213,21 +300,28 @@ public class SchedulerService {
             val transaction = new TblCardTransaction();
             transaction.setIsNewRecord(true);
             transaction.setSpTransactionId(t.getTransactionId());
-            transaction.setStatus(t.getType());
             transaction.setAmount(t.getAmount());
             transaction.setCardId(t.getCardId());
             transaction.setClearedDate(new DateTime(t.getClearDate()).toString("yyyy-MM-dd HH:mm:ss"));
             transaction.setOccurredDate(new DateTime(t.getOccurredDate()).toString("yyyy-MM-dd HH:mm:ss"));
             transaction.setClearedMerchant(t.getMerchantName());
             transaction.setMerchantLogo(t.getMerchantLogo());
+            transaction.setTransactionType(t.getType());
             transaction.setTransactionStatus(t.getStatus());
-            if (((TblCardInfo) CacheUtils.get(CommonService.CARD_CACHE, t.getCardId())) == null) {
+            transaction.setSpType(SpType.DIVVY.toString());
+            if (t.getType().equalsIgnoreCase("decline")) {
+                transaction.setProcStatus(PROC_STATUS_WAIT);
+            } else {
+                transaction.setProcStatus(PROC_STATUS_FINISH);
+            }
+            if (commonService.getCardinfoByCardId(t.getCardId()) == null) {
                 log.error("没有相关卡与id{}", t.getCardId());
             } else {
-                transaction.setCardNo(((TblCardInfo) CacheUtils.get(CommonService.CARD_CACHE, t.getCardId())).getCardNo());
-                transaction.setCardOwner(((TblCardInfo) CacheUtils.get(CommonService.CARD_CACHE, t.getCardId())).getCardOwner());
+                transaction.setCardNo(commonService.getCardinfoByCardId(t.getCardId()).getCardNo());
+                transaction.setCardOwner(commonService.getCardinfoByCardId(t.getCardId()).getCardOwner());
             }
             transaction.setClearedMerchant(t.getClearMerchantName());
+            transaction.setDeclineReason(t.getDeclineReason());
             try {
                 transactionService.save(transaction);
             } catch (Exception e) {
@@ -238,7 +332,7 @@ public class SchedulerService {
     }
 
 
-    @Scheduled(cron = "* 20 * * * *")
+    //    @Scheduled(cron = "* 20 * * * *")
     public void GetAllCards() throws Exception {
         val query = new TblCardInfo();
         query.setOrderBy("nickname desc");
@@ -254,19 +348,22 @@ public class SchedulerService {
 //        }
     }
 
-    @Scheduled(fixedDelay = 30 * 60 * 1000)//30分钟
+    /**
+     * 卡信息缓存
+     */
+    @Scheduled(fixedDelay = 60 * 1000)//30分钟
     public void updateCardCache() {
         commonService.updateCardCache();
     }
 
-    @Scheduled(fixedDelay = 60 * 1000)//30分钟
+    @Scheduled(fixedDelay = 60 * 1000)//1分钟
     public void updateSiteConfigCache() {
         val param = new TblBizParam();
         param.setKey("SiteSwitch");
         val list = SpringUtils.getBean(TblBizParamService.class).findList(param);
         if (list != null && list.size() > 0) {
             val value = list.get(0).getValue();
-            CacheUtils.put(SITE_SWITCH_CACHE,SITE_SWITCH_CACHE_KEY,value);
+            CacheUtils.put(SITE_SWITCH_CACHE, SITE_SWITCH_CACHE_KEY, value);
         }
     }
 
