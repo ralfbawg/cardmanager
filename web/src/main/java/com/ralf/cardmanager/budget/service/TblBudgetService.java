@@ -5,6 +5,7 @@ package com.ralf.cardmanager.budget.service;
 
 import java.util.List;
 
+import com.ralf.cardmanager.system.exception.BudgetNotEnoughException;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,11 +92,11 @@ public class TblBudgetService extends CrudService<TblBudgetDao, TblBudget> {
     }
 
     @Transactional
-    public int minus(String id, long amount) {
+    public int minus(String id, long amount) throws BudgetNotEnoughException{
         val budget = get(id);
         if (budget.getBudgetAmount() < amount) {
             log.error("账户{}现有余额{}不足以扣减{}", id, budget.getBudgetAmount(), amount);
-            return 0;
+            throw new BudgetNotEnoughException("账户现有余额不足以扣减");
         }
         return dao.minus(id, amount);
     }

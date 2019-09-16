@@ -178,6 +178,7 @@ public class TblOrderController extends BaseController {
      */
     @RequiresPermissions({"order:tblOrder:audit"})
     @RequestMapping({"audit"})
+    @ResponseBody
     public String auditForm(TblOrder tblOrder) {
         if (tblOrderService.AuditAndProcess(tblOrder)) {
             return renderResult(Global.TRUE, text("审核订单成功！后台执行中"));

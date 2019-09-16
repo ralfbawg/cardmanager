@@ -12,6 +12,7 @@ import com.ralf.cardmanager.spider.task.divvypay.operation.cardtranscation.GetCa
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardtranscation.GetCompanyTransactionsTotalCount;
 import com.ralf.cardmanager.system.CommonService;
 import com.ralf.cardmanager.system.SpType;
+import com.ralf.cardmanager.system.exception.BudgetNotEnoughException;
 import com.ralf.cardmanager.tblbizparam.entity.TblBizParam;
 import com.ralf.cardmanager.tblbizparam.service.TblBizParamService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,8 @@ import lombok.var;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Date;
@@ -32,7 +34,7 @@ import static com.ralf.cardmanager.system.CommonService.SITE_SWITCH_CACHE_KEY;
 import static com.ralf.cardmanager.system.Constants.PROC_STATUS_FINISH;
 import static com.ralf.cardmanager.system.Constants.PROC_STATUS_WAIT;
 
-@Service
+@Component
 @Slf4j
 public class SchedulerService {
     public static final Long pageSize = 30l;
@@ -87,8 +89,8 @@ public class SchedulerService {
         list.stream().forEach(t -> {
             try {
                 String timestamp = String.valueOf(System.currentTimeMillis());
-                val rsp = SpringUtils.getBean(CreateCardByBudget.class).init(String.valueOf(t.getCardAmount()), String.valueOf(System.currentTimeMillis())).execute();//实际卡名用时间戳，好排序
-                t.setBudgetId(rsp.getBudgetId());
+                val rsp = SpringUtils.getBean(CreateCardByBudget.class).init(String.valueOf(t.getCardAmount()), timestamp).execute();//实际卡名用时间戳，好排序
+//                t.setBudgetId(rsp.getBudgetId());
                 t.setCardId(rsp.getCardId());
                 t.setCardStatus(rsp.getStep2Resp().getCardStatus());
                 t.setCardToken(rsp.getStep2Resp().getCardToken());
@@ -113,6 +115,7 @@ public class SchedulerService {
 
     //自动激活卡
     @Scheduled(cron = "0/30 * * * * *")
+    @Transactional
     public void UnfreezedCard() throws Exception {
         val declineTransaction = new TblCardTransaction();
         declineTransaction.setProcStatus(PROC_STATUS_WAIT);
@@ -126,34 +129,40 @@ public class SchedulerService {
                 if (cardList != null && cardList.size() > 0) {
                     val card = cardList.get(0);
                     val rsp = getVirtualCardDetailsInfo.init(card.getCardId()).execute();
-                    var result = false;
+                    var result = rsp.isFrozen();
                     if (rsp.isFrozen()) {
                         result = unfreezedCard(cardInfo, 0);
                     }
-                    if (result && tblCardTransaction.getDeclineReason().equalsIgnoreCase("exceeds_vc_balance")) {//如果是超过余额，需要自动充值
-                        autoCharge(cardList.get(0), commonService.getAutoChargeAmount());
-                        tblCardTransaction.setProcStatus(PROC_STATUS_FINISH);
-                        transactionService.update(tblCardTransaction);
+                    if (result){continue;}
+                    if (!result && tblCardTransaction.getDeclineReason().equalsIgnoreCase("exceeds_vc_balance")) {//如果是超过余额，需要自动充值
+
+                        if (!autoCharge(cardList.get(0),  commonService.getAutoChargeAmount())) {
+                            continue;
+                        }
                     }
                     if (result && tblCardTransaction.getDeclineReason().equalsIgnoreCase("exceeds_vc_limit")) {//todo 如果是超过限额
                     }
+                    tblCardTransaction.setProcStatus(PROC_STATUS_FINISH);
+                    transactionService.update(tblCardTransaction);
                 }
             }
         }
     }
 
-    private boolean unfreezedCard(TblCardInfo cardinfo, int retry) throws Exception {
+    @Transactional
+    public boolean unfreezedCard(TblCardInfo cardinfo, int retry) throws Exception {
         val rsp = unfreezedCard.init(cardinfo.getCardId()).execute();
         if (rsp.isFrozen() && retry < 5) {
             retry++;
+            Thread.sleep(1000*5);
             unfreezedCard(cardinfo, retry++);
         } else {
             if (!rsp.isFrozen()) {
                 cardinfo.setCardStatus("actived");
                 cardInfoService.update(cardinfo);
-                return true;
+                return rsp.isFrozen();
             } else {
-                return false;
+                return rsp.isFrozen();
             }
         }
         return false;
@@ -165,12 +174,16 @@ public class SchedulerService {
      * @param cardinfo
      * @throws Exception
      */
-    private void autoCharge(TblCardInfo cardinfo, Long amount) {
+    private boolean autoCharge(TblCardInfo cardinfo, Long amount) {
         try {
             cardInfoService.chargeCard(cardinfo, amount);
-        } catch (Exception e) {
+            return true;
+        } catch (BudgetNotEnoughException e) {
             log.error("card({})自动充值({})失败", cardinfo.getId(), amount);
             e.printStackTrace();
+            return true;
+        }catch (Exception e){
+            return false;
         }
 
     }
@@ -222,7 +235,7 @@ public class SchedulerService {
      * @throws IOException
      */
 //    @Scheduled(fixedDelay = 60*1000)//每分钟一次
-    @Scheduled(fixedDelay = 30 * 1000)//每分钟一次
+//    @Scheduled(fixedDelay = 30 * 1000)//每分钟一次
     public void GetCardTransactions() throws Exception {
         log.debug("开始执行正常流水获取");
         Long dbTransactionCount = 0l;
@@ -264,7 +277,7 @@ public class SchedulerService {
      * @throws IOException
      */
 //    @Scheduled(fixedDelay = 60*1000)//每分钟一次
-    @Scheduled(fixedDelay = 30 * 1000)//每分钟一次
+//    @Scheduled(fixedDelay = 30 * 1000)//每分钟一次
     public void GetCardDeclineTransactions() throws Exception {
         log.debug("开始执行异常流水获取");
         Long dbDeclineTransactionCount = 0l;

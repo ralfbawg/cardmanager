@@ -32,7 +32,7 @@ public class UnfreezedCard extends BaseDivvyOperation<UnfreezedCardRsp> {
     @Override
     //{"data":{"unfreezeCard":{"card":{"token":"001.R.20190903111249705744","name":"final","lastFour":"7495","id":"Q2FyZDo0MDczODg=","frozen":true,"expirationDate":"09/22","cardType":"BURNER","brand":"mastercard","activationStatus":"ACTIVATED","__typename":"Card"},"__typename":"UnfreezeCardPayload"}}}
     public UnfreezedCardRsp persistent(String rsp) {
-        JsonObject jsonObject = new JsonParser().parse(rsp).getAsJsonObject().get("data").getAsJsonObject().get("node").getAsJsonObject();
+        JsonObject jsonObject = new JsonParser().parse(rsp).getAsJsonObject().get("data").getAsJsonObject().get("unfreezeCard").getAsJsonObject().get("card").getAsJsonObject();
         String token = jsonObject.get("token").getAsString();
         String cardType = jsonObject.get("cardType").getAsString();
         String expirationDate = jsonObject.get("expirationDate").getAsString();

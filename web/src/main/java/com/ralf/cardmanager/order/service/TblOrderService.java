@@ -196,7 +196,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
         budget.setName(UserUtils.get(tblOrder.getSubmitUsercode()).getUserName() + "的帐户");
         budget.setOwnerUsercode(UserUtils.get(tblOrder.getSubmitUsercode()).getUserName());
         Long budgetAmount = (tblOrder.getTblOrderDetailList() != null && tblOrder.getTblOrderDetailList().size() > 0) ? tblOrder.getTblOrderDetailList().stream().collect(Collectors.summingLong(TblOrderDetail::getLimitAmount)) : 0l;
-        budget.setBudgetAmount(budgetAmount);
+        budget.setBudgetAmount(0l);
         budget.setSpendAmount(0l);
         budget.setAssignAmount(budgetAmount);
         budget.setUnsignAmount(0l);

@@ -39,7 +39,7 @@ public class GetVirtualCardDetailsInfo extends BaseDivvyOperation<GetVirtualCard
         boolean deleted = jsonObject.get("deleted").getAsBoolean();
         boolean frozen = jsonObject.get("frozen").getAsBoolean();
         String allocationId = jsonObject.get("userAllocation").getAsJsonObject().get("id").getAsString();
-        return new GetVirtualCardDetailsInfoRsp(deleted, frozen, allocationId);
+        return new GetVirtualCardDetailsInfoRsp(frozen, deleted, allocationId);
     }
 }
 

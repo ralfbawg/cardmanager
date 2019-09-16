@@ -115,6 +115,8 @@ public class TblCardInfoController extends BaseController {
             try {
                 val rsp = deleteCard.init(cardInfo.getCardId()).execute();
                 if (rsp.getDeleteCardId().equals(cardInfo.getCardId())) {
+                    cardInfo.setCardStatus("deleted");
+                    tblCardInfoService.update(cardInfo);
                     return renderResult(Global.TRUE, text("删除卡信息成功！"));
                 }
                 throw new Exception();

@@ -1,7 +1,7 @@
 cusvar: cm
 cm:
-#  env: dev
-  env: prod
+  env: dev
+#  env: prod
   spider:
     enabled: true
     loginTip:
@@ -19,9 +19,9 @@ cm:
     password: Cavy996633!
     budget:
 #      id: QnVkZ2V0OjQ3MzAz
-      id: QnVkZ2V0OjQ3MzAz
+      id: QnVkZ2V0OjQ5MTQ2
 #      ownerId: VXNlcjo1MTIzNg==
-      ownerId: VXNlcjo1MTIzNg==
+      ownerId: VXNlcjo1MTE5OA==
     company:
       id: Q29tcGFueTozMDI3
 mybatis:

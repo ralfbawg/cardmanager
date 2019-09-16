@@ -9,11 +9,15 @@ import com.jeesite.common.utils.SpringUtils;
 import com.ralf.cardmanager.budget.service.TblBudgetService;
 import com.ralf.cardmanager.cardinfo.dao.TblCardInfoDao;
 import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
+import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.GetVirtualCardDetailsInfo;
+import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.GetVirtualCardEditInfo;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.UpdateVirtualCard;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 
 /**
  * 卡信息Service
@@ -28,6 +32,10 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
     private TblBudgetService budgetService;
     @Autowired
     private UpdateVirtualCard updateVirtualCard;
+    @Autowired
+    private GetVirtualCardEditInfo getVirtualCardEditInfo;
+    @Autowired
+    private GetVirtualCardDetailsInfo getVirtualCardDetailsInfo;
 
     /**
      * 获取单条数据
@@ -98,11 +106,20 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
     @Transactional(rollbackFor = Exception.class)
     public boolean chargeCard(TblCardInfo card, Long amount) throws Exception {
         val result = budgetService.minus(card.getBudgetId(), amount);
-        if (result<=0){
+        if (result <= 0) {
             throw new Exception();
         }
         SpringUtils.getBean(TblCardInfoService.class).charge(card.getId(), amount);
-        val rsp = updateVirtualCard.init(amount, card.getCardId(), card.getCardName()).execute();
-        return rsp.getUpdateCardId().equals(card.getCardId());
+        val rsp2 = getVirtualCardEditInfo.init(card.getCardId()).execute();
+        val goalAmount = rsp2.getAmount() + amount;
+        val rsp = updateVirtualCard.init(goalAmount, card.getCardId(), card.getCardName()).execute();
+        val rsp3 = getVirtualCardEditInfo.init(card.getCardId()).execute();
+        if (rsp.getUpdateCardId().equals(card.getCardId()) && rsp3.getAmount() == goalAmount) {
+            card.setLastChargeOn(new Date());
+            SpringUtils.getBean(TblCardInfoService.class).update(card);
+            return true;
+        } else {
+            throw new Exception();
+        }
     }
 }
