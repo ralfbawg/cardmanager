@@ -32,7 +32,7 @@ public class GetCardTransactionsByCompanyId extends BaseDivvyOperation<GetCardTr
         };
 //        params[5] = new BASE64Encoder().encode(String.format(pageSizeStr, (pageSize != null && pageSize > 0) ? String.valueOf(pageSize) : "10").getBytes());
         super.init(params);
-        if (type.equalsIgnoreCase("decline")){
+        if (!StringUtils.isEmpty(type) && type.equalsIgnoreCase("decline")) {
             defaultHeader.put("referer", " https://app.divvy.co/transactions/declined");
         }
         return this;

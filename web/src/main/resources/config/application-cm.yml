@@ -1,7 +1,7 @@
 cusvar: cm
 cm:
-  env: dev
-#  env: prod
+#  env: dev
+  env: prod
   spider:
     enabled: true
     loginTip:
@@ -49,14 +49,12 @@ session:
   #  sessionTimeoutClean: 1200000
   #
   #  # 会话唯一标识SessionId在Cookie中的名称。
-  sessionIdCookieName: jeesite.session.id
+  sessionIdCookieName: cm.session.id
 #======================================#
 #========== Server settings ===========#
 #======================================#
-
 server:
-
-  port: 80
+  port: 8980
   servlet:
     context-path: /
   tomcat:

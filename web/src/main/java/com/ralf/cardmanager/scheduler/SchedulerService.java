@@ -131,20 +131,15 @@ public class SchedulerService {
                         result = unfreezedCard(cardInfo, 0);
                     }
                     if (result && tblCardTransaction.getDeclineReason().equalsIgnoreCase("exceeds_vc_balance")) {//如果是超过余额，需要自动充值
-//                        autoCharge(cardList.get(0), Math.abs(tblCardTransaction.getAmount())+1);
                         autoCharge(cardList.get(0), commonService.getAutoChargeAmount());
+                        tblCardTransaction.setProcStatus(PROC_STATUS_FINISH);
+                        transactionService.update(tblCardTransaction);
                     }
                     if (result && tblCardTransaction.getDeclineReason().equalsIgnoreCase("exceeds_vc_limit")) {//todo 如果是超过限额
-//                        autoCharge(cardList.get(0), Math.abs(tblCardTransaction.getAmount())+1);
-//                        autoCharge(cardList.get(0), commonService.getAutoChargeAmount());
                     }
                 }
-
-
             }
-
         }
-
     }
 
     private boolean unfreezedCard(TblCardInfo cardinfo, int retry) throws Exception {
@@ -229,6 +224,7 @@ public class SchedulerService {
 //    @Scheduled(fixedDelay = 60*1000)//每分钟一次
     @Scheduled(fixedDelay = 30 * 1000)//每分钟一次
     public void GetCardTransactions() throws Exception {
+        log.debug("开始执行正常流水获取");
         Long dbTransactionCount = 0l;
         val param = new TblBizParam();
         param.setKey("TransactionsTotal");
@@ -242,6 +238,9 @@ public class SchedulerService {
             val size = transactionTotal.getTotalCount() - dbTransactionCount;
             if (size > pageSize) {
                 for (int i = 0; i < (size % pageSize > 0 ? 1 : 0) + size / pageSize; i++) {
+                    if (size / pageSize > 10 && i % 10 == 0) {
+                        Thread.sleep(1000 * 2);
+                    }
                     val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, i * pageSize, null).execute();
                     saveTransaction(rsp);
                 }
@@ -267,6 +266,7 @@ public class SchedulerService {
 //    @Scheduled(fixedDelay = 60*1000)//每分钟一次
     @Scheduled(fixedDelay = 30 * 1000)//每分钟一次
     public void GetCardDeclineTransactions() throws Exception {
+        log.debug("开始执行异常流水获取");
         Long dbDeclineTransactionCount = 0l;
         val param = new TblBizParam();
         param.setKey("DeclineTransactionsTotal");
@@ -279,6 +279,9 @@ public class SchedulerService {
             val size = transactionTotal.getTotalCount() - dbDeclineTransactionCount;
             if (size > pageSize) {
                 for (int i = 0; i < (size % pageSize > 0 ? 1 : 0) + size / pageSize; i++) {
+                    if (size / pageSize > 10 && i % 10 == 0) {
+                        Thread.sleep(1000 * 2);
+                    }
                     val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, i * pageSize, "decline").execute();
                     saveTransaction(rsp);
                 }

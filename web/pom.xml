@@ -19,7 +19,7 @@
 
     <properties>
 
-        <finalName>carmanager</finalName><!-- war包的名称 -->
+        <finalName>cardmanager</finalName><!-- war包的名称 -->
         <start-class>com.jeesite.modules.Application</start-class>
 
         <!-- environment setting -->

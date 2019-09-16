@@ -17,7 +17,7 @@ spring:
 
 # 产品或项目名称、软件开发公司名称
 productName: 外卡管理系统
-companyName: 漂亮跨境商务公司
+companyName: 广州海普友信息科技有限公司
 
 # 产品版本、版权年份
 productVersion: V1.0
