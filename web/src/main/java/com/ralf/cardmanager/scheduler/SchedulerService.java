@@ -234,7 +234,7 @@ public class SchedulerService {
      *
      * @throws IOException
      */
-    @Scheduled(fixedDelay = 60*1000)//每分钟一次
+//    @Scheduled(fixedDelay = 60*1000)//每分钟一次
 //    @Scheduled(fixedDelay = 30 * 1000)//每分钟一次
     public void GetCardTransactions() throws Exception {
         log.debug("开始执行正常流水获取");

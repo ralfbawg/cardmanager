@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.jeesite.common.cache.CacheUtils;
 import com.jeesite.modules.sys.entity.DictData;
+import com.jeesite.modules.sys.entity.User;
 import com.jeesite.modules.sys.service.DictDataService;
 import com.jeesite.modules.sys.service.support.DictDataServiceSupport;
 import com.jeesite.modules.sys.utils.UserUtils;
@@ -90,6 +91,9 @@ public class TblOrderController extends BaseController {
     @ResponseBody
     public Page<TblOrder> listData(TblOrder tblOrder, HttpServletRequest request, HttpServletResponse response) {
         tblOrder.setPage(new Page<>(request, response));
+        if (!UserUtils.getUser().isSuperAdmin()&&!UserUtils.getUser().isAdmin()){
+            tblOrder.setSubmitUsercode(UserUtils.getUser().getUserCode());
+        }
         Page<TblOrder> page = tblOrderService.findPage(tblOrder);
         return page;
     }
