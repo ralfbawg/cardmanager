@@ -14,6 +14,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
@@ -382,14 +383,27 @@ public class LoginController extends BaseController{
 		}
 		return "modules/sys/sysSwitchSkin";
 	}
-	
+
 	/**
 	 * 个人桌面页面
 	 */
 	@RequiresPermissions("user")
 	@RequestMapping(value = "desktop")
 	public String desktop(HttpServletRequest request, HttpServletResponse response, Model model) {
+		if (UserUtils.getUser().isAdmin()||UserUtils.getUser().isSuperAdmin()){
+			return "modules/sys/sysDesktop";
+		}else{
+			return "modules/sys/userDesktop";
+		}
+
+	}
+	/**
+	 * 个人桌面页面
+	 */
+	@RequiresPermissions("user")
+	@RequestMapping(value = "userDesktop")
+	public String custmerDesktop(HttpServletRequest request, HttpServletResponse response, Model model) {
 		return "modules/sys/sysDesktop";
 	}
-	
+
 }
