@@ -31,8 +31,7 @@ import com.jeesite.modules.file.utils.FileUploadUtils;
 import com.ralf.cardmanager.order.entity.TblOrderDetail;
 import com.ralf.cardmanager.order.dao.TblOrderDetailDao;
 
-import static com.ralf.cardmanager.order.web.TblOrderController.STATUS_AUDIT_PASS_WAIT_PRO;
-import static com.ralf.cardmanager.order.web.TblOrderController.STATUS_WAIT_PAY;
+import static com.ralf.cardmanager.order.web.TblOrderController.*;
 
 /**
  * 订单表Service
@@ -46,6 +45,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
     public static final String TYPE_CREATE = "create";
     public static final String TYPE_CREATE_CARD = "createCard";
     public static final String TYPE_CHARGE = "charge";
+    public static final String TYPE_BATCH_CREATE_CARD = "batchCreateCard";
 
 
     @Autowired
@@ -161,11 +161,11 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
         try {
             switch (tblOrder.getType()) {
                 case TYPE_CREATE:
-                    createBudgetAndCard(tblOrder, budget);
+                    SpringUtils.getBean(TblOrderService.class).createBudgetAndCard(tblOrder, budget);
                     break;
                 case TYPE_CREATE_CARD:
                     if (budgetList.size() == 1) {
-                        createCard(tblOrder, budgetList.get(0).getId());
+                        SpringUtils.getBean(TblOrderService.class).createCard(tblOrder, budgetList.get(0).getId());
                     }
 
                     break;
@@ -174,7 +174,15 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
                         int n = budgetService.charge(budgetList.get(0).getId(), tblOrder.getChargeAmount());
                     }
                     break;
+
+                case TYPE_BATCH_CREATE_CARD:
+                    if (budgetList.size() == 1) {
+                        SpringUtils.getBean(TblOrderService.class).batchCreateCard(tblOrder, budgetList.get(0).getId());
+                    }
+                    break;
             }
+            tblOrder.setPayStatus(STATUS_AUDIT_PASS_PRO_SUCCESS);
+            SpringUtils.getBean(TblOrderService.class).update(tblOrder);
         } catch (Exception e) {
 
         }
@@ -227,6 +235,26 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
                 cardInfoService.insert(card);
             });
 
+        }
+    }
+    /**
+     * 批量创建卡
+     *
+     * @param tblOrder
+     * @param budgetId
+     */
+    @Transactional
+    public void batchCreateCard(TblOrder tblOrder, String budgetId) {
+        for (int i=0;i<tblOrder.getBatchCardNum();i++){
+            val card = new TblCardInfo();
+            card.setIsNewRecord(true);
+            card.setBudgetId(budgetId);
+            card.setCardOwner(tblOrder.getSubmitUsercode());
+            card.setCardName(String.valueOf(System.currentTimeMillis()+i));
+            card.setCardLimit(tblOrder.getBatchCardAmount());
+            card.setCardAmount(tblOrder.getBatchCardAmount());
+            card.setCardStatus("tobecreate");
+            cardInfoService.insert(card);
         }
     }
 

@@ -32,6 +32,8 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 		@Column(name="audit_time", attrName="auditTime", label="审核时间", isUpdate=false),
 		@Column(name="order_amount", attrName="orderAmount", label="订单金额", isQuery=false),
 		@Column(name="pay_status", attrName="payStatus", label="支付状态"),
+		@Column(name="batch_card_num", attrName="batchCardNum", label="批量制卡数"),
+		@Column(name="batch_card_amount", attrName="batchCardAmount", label="批量制卡金额"),
 		@Column(name="status", attrName="status", label="状态", isUpdate=false),
 	}, orderBy="a.id DESC"
 )
@@ -45,6 +47,8 @@ public class TblOrder extends DataEntity<TblOrder> {
 	private String auditUsercode;		// 审核用户
 	private Date auditTime;		// 审核时间
 	private Long orderAmount;		// 订单金额
+	private Long batchCardNum;
+	private Long batchCardAmount;
 	private String payStatus;		// 支付状态
 	private List<TblOrderDetail> tblOrderDetailList = ListUtils.newArrayList();		// 子表列表
 	
@@ -138,5 +142,20 @@ public class TblOrder extends DataEntity<TblOrder> {
 	public void setTblOrderDetailList(List<TblOrderDetail> tblOrderDetailList) {
 		this.tblOrderDetailList = tblOrderDetailList;
 	}
-	
+
+	public Long getBatchCardNum() {
+		return batchCardNum;
+	}
+
+	public void setBatchCardNum(Long batchCardNum) {
+		this.batchCardNum = batchCardNum;
+	}
+
+	public Long getBatchCardAmount() {
+		return batchCardAmount;
+	}
+
+	public void setBatchCardAmount(Long batchCardAmount) {
+		this.batchCardAmount = batchCardAmount;
+	}
 }

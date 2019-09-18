@@ -7,11 +7,11 @@
 			</div>
 			<div class="box-tools pull-right">
 				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
-				<% if(hasPermi('cardinfo:tblCardInfo:edit')){ %>
+				<% if(hasPermi('cardinfo:tblCardInfo:add')){ %>
 					<a href="${ctx}/cardinfo/tblCardInfo/form" class="btn btn-default btnTool" title="${text('新增银行卡')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
 				<% } %>
 				<% if(hasPermi('cardinfo:tblCardInfo:batchCharge')){ %>
-				<a href="#" class="btn btn-default btnTool" id="batchChargeButton" title="${text('批量充值')}"><i class="fa fa-plus"></i> ${text('充值')}</a>
+				<a href="#" class="btn btn-default" id="batchChargeButton" title="${text('批量充值')}" onclick="batchChargeFunc()"><i class="fa fa-plus"></i> ${text('批量充值')}</a>
 				<% } %>
 				<div class="btn-group">
 					<a href="javascript:" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -151,15 +151,16 @@ $('#dataGrid').dataGrid({
 });
 
 $(document).ready(function () {
-	$("#batchChargeButton").on("click",function () {
-		// $('#dataGrid').dataGrid("getSelRow");
-		var rows = $('#dataGrid').dataGrid('getSelectRows');
-		debugger;
-		batchChargeCard(rows);
-	});
 });
 
+function batchChargeFunc() {
+	var rows = $('#dataGrid').dataGrid('getSelectRows');
+	batchChargeCard(rows);
+}
+
+
 function chargeCard(id) {
+
 	layer.prompt({title: '输入充值数额，并确认', formType: 0}, function (pass, index) {
 		js.loading("充值中");
 		$.ajax({
@@ -186,7 +187,11 @@ function chargeCard(id) {
 		});
 	});
 }
+
 function batchChargeCard(ids) {
+	if (ids.length<=0){
+		return js.showMessage("请先选中卡片","提示","warning", 4000);
+	}
 	layer.prompt({title: '输入每张卡的充值数额，并确认', formType: 0}, function (pass, index) {
 		js.loading("充值中");
 		$.ajax({

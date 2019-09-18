@@ -32,7 +32,29 @@
                             <span class="required hide">*</span> ${text('充值金额')}：<i
                                 class="fa icon-question hide"></i></label>
                         <div class="col-sm-8">
-                            <#form:input path="chargeAmount" maxlength="20" class="form-control digits" min="1"/>
+                            <#form:input path="chargeAmount" class="form-control " min="0.01"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row hidden" id="batchDiv">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" title="">
+                            <span class="required ">*</span> ${text('批量制卡数')}：<i
+                                class="fa icon-question hide"></i></label>
+                        <div class="col-sm-8">
+                            <#form:input path="batchCardNum" max="100" min="1" class="form-control digits" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6 " >
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" title="">
+                            <span class="required hide">*</span> ${text('每张卡金额')}：<i
+                                class="fa icon-question hide"></i></label>
+                        <div class="col-sm-8">
+                            <#form:input path="batchCardAmount" class="form-control" min="0.01"/>
                         </div>
                     </div>
                 </div>
@@ -84,7 +106,6 @@
 <script>
     //初始化订单详情DataGrid对象
     $("#tblOrderDetailDataGrid").dataGrid({
-
         data: ${toJson(tblOrder.tblOrderDetailList)},
         datatype: "local", // 设置本地数据
         autoGridHeight: function () {
@@ -93,7 +114,7 @@
 
         // 设置数据表格列
         columnModel: [
-            {header: '状态', name: 'status', editable: true, hidden: true},
+            {header: '状态', name: 'status', editable: true,hidden: true},
             {header: '主键', name: 'id', editable: true, hidden: true},
             {
                 header: '${text("卡名")}',
@@ -104,23 +125,16 @@
                 editoptions: {'maxlength': '255', 'class': 'required form-control'}
             },
             {
-                header: '${text("建卡数量")}',
-                name: 'cardId',
-                hidden: true,
-                width: 150,
-                editable: true,
-                edittype: 'text',
-                editoptions: {'maxlength': '20', 'min': '1','max': '100', 'class': 'form-control required digits'}
-            },
-            {
                 header: '${text("金额")}',
                 name: 'limitAmount',
                 width: 150,
                 editable: true,
                 edittype: 'text',
-                editoptions: {'maxlength': '20', 'min': '1', 'class': 'form-control required digits'}
+                formatter:function (val, obj, row, act) {
+                    return val/100;
+                },
+                editoptions: {'maxlength': '20', 'min': '0.01', 'class': 'form-control required'}
             },
-
             {
                 header: '${text("操作")}',
                 name: 'actions',
@@ -139,7 +153,8 @@
                     } else {
                     <%
                         if (hasPermi('order:tblOrder:edit')) { %>
-                            actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#tblOrderDetailDataGrid\').dataGrid(\'setRowData\',\'' + obj.rowId + '\',null,{display:\'none\'});$(\'#' + obj.rowId + '_status\').val(\'' + Global.STATUS_DELETE + '\');});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                            actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){' +
+                                '$(\'#tblOrderDetailDataGrid\').dataGrid(\'setRowData\',\'' + obj.rowId + '\',null,{display:\'none\'});$(\'#' + obj.rowId + '_status\').val(\'' + Global.STATUS_DELETE + '\');});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
                         <%
                         }
                     %>
@@ -169,7 +184,12 @@
 <script>
     $("#inputForm").validate({
         submitHandler: function (form) {
-
+            debugger;
+            $(form).find("#chargeAmount").val( parseInt($(form).find("#chargeAmount").val()*100));
+            $(form).find("#batchCardAmount").val( parseInt($(form).find("#batchCardAmount").val()*100));
+            $("input[id$=limitAmount]").each(function (i,e) {
+                $(e).val(parseInt($(e).val()*100));
+            })
             js.ajaxSubmitForm($(form), function (data) {
                 js.showMessage(data.message);
                 if (data.result == Global.TRUE) {
@@ -182,14 +202,14 @@
     });
 
     $(document).ready(function () {
+
         $("#type").bind("change", function () {
-            debugger;
             toggleBatchCard(false);
             toggleSingalCard(false);
+            toggleCharge(false)
             switch ($(this).val()) {
                 case "charge":
-                    $("#chargeDiv").removeClass("hidden");
-                    $("#chargeAmount").addClass("required");
+                    toggleCharge(true)
                     break;
                 case "batchCreateCard":
                     toggleBatchCard(true);
@@ -197,23 +217,34 @@
                 default:
                     toggleSingalCard(true);
             }
-        });
+        }).trigger("change");
 
     });
+    function toggleCharge(flag) {
+        if (flag) {
+            $('#tblOrderDetailDataGridAddRowBtn').addClass("hidden");
+            $("#chargeDiv").removeClass("hidden");
+            $("#chargeAmount").addClass("required");
+        } else {
+            $('#tblOrderDetailDataGridAddRowBtn').removeClass("hidden");
+            $("#chargeDiv").addClass("hidden");
+            $("#chargeAmount").removeClass("required");
+            <% if(tblOrder.isNewRecord){%>
+                $("#chargeAmount").val(0);
+            <%}else{%>
+                $("#chargeAmount").val( $("#chargeAmount").val()/100);
+            <%}%>
+        }
+    }
+
+
 
     function toggleSingalCard(flag) {
         if (flag) {
-            $('#tblOrderDetailDataGridAddRowBtn').removeAttr("disabled");
-            if ($('#tblOrderDetailDataGrid').dataGrid('getDataIDs').length <= 0) {
-                $('#tblOrderDetailDataGridAddRowBtn').trigger("click");
-            }
+            $("#tblOrderDetailDataGrid").removeClass("hidden")
         } else {
-            if ($('#tblOrderDetailDataGrid').dataGrid('getDataIDs').length > 0) {
-                $('#tblOrderDetailDataGrid').dataGrid('getDataIDs').forEach(function (e) {
-                    $('#tblOrderDetailDataGrid').dataGrid('delRowData', e);
-                });
-            }
-            $('#tblOrderDetailDataGridAddRowBtn').attr('disabled', "true");
+            $("#tblOrderDetailDataGrid").addClass("hidden")
+            $('#tblOrderDetailDataGridAddRowBtn').addClass("hidden");
             $("#chargeDiv").addClass("hidden");
             $("#chargeAmount").removeClass("required");
         }
@@ -221,29 +252,35 @@
 
     function toggleBatchCard(flag) {
         if (flag){
-            debugger;
-            $('#tblOrderDetailDataGridAddRowBtn').attr('disabled', "true");
-            $('#tblOrderDetailDataGrid').dataGrid('hideCol', 'cardName'); //隐藏列
-            $('#tblOrderDetailDataGrid').dataGrid('showCol', 'cardId'); //显示列
-            $('#tblOrderDetailDataGrid').dataGrid('setCell', 1,'cardId',Date.parse(new Date())); //显示列
-            $('#tblOrderDetailDataGridAddRowBtn').attr("disable", "false");
-            if ($('#tblOrderDetailDataGrid').dataGrid('getDataIDs').length <= 0) {
-                $('#tblOrderDetailDataGridAddRowBtn').trigger("click")
-            }
+            $('#tblOrderDetailDataGridAddRowBtn').addClass("hidden");
+            $('#batchDiv').removeClass("hidden");
+            $("#batchCardNum").addClass("required");
+            $("#batchCardAmount").addClass("required");
         } else {
-            $('#tblOrderDetailDataGridAddRowBtn').removeAttr("disabled")
-            $('#tblOrderDetailDataGrid').dataGrid('hideCol', 'cardId'); //隐藏列
-            $('#tblOrderDetailDataGrid').dataGrid('showCol', 'cardName'); //显示列
-            if ($('#tblOrderDetailDataGrid').dataGrid('getDataIDs').length > 1) {
-                $('#tblOrderDetailDataGrid').dataGrid('getDataIDs').forEach(function (i, e) {
-                    if (i > 0) {
-                        $('#tblOrderDetailDataGrid').dataGrid('delRowData', e);
-                    }
-                });
-            }
+            $('#tblOrderDetailDataGridAddRowBtn').removeClass("hidden");
+            $('#batchDiv').addClass("hidden");
+            $("#batchCardNum").removeClass("required");
+            $("#batchCardAmount").removeClass("required");
+            <% if(tblOrder.isNewRecord){%>
+                $("#batchCardAmount").val(0);
+            <%}else{%>
+                $("#batchCardAmount").val( $("#batchCardAmount").val()/100);
+            <%}%>
+
         }
 
+    }
 
+    function deleteDetail(id) {
+        js.loading("充值中");
+        $.ajax({
+            url:"${ctx}/order/tblOrder/deleteDetail",
+            data:{id:id},
+            async:false,
+            success:function (data) {
+                js.closeLoading(1000, true);
+            }
+        })
     }
 
 </script>

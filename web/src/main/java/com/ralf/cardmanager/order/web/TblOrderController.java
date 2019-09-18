@@ -13,7 +13,10 @@ import com.jeesite.modules.sys.entity.User;
 import com.jeesite.modules.sys.service.DictDataService;
 import com.jeesite.modules.sys.service.support.DictDataServiceSupport;
 import com.jeesite.modules.sys.utils.UserUtils;
+import com.ralf.cardmanager.budget.entity.TblBudget;
+import com.ralf.cardmanager.budget.service.TblBudgetService;
 import com.ralf.cardmanager.order.entity.TblOrderDetail;
+import com.ralf.cardmanager.spider.task.divvypay.operation.company.Budget;
 import com.ralf.cardmanager.tblbizparam.entity.TblBizParam;
 import com.ralf.cardmanager.tblbizparam.service.TblBizParamService;
 import lombok.val;
@@ -64,6 +67,8 @@ public class TblOrderController extends BaseController {
 
     @Autowired
     private TblBizParamService bizParamService;
+    @Autowired
+    private TblBudgetService budgetService;
 
     /**
      * 获取数据
@@ -91,7 +96,7 @@ public class TblOrderController extends BaseController {
     @ResponseBody
     public Page<TblOrder> listData(TblOrder tblOrder, HttpServletRequest request, HttpServletResponse response) {
         tblOrder.setPage(new Page<>(request, response));
-        if (!UserUtils.getUser().isSuperAdmin()&&!UserUtils.getUser().isAdmin()){
+        if (!UserUtils.getUser().isSuperAdmin() && !UserUtils.getUser().isAdmin()) {
             tblOrder.setSubmitUsercode(UserUtils.getUser().getUserCode());
         }
         Page<TblOrder> page = tblOrderService.findPage(tblOrder);
@@ -138,22 +143,19 @@ public class TblOrderController extends BaseController {
         if (tblOrder.getType().equalsIgnoreCase("create")) {
             BizParam.setKey("CreateBudgetCost");
             BizParam.setPageSize(Integer.MAX_VALUE);
-            budgetPrice = Long.valueOf(bizParamService.findList(BizParam).get(0).getValue());
+            budgetPrice = Long.valueOf(bizParamService.findList(BizParam).get(0).getValue()) * 100;
         }
         //建卡金额
-        if (tblOrder.getTblOrderDetailList() != null && tblOrder.getTblOrderDetailList().size() > 0) {
-            BizParam.setKey("PerCardCost");
-            val perCardPrice = Long.valueOf(bizParamService.findList(BizParam).get(0).getValue());
-            if (tblOrder.getType()=="batchCreateCard"){
-                cardAmountPrice = Long.valueOf(tblOrder.getTblOrderDetailList().get(0).getCardId())*perCardPrice;
-            }else {
-                cardPrice = tblOrder.getTblOrderDetailList().size() * perCardPrice;
-                tblOrder.getTblOrderDetailList().forEach(t -> {
-                    t.setLimitAmount(t.getLimitAmount() * 100);
-                });
-                cardAmountPrice = tblOrder.getTblOrderDetailList().stream().collect(Collectors.summingLong(TblOrderDetail::getLimitAmount));//卡内额度金额
+        BizParam.setKey("PerCardCost");
+        val perCardPrice = Long.valueOf(bizParamService.findList(BizParam).get(0).getValue());
+        if ((tblOrder.getType().equalsIgnoreCase("createCard") || tblOrder.getType().equalsIgnoreCase("create")) && tblOrder.getTblOrderDetailList() != null && tblOrder.getTblOrderDetailList().size() > 0) {
+            cardPrice = tblOrder.getTblOrderDetailList().stream().filter(t -> !t.getStatus().equalsIgnoreCase("1")).count() * perCardPrice;
+            cardAmountPrice = tblOrder.getTblOrderDetailList().stream().filter(t -> !t.getStatus().equalsIgnoreCase("1")).collect(Collectors.summingLong(TblOrderDetail::getLimitAmount));//卡内额度金额
+        } else {
+            if (tblOrder.getType().equalsIgnoreCase("batchCreateCard")) {
+                cardPrice = tblOrder.getBatchCardNum() * perCardPrice;
+                cardAmountPrice = tblOrder.getBatchCardNum() * tblOrder.getBatchCardAmount();
             }
-
         }
         val totalPrice = budgetPrice + cardPrice + cardAmountPrice + chargePrice;
         tblOrder.setOrderAmount(totalPrice);
@@ -171,7 +173,7 @@ public class TblOrderController extends BaseController {
         val dict = new DictData();
         dict.setDictType("cm_order_pay_status");
         DictData a = dictDataService.get(dict);
-        if (!StringUtils.isEmpty(tblOrder.getPayStatus()) && tblOrder.getPayStatus() != "01") {//编辑中
+        if (!StringUtils.isEmpty(tblOrder.getPayStatus()) && !tblOrder.getPayStatus().equalsIgnoreCase("01")) {//编辑中
             return renderResult(Global.FALSE, text("订单已经提交，不能删除！"));
         }
         tblOrderService.delete(tblOrder);
@@ -203,8 +205,20 @@ public class TblOrderController extends BaseController {
     @RequestMapping(value = "submit")
     @ResponseBody
     public String submit(TblOrder tblOrder) {
+//        if (tblOrder.getType().equalsIgnoreCase(TblOrderService.TYPE_CREATE_CARD)||tblOrder.getType().equalsIgnoreCase(TblOrderService.TYPE_BATCH_CREATE_CARD)){
+//            val budget = new TblBudget();
+//            budget.setOwnerUsercode(UserUtils.getUser().getUserCode());
+//            val list = budgetService.findList(budget);
+//            if (list!=null&&list.size()>0){
+//                if (list.get(0).getBudgetAmount()<tblOrder.getOrderAmount()) {
+//                    return renderResult(Global.FALSE, text(" 账户余额不足，请先充值！"));
+//                }
+//            }else {
+//                return renderResult(Global.FALSE, text(" 账户不存在！"));
+//            }
+//
+//        }
         tblOrder.setPayStatus(STATUS_WAIT_PAY);
-
         tblOrderService.update(tblOrder);
         return renderResult(Global.TRUE, text(" 提交订单成功！"));
     }

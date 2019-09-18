@@ -181,7 +181,7 @@ public class TblCardInfoController extends BaseController {
         budgetQuery.setOwnerUsercode(UserUtils.getUser().getUserCode());
         val budget = budgetService.get(budgetQuery);
         if (budget != null) {
-            if (budget.getBudgetAmount() < (ids.length * amount)) {
+            if (budget.getBudgetAmount() < (ids.length * amount*100)) {
                 return renderResult(Global.FALSE, text("帐户余额不足，请先充值帐户！"));
             }
             try {
@@ -198,7 +198,7 @@ public class TblCardInfoController extends BaseController {
     }
 
     /**
-     * 批量回收
+     * 批量回收余额
      */
     @RequiresPermissions("cardinfo:tblCardInfo:batchRefund")
     @RequestMapping(value = "batchRefund")
