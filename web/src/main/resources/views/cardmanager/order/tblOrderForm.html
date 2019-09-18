@@ -110,7 +110,7 @@
                 width: 150,
                 editable: true,
                 edittype: 'text',
-                editoptions: {'maxlength': '20', 'min': '1', 'class': 'form-control required digits'}
+                editoptions: {'maxlength': '20', 'min': '1','max': '100', 'class': 'form-control required digits'}
             },
             {
                 header: '${text("金额")}',
@@ -221,9 +221,11 @@
 
     function toggleBatchCard(flag) {
         if (flag){
+            debugger;
             $('#tblOrderDetailDataGridAddRowBtn').attr('disabled', "true");
             $('#tblOrderDetailDataGrid').dataGrid('hideCol', 'cardName'); //隐藏列
             $('#tblOrderDetailDataGrid').dataGrid('showCol', 'cardId'); //显示列
+            $('#tblOrderDetailDataGrid').dataGrid('setCell', 1,'cardId',Date.parse(new Date())); //显示列
             $('#tblOrderDetailDataGridAddRowBtn').attr("disable", "false");
             if ($('#tblOrderDetailDataGrid').dataGrid('getDataIDs').length <= 0) {
                 $('#tblOrderDetailDataGridAddRowBtn').trigger("click")

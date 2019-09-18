@@ -3,6 +3,7 @@
  */
 package com.ralf.cardmanager.cardinfo.service;
 
+import com.jeesite.common.config.Global;
 import com.jeesite.common.entity.Page;
 import com.jeesite.common.service.CrudService;
 import com.jeesite.common.utils.SpringUtils;
@@ -12,7 +13,9 @@ import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.GetVirtualCardDetailsInfo;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.GetVirtualCardEditInfo;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.UpdateVirtualCard;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +30,7 @@ import java.util.Date;
  */
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo> {
     @Autowired
     private TblBudgetService budgetService;
@@ -121,5 +125,34 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
         } else {
             throw new Exception();
         }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public boolean batchChargeCard(String[] ids, String budgetId, Long amount) throws Exception {
+        var result = true;
+        for (String id : ids) {
+            val cardQuery = new TblCardInfo();
+            cardQuery.setId(id);
+            cardQuery.setBudgetId(budgetId);
+            val cardList = findList(cardQuery);
+            if (cardList == null || cardList.size() <= 0) {
+                log.error("没找到卡");
+                return false;
+            } else {
+                result &= chargeCard(cardList.get(0), amount);
+            }
+        }
+        return result;
+    }
+
+    @Transactional
+    public boolean deleteCard(TblCardInfo cardInfo) {
+
+        return false;
+    }
+
+    @Transactional
+    public boolean batchDeleteCard(String[] ids) {
+        return false;
     }
 }

@@ -144,13 +144,17 @@ public class TblOrderController extends BaseController {
         if (tblOrder.getTblOrderDetailList() != null && tblOrder.getTblOrderDetailList().size() > 0) {
             BizParam.setKey("PerCardCost");
             val perCardPrice = Long.valueOf(bizParamService.findList(BizParam).get(0).getValue());
-            cardPrice = tblOrder.getTblOrderDetailList().size() * perCardPrice;
-            tblOrder.getTblOrderDetailList().forEach(t -> {
-                t.setLimitAmount(t.getLimitAmount() * 100);
-            });
-            cardAmountPrice = tblOrder.getTblOrderDetailList().stream().collect(Collectors.summingLong(TblOrderDetail::getLimitAmount));//卡内额度金额
-        }
+            if (tblOrder.getType()=="batchCreateCard"){
+                cardAmountPrice = Long.valueOf(tblOrder.getTblOrderDetailList().get(0).getCardId())*perCardPrice;
+            }else {
+                cardPrice = tblOrder.getTblOrderDetailList().size() * perCardPrice;
+                tblOrder.getTblOrderDetailList().forEach(t -> {
+                    t.setLimitAmount(t.getLimitAmount() * 100);
+                });
+                cardAmountPrice = tblOrder.getTblOrderDetailList().stream().collect(Collectors.summingLong(TblOrderDetail::getLimitAmount));//卡内额度金额
+            }
 
+        }
         val totalPrice = budgetPrice + cardPrice + cardAmountPrice + chargePrice;
         tblOrder.setOrderAmount(totalPrice);
         tblOrderService.save(tblOrder);

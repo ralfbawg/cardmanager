@@ -72,7 +72,7 @@ public class TblCardInfoController extends BaseController {
     @ResponseBody
     public Page<TblCardInfo> listData(TblCardInfo tblCardInfo, HttpServletRequest request, HttpServletResponse response) {
         tblCardInfo.setPage(new Page<>(request, response));
-        if (!UserUtils.getUser().isAdmin()&&!UserUtils.getUser().isSuperAdmin()){
+        if (!UserUtils.getUser().isAdmin() && !UserUtils.getUser().isSuperAdmin()) {
             tblCardInfo.setCardOwner(UserUtils.getUser().getUserCode());
         }
         Page<TblCardInfo> page = tblCardInfoService.findPage(tblCardInfo);
@@ -131,7 +131,7 @@ public class TblCardInfoController extends BaseController {
     }
 
     /**
-     * 删除卡信息
+     * 单卡充值
      */
     @RequiresPermissions("cardinfo:tblCardInfo:charge")
     @RequestMapping(value = "charge")
@@ -148,7 +148,7 @@ public class TblCardInfoController extends BaseController {
             cardQuery.setId(id);
             cardQuery.setBudgetId(budget.getId());
             val cardList = tblCardInfoService.findList(cardQuery);
-            if (cardList==null||cardList.size()<=0){
+            if (cardList == null || cardList.size() <= 0) {
                 log.error("没找到卡");
                 return renderResult(Global.FALSE, text("卡充值失败！请联系管理员"));
             }
@@ -170,4 +170,57 @@ public class TblCardInfoController extends BaseController {
 
     }
 
+    /**
+     * 批量充值
+     */
+    @RequiresPermissions("cardinfo:tblCardInfo:batchCharge")
+    @RequestMapping(value = "batchCharge")
+    @ResponseBody
+    public String batchCharge(@RequestParam("ids") String[] ids, @RequestParam("amount") Long amount) {
+        val budgetQuery = new TblBudget();
+        budgetQuery.setOwnerUsercode(UserUtils.getUser().getUserCode());
+        val budget = budgetService.get(budgetQuery);
+        if (budget != null) {
+            if (budget.getBudgetAmount() < (ids.length * amount)) {
+                return renderResult(Global.FALSE, text("帐户余额不足，请先充值帐户！"));
+            }
+            try {
+                tblCardInfoService.batchChargeCard(ids, budget.getId(), amount);
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error("充值失败,id:{},amounts:{}" + ids, ids.length * amount);
+                return renderResult(Global.FALSE, text("批量卡充值失败！请联系管理员"));
+            }
+        } else {
+            return renderResult(Global.FALSE, text("你没有帐户，是不是有问题！！！！请联系管理员"));
+        }
+        return renderResult(Global.FALSE, text("未知错误，请联系管理员"));
+    }
+
+    /**
+     * 批量回收
+     */
+    @RequiresPermissions("cardinfo:tblCardInfo:batchRefund")
+    @RequestMapping(value = "batchRefund")
+    @ResponseBody
+    public String batchRefund(@RequestParam("ids") String[] ids) {
+        val budgetQuery = new TblBudget();
+        budgetQuery.setOwnerUsercode(UserUtils.getUser().getUserCode());
+        val budget = budgetService.get(budgetQuery);
+
+        return renderResult(Global.FALSE, text("未知错误，请联系管理员"));
+    }
+    /**
+     * 批量回收
+     */
+    @RequiresPermissions("cardinfo:tblCardInfo:batchDelete")
+    @RequestMapping(value = "batchDelete")
+    @ResponseBody
+    public String batchDelete(@RequestParam("ids") String[] ids) {
+        val budgetQuery = new TblBudget();
+        budgetQuery.setOwnerUsercode(UserUtils.getUser().getUserCode());
+        val budget = budgetService.get(budgetQuery);
+
+        return renderResult(Global.FALSE, text("未知错误，请联系管理员"));
+    }
 }

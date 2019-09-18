@@ -10,6 +10,9 @@
 				<% if(hasPermi('cardinfo:tblCardInfo:edit')){ %>
 					<a href="${ctx}/cardinfo/tblCardInfo/form" class="btn btn-default btnTool" title="${text('新增银行卡')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
 				<% } %>
+				<% if(hasPermi('cardinfo:tblCardInfo:batchCharge')){ %>
+				<a href="#" class="btn btn-default btnTool" id="batchChargeButton" title="${text('批量充值')}"><i class="fa fa-plus"></i> ${text('充值')}</a>
+				<% } %>
 				<div class="btn-group">
 					<a href="javascript:" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 						<i class="fa fa-navicon"></i> <span class="caret"></span>
@@ -93,9 +96,10 @@
 // 初始化DataGrid对象
 $('#dataGrid').dataGrid({
 	searchForm: $("#searchForm"),
+	showCheckbox: true,
 	columnModel: [
 		{header:'${text("id")}', name:'cardNo', index:'a.id', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
-				return '<a href="${ctx}/cardinfo/tblCardInfo/form?id='+row.id+'" class="btnList" data-title="${text("编辑银行卡")}">'+(val||row.id)+'</a>';
+				return '<a href="${ctx}/cardtransaction/tblCardTransaction/list?cardId='+row.cardId+'" class="btnList" data-title="${text("查看流水")}">查看流水</a>';
 			}},
 		{header:'${text("银行卡号")}', name:'cardNo', index:'a.card_no', width:150, align:"center"},
 		{header:'${text("cvv")}', name:'cvv', index:'a.cvv', width:150, align:"left",align:"center"},
@@ -146,6 +150,15 @@ $('#dataGrid').dataGrid({
 	}
 });
 
+$(document).ready(function () {
+	$("#batchChargeButton").on("click",function () {
+		// $('#dataGrid').dataGrid("getSelRow");
+		var rows = $('#dataGrid').dataGrid('getSelectRows');
+		debugger;
+		batchChargeCard(rows);
+	});
+});
+
 function chargeCard(id) {
 	layer.prompt({title: '输入充值数额，并确认', formType: 0}, function (pass, index) {
 		js.loading("充值中");
@@ -173,4 +186,32 @@ function chargeCard(id) {
 		});
 	});
 }
+function batchChargeCard(ids) {
+	layer.prompt({title: '输入每张卡的充值数额，并确认', formType: 0}, function (pass, index) {
+		js.loading("充值中");
+		$.ajax({
+			type: "POST",
+			url: "${ctx}/cardinfo/tblCardInfo/batchCharge",
+			data: {ids: ids, amount: pass},
+			dataType: "json",
+			async:false,
+			success: function (data) {
+				js.closeLoading(1000, true);
+				if(data.result == Global.TRUE){
+					js.showMessage(data.message,"消息","success", 4000);
+					layer.close(index);
+					$('#dataGrid').dataGrid('refresh');
+				}else {
+					js.showMessage(data.message, "消息", "error", 4000);
+				}
+			},
+			error: function (e) {
+				js.closeLoading(1000, true);
+				console.log(e);
+				layer.close(index);
+			}
+		});
+	});
+}
+
 </script>
