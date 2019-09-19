@@ -179,13 +179,13 @@ public class TblCardInfoController extends BaseController {
     public String batchCharge(@RequestParam("ids") String[] ids, @RequestParam("amount") Long amount) {
         val budgetQuery = new TblBudget();
         budgetQuery.setOwnerUsercode(UserUtils.getUser().getUserCode());
-        val budget = budgetService.get(budgetQuery);
-        if (budget != null) {
-            if (budget.getBudgetAmount() < (ids.length * amount*100)) {
+        val budgetList = budgetService.findList(budgetQuery);
+        if (budgetList != null&&budgetList.size()==1) {
+            if (budgetList.get(0).getBudgetAmount() < (ids.length * amount*100)) {
                 return renderResult(Global.FALSE, text("帐户余额不足，请先充值帐户！"));
             }
             try {
-                tblCardInfoService.batchChargeCard(ids, budget.getId(), amount);
+                tblCardInfoService.batchChargeCard(ids, budgetList.get(0).getId(), amount);
             } catch (Exception e) {
                 e.printStackTrace();
                 log.error("充值失败,id:{},amounts:{}" + ids, ids.length * amount);
@@ -206,8 +206,14 @@ public class TblCardInfoController extends BaseController {
     public String batchRefund(@RequestParam("ids") String[] ids) {
         val budgetQuery = new TblBudget();
         budgetQuery.setOwnerUsercode(UserUtils.getUser().getUserCode());
-        val budget = budgetService.get(budgetQuery);
-
+        val budgetList = budgetService.findList(budgetQuery);
+        if (budgetList != null&&budgetList.size()==1){
+            try {
+                tblCardInfoService.batchRefundCard(ids, budgetList.get(0).getId());
+            } catch (Exception e) {
+                return renderResult(Global.FALSE, text("回收错误，请联系管理员"));
+            }
+        }
         return renderResult(Global.FALSE, text("未知错误，请联系管理员"));
     }
     /**

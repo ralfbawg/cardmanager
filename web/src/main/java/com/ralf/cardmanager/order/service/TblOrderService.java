@@ -202,14 +202,15 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
         budget.setCreateUserCode(tblOrder.getAuditUsercode());
         budget.setCardServiceProvider(SpType.DIVVY.toString());
         budget.setName(UserUtils.get(tblOrder.getSubmitUsercode()).getUserName() + "的帐户");
-        budget.setOwnerUsercode(UserUtils.get(tblOrder.getSubmitUsercode()).getUserName());
-        Long budgetAmount = (tblOrder.getTblOrderDetailList() != null && tblOrder.getTblOrderDetailList().size() > 0) ? tblOrder.getTblOrderDetailList().stream().collect(Collectors.summingLong(TblOrderDetail::getLimitAmount)) : 0l;
+        budget.setOwnerUsercode(tblOrder.getSubmitUsercode());
+        Long AssignAmount = (tblOrder.getTblOrderDetailList() != null && tblOrder.getTblOrderDetailList().size() > 0) ? tblOrder.getTblOrderDetailList().stream().collect(Collectors.summingLong(TblOrderDetail::getLimitAmount)) : 0l;
         budget.setBudgetAmount(0l);
         budget.setSpendAmount(0l);
-        budget.setAssignAmount(budgetAmount);
+        budget.setAssignAmount(AssignAmount);
         budget.setUnsignAmount(0l);
-        budget.setTotalAmount(budgetAmount);
+        budget.setTotalAmount(AssignAmount);
         budget.setLastChargeOn(new Date());
+        budget.setCreateTime(new Date());
         budgetService.save(budget);
         createCard(tblOrder, budget.getId());
     }

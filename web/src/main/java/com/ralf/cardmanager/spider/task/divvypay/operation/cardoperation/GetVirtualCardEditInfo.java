@@ -1,16 +1,23 @@
 package com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation;
 
 import com.google.gson.JsonParser;
+import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
+import com.ralf.cardmanager.cardinfo.service.TblCardInfoService;
 import com.ralf.cardmanager.spider.task.divvypay.config.DivvyPaySiteConfig;
 import com.ralf.cardmanager.spider.task.divvypay.operation.base.BaseDivvyOperation;
 import lombok.val;
+import lombok.var;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 @Service
 @Scope("prototype")
 public class GetVirtualCardEditInfo extends BaseDivvyOperation<GetVirtualCardEditRsp> {
+    @Autowired
+    TblCardInfoService tblCardInfoService;
+
     public GetVirtualCardEditInfo init(String cardId) throws Exception {
         val t = new DateTime(2019, 12, 1, 1, 1);
         val start = (new DateTime(t.getYear(), t.getMonthOfYear(), 1, 8, 0).getMillis() / 1000);
@@ -41,6 +48,18 @@ public class GetVirtualCardEditInfo extends BaseDivvyOperation<GetVirtualCardEdi
         val amount = jsonObject.get("userAllocation").getAsJsonObject().get("balance").getAsLong();
         val initialAmount = jsonObject.get("userAllocation").getAsJsonObject().get("initialAmount").getAsLong();
         val totalCleared = jsonObject.get("userAllocation").getAsJsonObject().get("totalCleared").getAsLong();
+        new Thread(() -> {
+            val cardInfo = new TblCardInfo();
+            cardInfo.setCardId(bodyParams[0]);
+            val list = tblCardInfoService.findList(cardInfo);
+            if (list!=null&&list.size()==1){
+                var result = list.get(0);
+                result.setUserAllocationId(id);
+                result.setCardSpendAmount(totalCleared);
+                result.setCardAmount(amount);
+                tblCardInfoService.update(result);
+            }
+        }).start();
 
 
         return new GetVirtualCardEditRsp(id,amount,initialAmount,totalCleared);

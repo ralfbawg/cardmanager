@@ -10,6 +10,7 @@ import com.jeesite.common.utils.SpringUtils;
 import com.ralf.cardmanager.budget.service.TblBudgetService;
 import com.ralf.cardmanager.cardinfo.dao.TblCardInfoDao;
 import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
+import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.DeleteCard;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.GetVirtualCardDetailsInfo;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.GetVirtualCardEditInfo;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.UpdateVirtualCard;
@@ -40,6 +41,8 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
     private GetVirtualCardEditInfo getVirtualCardEditInfo;
     @Autowired
     private GetVirtualCardDetailsInfo getVirtualCardDetailsInfo;
+    @Autowired
+    private DeleteCard deleteCard;
 
     /**
      * 获取单条数据
@@ -147,12 +150,62 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
 
     @Transactional
     public boolean deleteCard(TblCardInfo cardInfo) {
-
+        try {
+            val rsp = deleteCard.init(cardInfo.getCardId()).execute();
+            if (rsp.getDeleteCardId().equalsIgnoreCase(cardInfo.getCardId())){
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
         return false;
     }
 
     @Transactional
     public boolean batchDeleteCard(String[] ids) {
-        return false;
+        var result = true;
+        for (String id : ids) {
+            val card = get(id);
+            if (card!=null){
+                result&=deleteCard(card);
+            }
+
+        }
+
+        return result;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public boolean batchRefundCard(String[] ids, String budgetId) throws Exception{
+        var result = true;
+        for (String id : ids) {
+            val cardQuery = new TblCardInfo();
+            cardQuery.setId(id);
+            cardQuery.setBudgetId(budgetId);
+            val cardList = findList(cardQuery);
+            if (cardList == null || cardList.size() <= 0) {
+                log.error("没找到卡");
+                return false;
+            } else {
+                result &= refundCard(cardList.get(0));
+            }
+        }
+        return result;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public boolean refundCard(TblCardInfo cardInfo) throws Exception {
+            val rsp = getVirtualCardEditInfo.init(cardInfo.getCardId()).execute();
+            var refundAmount = rsp.getAmount()-1;
+            updateVirtualCard.init(refundAmount,cardInfo.getCardId(),cardInfo.getCardName());
+        try {
+            budgetService.charge(cardInfo.getBudgetId(),refundAmount);
+        } catch (Exception e) {
+            e.printStackTrace();
+            updateVirtualCard.init(rsp.getAmount(),cardInfo.getCardId(),cardInfo.getCardName());
+            throw e;
+        }
+        return true;
     }
 }
