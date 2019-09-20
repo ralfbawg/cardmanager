@@ -1,9 +1,9 @@
 cusvar: cm
 cm:
-  env: dev
-#  env: prod
+#  env: dev
+  env: prod
   spider:
-    enabled: false
+    enabled: true
     loginTip:
       inteval: 10
       email:

@@ -124,24 +124,24 @@ $('#dataGrid').dataGrid({
 		{header:'${text("卡号")}', name:'cardNo', index:'a.card_no', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
 			return '<a href="${ctx}/cardtransaction/tblCardTransaction/form?id='+row.id+'" class="btnList" data-title="${text("编辑交易流水")}">'+(val||row.id)+'</a>';
 		}},
-		{header:'${text("清算商户")}', name:'clearedMerchant', index:'a.cleared_merchant', width:150, align:"left"},
-		{header:'${text("消费金额")}', name:'amount', index:'a.amount', width:150, align:"center",formatter:function (val, obj, row, act) {
+		{header:'${text("交易商户")}', name:'clearedMerchant', index:'a.cleared_merchant', width:150, align:"left"},
+		{header:'${text("交易金额")}', name:'amount', index:'a.amount', width:150, align:"center",formatter:function (val, obj, row, act) {
 			    var price = val/100
 				return (price<0?"-":"")+("$"+price).replace("-","");
 			}},
 		// {header:'${text("商户")}', name:'merchantLogo', index:'a.merchant_logo', width:90, align:"center",formatter:function (val, obj, row, act) {
 		// 		return val!=undefined?'<img src="'+val+'" style="width: 20px;height: 20px">':"";
 		// 	}},
-		{header:'${text("交易状态")}', name:'transactionStatus', index:'a.transaction_status', width:150, align:"center", formatter: function(val, obj, row, act){
+		{header:'${text("清算状态")}', name:'transactionStatus', index:'a.transaction_status', width:150, align:"center", formatter: function(val, obj, row, act){
 			return js.getDictLabel(${@DictUtils.getDictListJson('cm_trancaction_status')}, val, '${text("未知")}', true);
 		}},
-		{header:'${text("发生日期")}', name:'occurredDate', index:'a.occurred_date', width:150, align:"left"},
+		{header:'${text("交易日期")}', name:'occurredDate', index:'a.occurred_date', width:150, align:"left"},
 		{header:'${text("清算日期")}', name:'clearedDate', index:'a.cleared_date', width:150, align:"left"},
+		{header:'${text("交易状态")}', name:'transactionType', index:'a.transaction_type', width:150, align:"center"},
 		{header:'${text("标签")}', name:'label', index:'a.label', width:150, align:"left"},
 		{header:'${text("注释")}', name:'note', index:'a.note', width:150, align:"left"},
-		{header:'${text("流水类型")}', name:'transactionType', index:'a.transaction_type', width:150, align:"left"},
-		{header:'${text("税费")}', name:'fee', index:'a.fee', width:150, align:"center"},
-		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+		{header:'${text("税费")}', name:'fee', index:'a.fee', width:80, align:"center"},
+		{header:'${text("操作")}', name:'actions', width:80, sortable:false, title:false, formatter: function(val, obj, row, act){
 			var actions = [];
 			<% if(hasPermi('cardtransaction:tblCardTransaction:edit')){ %>
 				actions.push('<a href="${ctx}/cardtransaction/tblCardTransaction/form?id='+row.id+'" class="btnList" title="${text("编辑交易流水")}"><i class="fa fa-pencil"></i></a>&nbsp;');

@@ -20,6 +20,7 @@ import lombok.val;
 import lombok.var;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -255,7 +256,12 @@ public class SchedulerService {
                         Thread.sleep(1000 * 2);
                     }
                     val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, i * pageSize, null).execute();
-                    saveTransaction(rsp);
+                    try{saveTransaction(rsp);}
+                    catch (DuplicateKeyException e){
+                        continue;
+                    }catch (Exception e){
+                        throw e;
+                    }
                 }
             } else {
                 val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, 0l, null).execute();
@@ -331,7 +337,7 @@ public class SchedulerService {
                 transaction.setProcStatus(PROC_STATUS_FINISH);
             }
             if (commonService.getCardinfoByCardId(t.getCardId()) == null) {
-                log.error("没有相关卡与id{}", t.getCardId());
+                log.error("没有相关卡与id{}对应", t.getCardId());
             } else {
                 transaction.setCardNo(commonService.getCardinfoByCardId(t.getCardId()).getCardNo());
                 transaction.setCardOwner(commonService.getCardinfoByCardId(t.getCardId()).getCardOwner());
@@ -340,8 +346,8 @@ public class SchedulerService {
             transaction.setDeclineReason(t.getDeclineReason());
             try {
                 transactionService.save(transaction);
-            } catch (Exception e) {
-                log.error("save transaction error", e);
+            }catch (DuplicateKeyException e){
+                log.error("库里已经存在这条交易流水{}了", transaction.getSpTransactionId());
             }
 
         });
