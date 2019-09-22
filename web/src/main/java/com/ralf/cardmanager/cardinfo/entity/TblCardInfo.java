@@ -24,7 +24,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
  */
 @Table(name = "tbl_card_info", alias = "a", columns = {
         @Column(name = "id", attrName = "id", label = "id", isPK = true),
-        @Column(name = "card_no", attrName = "cardNo", label = "银行卡号"),
+        @Column(name = "card_no", attrName = "cardNo", label = "银行卡号",queryType = QueryType.LIKE),
         @Column(name = "budget_id", attrName = "budgetId", label = "帐户id"),
         @Column(name = "card_name", attrName = "cardName", label = "卡名", queryType = QueryType.LIKE),
         @Column(name = "card_limit", attrName = "cardLimit", label = "限额度", isQuery = false),

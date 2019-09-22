@@ -31,7 +31,7 @@
 			</div>
 		</div>
 		<div class="box-body">
-			<#form:form id="searchForm" model="${tblCardInfo}" action="${ctx}/cardinfo/tblCardInfo/listData" method="post" class="form-inline hide"
+			<#form:form id="searchForm" model="${tblCardInfo}" action="${ctx}/cardinfo/tblCardInfo/listData" method="post" class="form-inline <% if(hasRole()){ %>hide<% } %>"
 					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
 				<div class="form-group">
 					<label class="control-label">${text('银行卡号')}：</label>
