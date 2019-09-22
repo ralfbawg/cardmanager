@@ -8,7 +8,7 @@
 			<div class="box-tools pull-right">
 				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
 				<% if(hasPermi('sys:empUser:edit')){ %>
-					<a href="${ctx}/sys/empUser/form?op=add" class="btn btn-default btnTool" title="${text('新增用户')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+					<a href="${ctx}/sys/empUser/form?op=add&employee.office.officeCode=CHGS" class="btn btn-default btnTool" title="${text('新增用户')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
 				<% } %>
 				<div class="btn-group">
 					<a href="javascript:" class="btn btn-default dropdown-toggle" data-toggle="dropdown">

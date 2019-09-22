@@ -11,6 +11,7 @@ import com.jeesite.modules.sys.utils.UserUtils;
 import com.ralf.cardmanager.budget.entity.TblBudget;
 import com.ralf.cardmanager.budget.service.TblBudgetService;
 import com.ralf.cardmanager.spider.task.divvypay.operation.cardoperation.DeleteCard;
+import com.ralf.cardmanager.system.CommonService;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -46,6 +47,9 @@ public class TblCardInfoController extends BaseController {
     @Autowired
     private DeleteCard deleteCard;
 
+    @Autowired
+    private CommonService commonService;
+
     /**
      * 获取数据
      */
@@ -72,7 +76,7 @@ public class TblCardInfoController extends BaseController {
     @ResponseBody
     public Page<TblCardInfo> listData(TblCardInfo tblCardInfo, HttpServletRequest request, HttpServletResponse response) {
         tblCardInfo.setPage(new Page<>(request, response));
-        if (!UserUtils.getUser().isAdmin() && !UserUtils.getUser().isSuperAdmin()) {
+        if (!commonService.isAdminOrSecMgr()) {
             tblCardInfo.setCardOwner(UserUtils.getUser().getUserCode());
         }
         Page<TblCardInfo> page = tblCardInfoService.findPage(tblCardInfo);
@@ -217,7 +221,7 @@ public class TblCardInfoController extends BaseController {
         return renderResult(Global.FALSE, text("未知错误，请联系管理员"));
     }
     /**
-     * 批量回收
+     * 批量删除
      */
     @RequiresPermissions("cardinfo:tblCardInfo:batchDelete")
     @RequestMapping(value = "batchDelete")

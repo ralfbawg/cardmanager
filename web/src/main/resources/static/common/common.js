@@ -3,15 +3,15 @@
  * 项目自定义的公共JavaScript，可覆盖jeesite.js里的方法
  */
 $.extend({
-    TransferUsdToRmb:function(curr,usd){
-        if (curr==undefined||usd==undefined){
+    TransferUsdToRmb: function (curr, usd) {
+        if (curr == undefined || usd == undefined) {
             return "未知";
         }
-        var result = (curr*usd)/10000;
+        var result = (curr * usd) / 10000;
         console.log(result);
         return result;
     },
-    accDiv:function(arg1,arg2) {
+    accDiv: function (arg1, arg2) {
         var t1 = 0, t2 = 0, r1, r2;
         try {
             t1 = arg1.toString().split(".")[1].length
@@ -26,15 +26,72 @@ $.extend({
             r2 = Number(arg2.toString().replace(".", ""))
             return (r1 / r2) * pow(10, t2 - t1);
         }
-    }
+    },
+    CurrentLongToDouble: function (a) {
+        console.log(a)
+        return a / 100;
+    },
+    GetUser: function (usercode) {
+        var user;
+        $.ajax({
+            type: "POST",
+            url: "/system/getUser",
+            data: {usercode: usercode},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                user = data;
+            },
+            error: function (e) {
+                console.log(e);
+            }
+        });
+        return user;
+    },
+    GetBudget: function (budgetId) {
+        var budget;
+        $.ajax({
+            type: "POST",
+            url: "/system/getBudget",
+            data: {budgetId: budgetId},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                budget = data;
+            },
+            error: function (e) {
+                console.log(e);
+            }
+        });
+        return budget;
+    },
+    GetBudgetCardCount: function (budgetId) {
+        var count;
+        $.ajax({
+            type: "POST",
+            url: "/system/getBudgetCardCount",
+            data: {budgetId: budgetId},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                count = data;
+            },
+            error: function (e) {
+                console.log(e);
+            }
+        });
+        return count;
+    },
+    userCache: {users: {}, lastTime: new Date().getMilliseconds()}
 });
-function addRow(id,obj) {
+
+function addRow(id, obj) {
     // 选中行rowid
-    var rowId = $("#"+id).dataGrid('getGridParam', 'selrow');
+    var rowId = $("#" + id).dataGrid('getGridParam', 'selrow');
 
     // 选中行实际表示的位置
-    var ind = $("#"+id).getInd(rowId);
+    var ind = $("#" + id).getInd(rowId);
     // 新插入行的位置
     var newInd = ind + 1;
-    $("#"+id).addRowData(rowId + 1, obj, newInd);
+    $("#" + id).addRowData(rowId + 1, obj, newInd);
 }

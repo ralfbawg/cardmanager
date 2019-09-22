@@ -17,6 +17,7 @@ import com.ralf.cardmanager.budget.entity.TblBudget;
 import com.ralf.cardmanager.budget.service.TblBudgetService;
 import com.ralf.cardmanager.order.entity.TblOrderDetail;
 import com.ralf.cardmanager.spider.task.divvypay.operation.company.Budget;
+import com.ralf.cardmanager.system.CommonService;
 import com.ralf.cardmanager.tblbizparam.entity.TblBizParam;
 import com.ralf.cardmanager.tblbizparam.service.TblBizParamService;
 import lombok.val;
@@ -50,6 +51,7 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "${adminPath}/order/tblOrder")
 public class TblOrderController extends BaseController {
     public static final String STATUS_DRAFT = "01";
+    public static final String STATUS_DRAFT_BACK = "00";
 
     public static final String STATUS_WAIT_PAY = "02";
 
@@ -67,9 +69,12 @@ public class TblOrderController extends BaseController {
 
     @Autowired
     private TblBizParamService bizParamService;
+
     @Autowired
     private TblBudgetService budgetService;
 
+    @Autowired
+    private CommonService commonService;
     /**
      * 获取数据
      */
@@ -96,7 +101,7 @@ public class TblOrderController extends BaseController {
     @ResponseBody
     public Page<TblOrder> listData(TblOrder tblOrder, HttpServletRequest request, HttpServletResponse response) {
         tblOrder.setPage(new Page<>(request, response));
-        if (!UserUtils.getUser().isSuperAdmin() && !UserUtils.getUser().isAdmin()) {
+        if (!commonService.isAdminOrSecMgr()) {
             tblOrder.setSubmitUsercode(UserUtils.getUser().getUserCode());
         }
         Page<TblOrder> page = tblOrderService.findPage(tblOrder);
@@ -143,7 +148,7 @@ public class TblOrderController extends BaseController {
         if (tblOrder.getType().equalsIgnoreCase("create")) {
             BizParam.setKey("CreateBudgetCost");
             BizParam.setPageSize(Integer.MAX_VALUE);
-            budgetPrice = Long.valueOf(bizParamService.findList(BizParam).get(0).getValue()) * 100;
+            budgetPrice = Long.valueOf(bizParamService.findList(BizParam).get(0).getValue());
         }
         //建卡金额
         BizParam.setKey("PerCardCost");
@@ -166,14 +171,14 @@ public class TblOrderController extends BaseController {
     /**
      * 删除订单
      */
-    @RequiresPermissions("order:tblOrder:edit")
+    @RequiresPermissions("order:tblOrder:delete")
     @RequestMapping(value = "delete")
     @ResponseBody
     public String delete(TblOrder tblOrder) {
         val dict = new DictData();
         dict.setDictType("cm_order_pay_status");
         DictData a = dictDataService.get(dict);
-        if (!StringUtils.isEmpty(tblOrder.getPayStatus()) && !tblOrder.getPayStatus().equalsIgnoreCase("01")) {//编辑中
+        if (!StringUtils.isEmpty(tblOrder.getPayStatus()) && (!tblOrder.getPayStatus().equalsIgnoreCase(STATUS_DRAFT)||!tblOrder.getPayStatus().equalsIgnoreCase(STATUS_DRAFT_BACK))) {//编辑中
             return renderResult(Global.FALSE, text("订单已经提交，不能删除！"));
         }
         tblOrderService.delete(tblOrder);
@@ -196,6 +201,20 @@ public class TblOrderController extends BaseController {
             return renderResult(Global.FALSE, text("审核订单失败！"));
         }
 
+    }
+    /**
+     * 退回订单
+     *
+     * @param tblOrder
+     * @return
+     */
+    @RequiresPermissions({"order:tblOrder:audit"})
+    @RequestMapping({"auditBack"})
+    @ResponseBody
+    public String auditBack(TblOrder tblOrder) {
+        tblOrder.setPayStatus(STATUS_DRAFT_BACK);
+        tblOrderService.update(tblOrder);
+        return renderResult(Global.TRUE, text("退回订单成功！请用户修改后再提交"));
     }
 
     /**

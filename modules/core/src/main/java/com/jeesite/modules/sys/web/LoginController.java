@@ -390,7 +390,7 @@ public class LoginController extends BaseController{
 	@RequiresPermissions("user")
 	@RequestMapping(value = "desktop")
 	public String desktop(HttpServletRequest request, HttpServletResponse response, Model model) {
-		if (UserUtils.getUser().isAdmin()||UserUtils.getUser().isSuperAdmin()){
+		if (UserUtils.getUser().isAdmin()||UserUtils.getUser().isSuperAdmin()||UserUtils.getUser().getMgrType()=="2"){
 			return "modules/sys/sysDesktop";
 		}else{
 			return "modules/sys/userDesktop";

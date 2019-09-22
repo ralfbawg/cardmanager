@@ -123,21 +123,27 @@ public class SchedulerService {
         declineTransaction.setTransactionType("DECLINE");
         val list = transactionService.findList(declineTransaction);
         if (list != null && list.size() > 0) {
+            val filterTransactionList = list.stream().filter(t->commonService.getCardinfoByCardId(t.getCardId())!=null).collect(Collectors.toList());
             for (TblCardTransaction tblCardTransaction : list) {
-                val cardInfo = new TblCardInfo();
-                cardInfo.setCardId(tblCardTransaction.getCardId());
-                val cardList = cardInfoService.findList(cardInfo);
-                if (cardList != null && cardList.size() > 0) {
-                    val card = cardList.get(0);
-                    val rsp = getVirtualCardDetailsInfo.init(card.getCardId()).execute();
+                    TblCardInfo cardInfo = null;
+                    val rsp = getVirtualCardDetailsInfo.init(tblCardTransaction.getCardId()).execute();
                     var result = rsp.isFrozen();
                     if (rsp.isFrozen()) {
+                        val card = new TblCardInfo();
+                        card.setCardId(tblCardTransaction.getCardId());
+                        cardInfo = cardInfoService.findList(card).get(0);
                         result = unfreezedCard(cardInfo, 0);
                     }
-                    if (result){continue;}
+                    if (result){
+                        if (commonService.getUnfreezeCardCount(tblCardTransaction.getCardId())>20){
+                            tblCardTransaction.setProcStatus(PROC_STATUS_FINISH);
+                            transactionService.update(tblCardTransaction);
+                        }
+                        continue;
+                    }
                     if (!result && tblCardTransaction.getDeclineReason().equalsIgnoreCase("exceeds_vc_balance")) {//如果是超过余额，需要自动充值
 
-                        if (!autoCharge(cardList.get(0),  commonService.getAutoChargeAmount())) {
+                        if (!autoCharge(cardInfo,  commonService.getAutoChargeAmount()==0?tblCardTransaction.getAmount():commonService.getAutoChargeAmount())) {
                             continue;
                         }
                     }
@@ -145,7 +151,7 @@ public class SchedulerService {
                     }
                     tblCardTransaction.setProcStatus(PROC_STATUS_FINISH);
                     transactionService.update(tblCardTransaction);
-                }
+
             }
         }
     }

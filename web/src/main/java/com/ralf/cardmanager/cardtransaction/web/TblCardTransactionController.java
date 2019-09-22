@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.jeesite.modules.sys.utils.UserUtils;
+import com.ralf.cardmanager.system.CommonService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,6 +35,9 @@ public class TblCardTransactionController extends BaseController {
 
 	@Autowired
 	private TblCardTransactionService tblCardTransactionService;
+
+	@Autowired
+	private CommonService commonService;
 	
 	/**
 	 * 获取数据
@@ -61,7 +65,7 @@ public class TblCardTransactionController extends BaseController {
 	@ResponseBody
 	public Page<TblCardTransaction> listData(TblCardTransaction tblCardTransaction, HttpServletRequest request, HttpServletResponse response) {
 		tblCardTransaction.setPage(new Page<>(request, response));
-		if (!UserUtils.getUser().isAdmin()&&!UserUtils.getUser().isSuperAdmin()){
+		if (!commonService.isAdminOrSecMgr()){
 			tblCardTransaction.setCardOwner(UserUtils.getUser().getUserCode());
 		}
 		Page<TblCardTransaction> page = tblCardTransactionService.findPage(tblCardTransaction);

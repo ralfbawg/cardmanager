@@ -23,9 +23,9 @@
 							<label class="control-label col-sm-4" title="">
 								<span class="required ">*</span> ${text('归属机构')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
-								<#form:treeselect id="office" title="${text('机构选择')}"
+								<#form:treeselect id="office" title="${text('机构选择')}" value="CHGS"
 									path="employee.office.officeCode" labelPath="employee.office.officeName" 
-									url="${ctx}/sys/office/treeData?ctrlPermi=${@Global.getConfig('user.adminCtrlPermi', '2')}" class="required" allowClear="false"/>
+									url="${ctx}/sys/office/treeData?ctrlPermi=${@Global.getConfig('user.adminCtrlPermi', '2')}" class="" allowClear="false"/>
 							</div>
 						</div>
 					</div>
@@ -35,7 +35,7 @@
 								<span class="required hide">*</span> ${text('归属公司')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
 								<#form:treeselect id="company" title="${text('公司选择')}"
-									path="employee.company.companyCode" labelPath="employee.company.companyName" 
+									path="employee.company.companyCode" labelPath="employee.company.companyName" value="CHGS"
 									url="${ctx}/sys/company/treeData?ctrlPermi=${@Global.getConfig('user.adminCtrlPermi', '2')}" btnClass="" allowClear="true"/>
 							</div>
 						</div>

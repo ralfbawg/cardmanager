@@ -110,11 +110,13 @@ $('#dataGrid').dataGrid({
 				return '<a href="${ctx}/cardtransaction/tblCardTransaction/list?cardId='+row.cardId+'" class="btnList" data-title="${text("查看流水")}">查看流水</a>';
 			}},
 		{header:'${text("卡号")}', name:'cardNo', index:'a.card_no', width:200, align:"center"},
-		{header:'${text("有效期")}', name:'expiredDate', index:'a.expired_date', width:180, align:"left"},
+		{header:'${text("有效期")}', name:'expiredDate', index:'a.expired_date', width:100, align:"center"},
 		{header:'${text("cvv")}', name:'cvv', index:'a.cvv', width:100, align:"center"},
 		{header:'${text("卡昵称")}', name:'nickname', index:'a.nickname', width:150, align:"center"},
 		{header:'${text("exp")}', name:'exp', index:'a.exp', width:150, align:"center",hidden:true},
-		{header:'${text("帐户id")}', name:'budgetId', index:'a.budget_id', width:150, align:"center",hidden:true},
+		{header:'${text("帐户")}', name:'budgetId', index:'a.budget_id', width:150, align:"center",formatter:function (val, obj, row, act) {
+				return $.GetBudget(val).name;
+			}},
 		// {header:'${text("卡名")}', name:'cardName', index:'a.card_name', width:150, align:"center",hidden:true},
 		{header:'${text("限额度")}', name:'cardLimit', index:'a.card_limit', width:150, align:"center",hidden:true},
 
@@ -204,8 +206,7 @@ function batchRefund(ids) {
     }, "json", false, "回收中...");
 }
 function chargeCard(id) {
-
-	layer.prompt({title: '输入充值数额，并确认', formType: 0}, function (pass, index) {
+	layer.prompt({title: '输入充值数额，并确认,当前帐户余额(<font color="green">$ '+$.CurrentLongToDouble('${@CommonUtil.getBudgetAmount("")}')+'</font>', formType: 0}, function (pass, index) {
 		js.loading("充值中");
 		$.ajax({
 			type: "POST",
@@ -237,12 +238,12 @@ function batchChargeCard(ids) {
 	if (ids.length<=0){
 		return js.showMessage("请先选中卡片","提示","warning", 4000);
 	}
-	layer.prompt({title: '输入每张卡的充值数额，并确认', formType: 0}, function (pass, index) {
+	layer.prompt({title: '输入每张卡的充值数额，并确认,当前帐户余额(<font color="green">$ '+$.CurrentLongToDouble('${@CommonUtil.getBudgetAmount("")}')+'</font>)', formType: 0}, function (pass, index) {
 		js.loading("充值中");
 		$.ajax({
 			type: "POST",
 			url: "${ctx}/cardinfo/tblCardInfo/batchCharge",
-			data: {ids: ids, amount: pass},
+			data: {ids: ids, amount: parseInt(pass*100)},
 			dataType: "json",
             traditional:true,
 			async:false,

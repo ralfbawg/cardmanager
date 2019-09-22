@@ -6,6 +6,10 @@ package com.ralf.cardmanager.budget.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.jeesite.modules.sys.entity.User;
+import com.jeesite.modules.sys.utils.UserUtils;
+import com.ralf.cardmanager.system.CommonService;
+import lombok.val;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,6 +37,9 @@ public class TblBudgetController extends BaseController {
 
 	@Autowired
 	private TblBudgetService tblBudgetService;
+
+	@Autowired
+	private CommonService commonService;
 	
 	/**
 	 * 获取数据
@@ -60,6 +67,10 @@ public class TblBudgetController extends BaseController {
 	@ResponseBody
 	public Page<TblBudget> listData(TblBudget tblBudget, HttpServletRequest request, HttpServletResponse response) {
 		tblBudget.setPage(new Page<>(request, response));
+		val user = UserUtils.getUser();
+		if(!commonService.isAdminOrSecMgr()){
+			tblBudget.setOwnerUsercode(user.getUserCode());
+		}
 		Page<TblBudget> page = tblBudgetService.findPage(tblBudget);
 		return page;
 	}

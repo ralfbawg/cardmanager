@@ -4,6 +4,13 @@ import com.jeesite.common.cache.CacheUtils;
 import com.jeesite.common.lang.StringUtils;
 import com.jeesite.common.utils.SpringUtils;
 import com.jeesite.common.web.BaseController;
+import com.jeesite.modules.sys.entity.User;
+import com.jeesite.modules.sys.service.UserService;
+import com.jeesite.modules.sys.utils.UserUtils;
+import com.ralf.cardmanager.budget.entity.TblBudget;
+import com.ralf.cardmanager.budget.service.TblBudgetService;
+import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
+import com.ralf.cardmanager.cardinfo.service.TblCardInfoService;
 import com.ralf.cardmanager.tblbizparam.entity.TblBizParam;
 import com.ralf.cardmanager.tblbizparam.service.TblBizParamService;
 import lombok.val;
@@ -27,6 +34,15 @@ public class SystemController extends BaseController {
 
     @Autowired
     TblBizParamService tblBizParamService;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    TblBudgetService budgetService;
+
+    @Autowired
+    TblCardInfoService cardInfoService;
 
     public void getToken() {
 
@@ -52,5 +68,24 @@ public class SystemController extends BaseController {
             return renderResult("false", "错误错误！");
         }
         return ".......有问题你";
+    }
+    @RequestMapping("/getUser")
+    @ResponseBody
+    public User getUser(String usercode) {
+        return UserUtils.get(usercode);
+    }
+
+    @RequestMapping("/getBudget")
+    @ResponseBody
+    public TblBudget getBudget(String budgetId) {
+        val budget = budgetService.get(budgetId);
+        return budget!=null?budget:null;
+    }
+    @RequestMapping("/getBudgetCardCount")
+    @ResponseBody
+    public Long getBudgetCardCount(String budgetId) {
+        val cardinfo = new TblCardInfo();
+        cardinfo.setBudgetId(budgetId);
+        return cardInfoService.findCount(cardinfo);
     }
 }
