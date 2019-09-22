@@ -115,7 +115,8 @@ $('#dataGrid').dataGrid({
 		{header:'${text("卡昵称")}', name:'nickname', index:'a.nickname', width:150, align:"center"},
 		{header:'${text("exp")}', name:'exp', index:'a.exp', width:150, align:"center",hidden:true},
 		{header:'${text("帐户")}', name:'budgetId', index:'a.budget_id', width:150, align:"center",formatter:function (val, obj, row, act) {
-				return $.GetBudget(val).name;
+				var tmp = $.GetBudget(val);
+				return tmp==undefined?"未知":tmp.name;
 			}},
 		// {header:'${text("卡名")}', name:'cardName', index:'a.card_name', width:150, align:"center",hidden:true},
 		{header:'${text("限额度")}', name:'cardLimit', index:'a.card_limit', width:150, align:"center",hidden:true},
