@@ -13,7 +13,7 @@
 			</div>
 		</div>
 		<div class="box-body">
-			<#form:form id="searchForm" model="${tblCardTransaction}" action="${ctx}/cardtransaction/tblCardTransaction/listData" method="post" class="form-inline<% if(hasRole()){ %>hide<% } %>"
+			<#form:form id="searchForm" model="${tblCardTransaction}" action="${ctx}/cardtransaction/tblCardTransaction/listData" method="post" class="form-inline <% if(hasRole()){ %>hide<% } %>"
 					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
 				<div class="form-group">
 					<label class="control-label">${text('卡id')}：</label>
@@ -34,9 +34,11 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label">${text('持卡用户')}：</label>
+					<label class="control-label">${text('拥有人')}：</label>
 					<div class="control-inline">
-						<#form:input path="cardOwner" maxlength="64" class="form-control width-120"/>
+						<#form:treeselect id="cardOwner" title="${text('用户选择')}"
+						path="cardOwner" labelPath=""
+						url="${ctx}/sys/office/treeData?isLoadUser=true" allowClear="true"/>
 					</div>
 				</div>
 				<div class="form-group">

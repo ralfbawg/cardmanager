@@ -23,17 +23,17 @@
 				</div>
 				<div class="form-group">
 					<label class="control-label">${text('提交时间')}：</label>
-					<div class="control-inline">
-						<#form:input path="submitTime" readonly="true" maxlength="20" class="form-control Wdate-datetime"
-							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
-					</div>
+					<input type="text" id="submitTime_gte" name="submitTime_gte" value="" readonly="true" maxlength="20" class="form-control Wdate-date" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false,onpicked:function(){submitTime_lte.click()}});">
+					&nbsp;--&nbsp;
+					<input type="text" id="submitTime_lte" name="submitTime_lte" value="" readonly="true" maxlength="20" class="form-control Wdate-date" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});">
+
 				</div>
 			<% if(hasRole()){ %>
 			<div class="form-group">
 				<label class="control-label">${text('提交用户')}：</label>
 				<div class="control-inline">
 					<#form:treeselect id="submitUsercode" title="提交用户"
-					path="userCode" labelPath="userName"
+					path="submitUsercode" labelPath="userName"
 					url="${ctx}/sys/office/treeData?isLoadUser=true" allowClear="true"/>
 				</div>
 			</div>

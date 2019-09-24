@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 /**
  * 卡信息Service
@@ -113,6 +114,7 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
     @Transactional(rollbackFor = Exception.class)
     public boolean chargeCard(TblCardInfo card, Long amount) throws Exception {
         val result = budgetService.minus(card.getBudgetId(), amount);
+        val budget = budgetService.get(card.getBudgetId());
         if (result <= 0) {
             throw new Exception();
         }
@@ -200,12 +202,27 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
             var refundAmount = rsp.getAmount()-1;
             updateVirtualCard.init(refundAmount,cardInfo.getCardId(),cardInfo.getCardName());
         try {
-            budgetService.charge(cardInfo.getBudgetId(),refundAmount);
+//            budgetService.charge(cardInfo.getBudgetId(),refundAmount);
+            budgetService.refund(cardInfo.getBudgetId(),refundAmount);
         } catch (Exception e) {
             e.printStackTrace();
             updateVirtualCard.init(rsp.getAmount(),cardInfo.getCardId(),cardInfo.getCardName());
             throw e;
         }
         return true;
+    }
+
+    @Transactional
+    public Long getClearAmount(String budgetId){
+        var card = new TblCardInfo();
+        card.setBudgetId(budgetId);
+        val list = findList(card);
+        if (list!=null&&list.size()>0){
+            val ids = list.parallelStream().map(t->t.getId()).collect(Collectors.joining(","));
+            return dao.getClearAmount(ids);
+        }else{
+            return 0l;
+        }
+
     }
 }

@@ -1,9 +1,9 @@
-<% layout('/layouts/default.html', {title: '帐户信息管理', libs: ['dataGrid']}){ %>
+<% layout('/layouts/default.html', {title: '帐户管理', libs: ['dataGrid']}){ %>
 <div class="main-content">
 	<div class="box box-main">
 		<div class="box-header">
 			<div class="box-title">
-				<i class="fa fa-list-alt"></i> ${text('帐户信息管理')}
+				<i class="fa fa-list-alt"></i> ${text('帐户管理')}
 			</div>
 			<div class="box-tools pull-right">
 				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
@@ -36,7 +36,7 @@
 							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group hide">
 					<label class="control-label">${text('卡提供商')}：</label>
 					<div class="control-inline width-120">
 						<#form:select path="cardServiceProvider" dictType="cm_card_sp" blankOption="true" class="form-control"/>
@@ -72,42 +72,50 @@
 $('#dataGrid').dataGrid({
 	searchForm: $("#searchForm"),
 	columnModel: [
-		{header:'${text("卡数")}', name:'id', index:'a.id', width:150, align:"center", frozen:true, formatter: function(val, obj, row, act){
-				return '<a href="${ctx}/cardinfo/tblCardInfo/list?budgetId='+row.id+'" class="btnList" data-title="${text("查看卡信息")}">'+($.GetBudgetCardCount(val)||row.id)+'</a>';
-			}},
+
 		{header:'${text("帐户名")}', name:'name', index:'a.name', width:150, align:"center", },
-		{header:'${text("拥有者")}', name:'', index:'a.owner_usercode', width:150, align:"center",formatter:function (val, obj, row, act) {
-				return $.GetUser(row.ownerUsercode).userName;
+		{header:'${text("客户名")}', name:'', index:'a.owner_usercode', width:150, align:"center",formatter:function (val, obj, row, act) {
+			var user = 	$.GetUser(row.ownerUsercode);
+			return user==undefined?"未知":user.userName;
 			}},
-		{header:'${text("创建时间")}', name:'createTime', index:'a.create_time', width:150, align:"center"},
+		// {header:'${text("拥有者")}', name:'', index:'a.owner_usercode', width:150, align:"center",formatter:function (val, obj, row, act) {
+		// 	var user = 	$.GetUser(row.ownerUsercode);
+		// 	return user==undefined?"未知":user.userName;
+		// 	}},
+
 		{header:'${text("帐户id")}', name:'accountId', index:'a.account_id', width:150, align:"left",hidden:true},
-		{header:'${text("卡提供商")}', name:'cardServiceProvider', index:'a.card_service_provider', width:150,hidden:true, align:"center", formatter: function(val, obj, row, act){
-			return js.getDictLabel(${@DictUtils.getDictListJson('cm_card_sp')}, val, '${text("未知")}', true);
-		}},
 		{header:'${text("卡提供商帐户id")}', name:'spBudgetId', index:'a.sp_budget_id', width:150, align:"left",hidden:true},
-		{header:'${text("创建者")}', name:'', index:'a.create_user_code', width:150, align:"center"},
-		{header:'${text("帐户额度")}', name:'budgetAmount', index:'a.budget_amount', width:150, align:"center",formatter:function(val, obj, row, act){
+		{header:'${text("创建者")}', name:'', index:'a.create_user_code', width:150, align:"center",hidden:true},
+
+		{header:'${text("充值总额")}', name:'totalAmount', index:'a.total_amount', width:150, align:"center",formatter:function(val, obj, row, act){
 				return isNaN(val)?0:val/100;
 			}},
-		{header:'${text("总额度")}', name:'totalAmount', index:'a.total_amount', width:150, align:"center",formatter:function(val, obj, row, act){
+		{header:'${text("消费总额")}', name:'spendAmount', index:'a.spend_amount', width:150, align:"center",formatter:function(val, obj, row, act){
 				return isNaN(val)?0:val/100;
 			}},
-		{header:'${text("已使用额度")}', name:'spendAmount', index:'a.spend_amount', width:150, align:"center",formatter:function(val, obj, row, act){
+		{header:'${text("帐户余额")}', name:'budgetAmount', index:'a.budget_amount', width:150, align:"center",formatter:function(val, obj, row, act){
 				return isNaN(val)?0:val/100;
 			}},
-		{header:'${text("已分配额度")}', name:'assignAmount', index:'a.assign_amount', width:150, align:"center",formatter:function(val, obj, row, act){
+		{header:'${text("已充额度")}', name:'assignAmount', index:'a.assign_amount', width:150, align:"center",formatter:function(val, obj, row, act){
 				return isNaN(val)?0:val/100;
 			}},
-		{header:'${text("未分配额度")}', name:'unsignAmount', index:'a.unsign_amount', width:150, align:"center",formatter:function(val, obj, row, act){
+		{header:'${text("可充额度")}', name:'unsignAmount', index:'a.unsign_amount', width:150, align:"center",formatter:function(val, obj, row, act){
 				return isNaN(val)?0:val/100;
 			}},
+		{header:'${text("开户时间")}', name:'createTime', index:'a.create_time', width:150, align:"center"},
 		{header:'${text("状态")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
 			return js.getDictLabel(${@DictUtils.getDictListJson('sys_search_status')}, val, '${text("未知")}', true);
 		}},
 		{header:'${text("是否虚拟")}', name:'virtual', index:'a.virtual', width:150, align:"center",hidden:true, formatter: function(val, obj, row, act){
 			return js.getDictLabel(${@DictUtils.getDictListJson('')}, val, '${text("未知")}', true);
 		}},
-		{header:'${text("卡数上限")}', name:'cardCreateLimit', index:'a.card_create_limit', width:150, align:"center"},
+		{header:'${text("卡数上限")}', name:'cardCreateLimit', index:'a.card_create_limit',hidden:true, width:150, align:"center"},
+		{header:'${text("卡品牌")}', name:'cardServiceProvider', index:'a.card_service_provider', width:150,hidden:true, align:"center", formatter: function(val, obj, row, act){
+				return js.getDictLabel(${@DictUtils.getDictListJson('cm_card_sp')}, val, '${text("未知")}', true);
+			}},
+		{header:'${text("卡数量")}', name:'id', index:'a.id', width:150, align:"center", frozen:true, formatter: function(val, obj, row, act){
+				return '<a href="${ctx}/cardinfo/tblCardInfo/list?budgetId='+row.id+'" class="btnList" data-title="${text("查看卡信息")}">'+($.GetBudgetCardCount(val)||'未知')+'</a>';
+			}},
 		{header:'${text("上次充值时间")}', name:'lastChargeOn', index:'a.last_charge_on', width:150, align:"center"},
 		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
 			var actions = [];

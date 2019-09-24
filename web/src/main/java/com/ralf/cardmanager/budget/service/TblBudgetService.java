@@ -101,4 +101,7 @@ public class TblBudgetService extends CrudService<TblBudgetDao, TblBudget> {
         return dao.minus(id, amount);
     }
 
+    public int refund(String budgetId, long refundAmount) {
+        return dao.refund(budgetId, refundAmount);
+    }
 }

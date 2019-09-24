@@ -158,4 +158,20 @@ public class TblOrder extends DataEntity<TblOrder> {
 	public void setBatchCardAmount(Long batchCardAmount) {
 		this.batchCardAmount = batchCardAmount;
 	}
+
+	public Date getSubmitTime_gte() {
+		return sqlMap.getWhere().getValue("submit_time", QueryType.GTE);
+	}
+
+	public void setSubmitTime_gte(Date testDate) {
+		sqlMap.getWhere().and("submit_time", QueryType.GTE, testDate);
+	}
+
+	public Date getSubmitTime_lte() {
+		return sqlMap.getWhere().getValue("submit_time", QueryType.LTE);
+	}
+
+	public void setSubmitTime_lte(Date testDate) {
+		sqlMap.getWhere().and("submit_time", QueryType.LTE, testDate);
+	}
 }

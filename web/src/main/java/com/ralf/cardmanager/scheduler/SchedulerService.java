@@ -2,6 +2,8 @@ package com.ralf.cardmanager.scheduler;
 
 import com.jeesite.common.cache.CacheUtils;
 import com.jeesite.common.utils.SpringUtils;
+import com.ralf.cardmanager.budget.entity.TblBudget;
+import com.ralf.cardmanager.budget.service.TblBudgetService;
 import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
 import com.ralf.cardmanager.cardinfo.service.TblCardInfoService;
 import com.ralf.cardmanager.cardtransaction.entity.TblCardTransaction;
@@ -67,6 +69,8 @@ public class SchedulerService {
     GetVirtualCardDetailsInfo getVirtualCardDetailsInfo;
     @Autowired
     GetVirtualCardEditInfo getVirtualCardEditInfo;
+    @Autowired
+    TblBudgetService budgetService;
 
     //更新卡的allcocation
     @Scheduled(cron = "* * * 1 * *")
@@ -123,34 +127,34 @@ public class SchedulerService {
         declineTransaction.setTransactionType("DECLINE");
         val list = transactionService.findList(declineTransaction);
         if (list != null && list.size() > 0) {
-            val filterTransactionList = list.stream().filter(t->commonService.getCardinfoByCardId(t.getCardId())!=null).collect(Collectors.toList());
-            for (TblCardTransaction tblCardTransaction : list) {
-                    TblCardInfo cardInfo = null;
-                    val rsp = getVirtualCardDetailsInfo.init(tblCardTransaction.getCardId()).execute();
-                    var result = rsp.isFrozen();
-                    if (rsp.isFrozen()) {
-                        val card = new TblCardInfo();
-                        card.setCardId(tblCardTransaction.getCardId());
-                        cardInfo = cardInfoService.findList(card).get(0);
-                        result = unfreezedCard(cardInfo, 0);
+            val filterTransactionList = list.stream().filter(t -> commonService.getCardinfoByCardId(t.getCardId()) != null).collect(Collectors.toList());
+            for (TblCardTransaction tblCardTransaction : filterTransactionList) {
+                TblCardInfo cardInfo = null;
+                val rsp = getVirtualCardDetailsInfo.init(tblCardTransaction.getCardId()).execute();
+                var result = rsp.isFrozen();
+                if (rsp.isFrozen()) {
+                    val card = new TblCardInfo();
+                    card.setCardId(tblCardTransaction.getCardId());
+                    cardInfo = cardInfoService.findList(card).get(0);
+                    result = unfreezedCard(cardInfo, 0);
+                }
+                if (result) {
+                    if (commonService.getUnfreezeCardCount(tblCardTransaction.getCardId()) > 20) {
+                        tblCardTransaction.setProcStatus(PROC_STATUS_FINISH);
+                        transactionService.update(tblCardTransaction);
                     }
-                    if (result){
-                        if (commonService.getUnfreezeCardCount(tblCardTransaction.getCardId())>20){
-                            tblCardTransaction.setProcStatus(PROC_STATUS_FINISH);
-                            transactionService.update(tblCardTransaction);
-                        }
+                    continue;
+                }
+                if (!result && tblCardTransaction.getDeclineReason().equalsIgnoreCase("exceeds_vc_balance")) {//如果是超过余额，需要自动充值
+
+                    if (!autoCharge(cardInfo, commonService.getAutoChargeAmount() == 0 ? tblCardTransaction.getAmount() : commonService.getAutoChargeAmount())) {
                         continue;
                     }
-                    if (!result && tblCardTransaction.getDeclineReason().equalsIgnoreCase("exceeds_vc_balance")) {//如果是超过余额，需要自动充值
-
-                        if (!autoCharge(cardInfo,  commonService.getAutoChargeAmount()==0?tblCardTransaction.getAmount():commonService.getAutoChargeAmount())) {
-                            continue;
-                        }
-                    }
-                    if (result && tblCardTransaction.getDeclineReason().equalsIgnoreCase("exceeds_vc_limit")) {//todo 如果是超过限额
-                    }
-                    tblCardTransaction.setProcStatus(PROC_STATUS_FINISH);
-                    transactionService.update(tblCardTransaction);
+                }
+                if (result && tblCardTransaction.getDeclineReason().equalsIgnoreCase("exceeds_vc_limit")) {//todo 如果是超过限额
+                }
+                tblCardTransaction.setProcStatus(PROC_STATUS_FINISH);
+                transactionService.update(tblCardTransaction);
 
             }
         }
@@ -161,7 +165,7 @@ public class SchedulerService {
         val rsp = unfreezedCard.init(cardinfo.getCardId()).execute();
         if (rsp.isFrozen() && retry < 5) {
             retry++;
-            Thread.sleep(1000*5);
+            Thread.sleep(1000 * 5);
             unfreezedCard(cardinfo, retry++);
         } else {
             if (!rsp.isFrozen()) {
@@ -189,7 +193,7 @@ public class SchedulerService {
             log.error("card({})自动充值({})失败", cardinfo.getId(), amount);
             e.printStackTrace();
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
 
@@ -197,7 +201,7 @@ public class SchedulerService {
 
 
     //自动更新余额与状态
-    @Scheduled(cron = "0/5 * * * * *")
+    @Scheduled(cron = "0/30 * * * * *")
     public void updateCardAmount() {
         val cardQuery = new TblCardInfo();
         cardQuery.setUpdateDate_lte(new DateTime().minusMinutes(30).toDate());
@@ -231,9 +235,14 @@ public class SchedulerService {
     }
 
 
-    @Scheduled(cron = "* 20 * * * *")
-    public void KeepSession() {
-
+    @Scheduled(cron = "* 5 * * * *")
+    public void budgetProcess() {
+        val list = budgetService.findList(new TblBudget());
+        list.forEach(t -> {
+            val spendAmount = cardInfoService.getClearAmount(t.getId());
+            t.setSpendAmount(spendAmount);
+            budgetService.update(t);
+        });
     }
 
     /**
@@ -262,10 +271,11 @@ public class SchedulerService {
                         Thread.sleep(1000 * 2);
                     }
                     val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, i * pageSize, null).execute();
-                    try{saveTransaction(rsp);}
-                    catch (DuplicateKeyException e){
+                    try {
+                        saveTransaction(rsp);
+                    } catch (DuplicateKeyException e) {
                         continue;
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         throw e;
                     }
                 }
@@ -288,8 +298,7 @@ public class SchedulerService {
      *
      * @throws IOException
      */
-    @Scheduled(fixedDelay = 60*1000)//每分钟一次
-//    @Scheduled(fixedDelay = 30 * 1000)//每分钟一次
+    @Scheduled(fixedDelay = 60 * 1000)//每分钟一次
     public void GetCardDeclineTransactions() throws Exception {
         log.debug("开始执行异常流水获取");
         Long dbDeclineTransactionCount = 0l;
@@ -352,7 +361,7 @@ public class SchedulerService {
             transaction.setDeclineReason(t.getDeclineReason());
             try {
                 transactionService.save(transaction);
-            }catch (DuplicateKeyException e){
+            } catch (DuplicateKeyException e) {
                 log.error("库里已经存在这条交易流水{}了", transaction.getSpTransactionId());
             }
 
