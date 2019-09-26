@@ -79,7 +79,7 @@
                 <% if (hasPermi('order:tblOrder:edit')){ %>
                 <!--                <a href="#" id="tblOrderDetailDataGridAddRowBtn" class="btn btn-primary btn-sm mt10 mb10"><i-->
                 <!--                        class="fa fa-plus"></i> ${text('增行')}</a>-->
-                <button type="button" class="btn btn-primary btn-sm mt10 mb10" id="tblOrderDetailDataGridAddRowBtn"><i
+                <button type="button" class="btn btn-primary btn-sm mt10 mb10 hidden" id="tblOrderDetailDataGridAddRowBtn"><i
                         class="fa fa-plus"></i> ${text('增行')}
                 </button>
                 <% } %>
@@ -226,7 +226,7 @@
             $("#chargeDiv").removeClass("hidden");
             $("#chargeAmount").addClass("required");
         } else {
-            $('#tblOrderDetailDataGridAddRowBtn').removeClass("hidden");
+            // $('#tblOrderDetailDataGridAddRowBtn').removeClass("hidden");
             $("#chargeDiv").addClass("hidden");
             $("#chargeAmount").removeClass("required");
             <% if(tblOrder.isNewRecord){%>
@@ -241,7 +241,7 @@
 
     function toggleSingalCard(flag) {
         if (flag) {
-            $("#tblOrderDetailDataGrid").removeClass("hidden")
+            // $("#tblOrderDetailDataGrid").removeClass("hidden")
         } else {
             $("#tblOrderDetailDataGrid").addClass("hidden")
             $('#tblOrderDetailDataGridAddRowBtn').addClass("hidden");
@@ -257,7 +257,7 @@
             $("#batchCardNum").addClass("required");
             $("#batchCardAmount").addClass("required");
         } else {
-            $('#tblOrderDetailDataGridAddRowBtn').removeClass("hidden");
+            // $('#tblOrderDetailDataGridAddRowBtn').removeClass("hidden");
             $('#batchDiv').addClass("hidden");
             $("#batchCardNum").removeClass("required");
             $("#batchCardAmount").removeClass("required");

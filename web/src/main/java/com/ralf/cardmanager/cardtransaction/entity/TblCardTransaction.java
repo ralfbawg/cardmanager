@@ -20,7 +20,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
         @Column(name = "id", attrName = "id", label = "id", isPK = true),
         @Column(name = "card_id", attrName = "cardId", label = "卡id"),
         @Column(name = "sp_transaction_id", attrName = "spTransactionId", label = "银行流水id"),
-        @Column(name = "card_no", attrName = "cardNo", label = "卡号"),
+        @Column(name = "card_no", attrName = "cardNo", label = "卡号" ,queryType = QueryType.LIKE),
         @Column(name = "card_owner", attrName = "cardOwner", label = "持卡用户"),
         @Column(name = "cleared_merchant", attrName = "clearedMerchant", label = "清算商户"),
         @Column(name = "amount", attrName = "amount", label = "消费金额"),

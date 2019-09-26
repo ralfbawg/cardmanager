@@ -22,14 +22,14 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label">${text('拥有者')}：</label>
+					<label class="control-label">${text('客户名')}：</label>
 					<div class="control-inline width-120" >
 						<#form:treeselect id="ownerUsercode" title="${text('用户选择')}"
 							path="ownerUsercode" labelPath="" 
 							url="${ctx}/sys/office/treeData?isLoadUser=true" allowClear="true"/>
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group hide">
 					<label class="control-label">${text('创建时间')}：</label>
 					<div class="control-inline">
 						<#form:input path="createTime" readonly="true" maxlength="20" class="form-control Wdate-datetime"
@@ -42,7 +42,7 @@
 						<#form:select path="cardServiceProvider" dictType="cm_card_sp" blankOption="true" class="form-control"/>
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group hide">
 					<label class="control-label">${text('创建者')}：</label>
 					<div class="control-inline width-120" >
 						<#form:treeselect id="createUserCode" title="${text('用户选择')}"

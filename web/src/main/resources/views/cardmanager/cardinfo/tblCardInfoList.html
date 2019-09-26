@@ -39,7 +39,7 @@
 						<#form:input path="cardNo" maxlength="32" class="form-control width-120"/>
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group <% if(!hasRole()){ %>hide<% } %>">
 					<label class="control-label">${text('帐户id')}：</label>
 					<div class="control-inline">
 						<#form:input path="budgetId" maxlength="64" class="form-control width-120"/>
@@ -108,6 +108,10 @@ $('#dataGrid').dataGrid({
 	searchForm: $("#searchForm"),
 	showCheckbox: true,
 	columnModel: [
+		{header:'${text("帐户名")}', name:'budgetId', index:'a.budget_id', width:150, align:"center",formatter:function (val, obj, row, act) {
+				var tmp = $.GetBudget(val);
+				return tmp==undefined?"未知":tmp.name;
+			}},
 		{header:'${text("查看流水")}', name:'cardNo', index:'a.id', width:100, align:"center", frozen:true, formatter: function(val, obj, row, act){
 				return '<a href="${ctx}/cardtransaction/tblCardTransaction/list?cardId='+row.cardId+'" class="btnList" data-title="${text("查看流水")}">查看流水</a>';
 			}},
@@ -117,10 +121,7 @@ $('#dataGrid').dataGrid({
 		{header:'${text("卡名")}', name:'nickname', index:'a.nickname', width:150, align:"center"},
 		// {header:'${text("卡昵称")}', name:'nickname', index:'a.nickname', width:150, align:"center"},
 		{header:'${text("exp")}', name:'exp', index:'a.exp', width:150, align:"center",hidden:true},
-		{header:'${text("帐户")}', name:'budgetId', index:'a.budget_id', width:150, align:"center",formatter:function (val, obj, row, act) {
-				var tmp = $.GetBudget(val);
-				return tmp==undefined?"未知":tmp.name;
-			}},
+
 		// {header:'${text("卡名")}', name:'cardName', index:'a.card_name', width:150, align:"center",hidden:true},
 		{header:'${text("限额度")}', name:'cardLimit', index:'a.card_limit', width:150, align:"center",hidden:true},
 
