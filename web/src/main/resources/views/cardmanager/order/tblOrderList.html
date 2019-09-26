@@ -47,7 +47,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label">${text('支付状态')}：</label>
+					<label class="control-label">${text('订单状态')}：</label>
 					<div class="control-inline width-120">
 						<#form:select path="payStatus" dictType="cm_order_pay_status" blankOption="true" class="form-control"/>
 					</div>
@@ -85,14 +85,14 @@ $('#dataGrid').dataGrid({
 		{header:'${text("审核用户")}', name:'auditUsercode', index:'a.audit_usercode', width:150, align:"center",hidden:true},
 		{header:'${text("审核时间")}', name:'auditTime', index:'a.audit_time', width:150, align:"center",hidden:true},
 		{header:'${text("制卡数量")}', name:'batchCardNum', index:'a.batch_card_num', width:150, align:"center"},
-		{header:'${text("制卡单卡金额")}', name:'batchCardAmount', index:'a.batch_card_amount', width:150, align:"center"},
-		{header:'${text("订单总金额(美元)")}', name:'orderAmount', index:'a.order_amount', width:150, align:"center",formatter: function(val, obj, row, act){
+		{header:'${text("卡单价")}', name:'batchCardAmount', index:'a.batch_card_amount', width:150, align:"center"},
+		{header:'${text("订单总额(USD)")}', name:'orderAmount', index:'a.order_amount', width:150, align:"center",formatter: function(val, obj, row, act){
 				return val/100;
 			}},
-		{header:'${text("订单总金额(人民币)")}', name:'orderAmount', index:'a.order_amount', width:150, align:"center",formatter: function(val, obj, row, act){
+		{header:'${text("订单总额(RMB)")}', name:'orderAmount', index:'a.order_amount', width:150, align:"center",formatter: function(val, obj, row, act){
 				return $.TransferUsdToRmb(${@CurrencyUtil.GetUSDToRMBCurrency()}, val);
 			}},
-		{header:'${text("支付状态")}', name:'payStatus', index:'a.pay_status', width:150, align:"center", formatter: function(val, obj, row, act){
+		{header:'${text("订单状态")}', name:'payStatus', index:'a.pay_status', width:150, align:"center", formatter: function(val, obj, row, act){
 			return js.getDictLabel(${@DictUtils.getDictListJson('cm_order_pay_status')}, val, '${text("未知")}', true);
 		}},
 		{header:'${text("状态")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
