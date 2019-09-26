@@ -33,7 +33,7 @@
 						<#form:input path="cardNo" maxlength="32" class="form-control width-120"/>
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group <% if(!hasRole()){ %>hide<% } %>">
 					<label class="control-label">${text('客户名')}：</label>
 					<div class="control-inline">
 						<#form:treeselect id="cardOwner" title="${text('用户选择')}"
