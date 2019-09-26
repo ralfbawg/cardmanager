@@ -23,8 +23,8 @@
 							<label class="control-label col-sm-4" title="">
 								<span class="required ">*</span> ${text('归属机构')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
-								<#form:treeselect id="office" title="${text('机构选择')}" value="CHGS"
-									path="employee.office.officeCode" labelPath="employee.office.officeName" 
+								<#form:treeselect id="office" title="${text('机构选择')}" value="CHGS" defaultValue="CHGS"
+									path="employee.office.officeCode" labelPath="employee.office.officeName" defaultLabel="程欢的公司"
 									url="${ctx}/sys/office/treeData?ctrlPermi=${@Global.getConfig('user.adminCtrlPermi', '2')}" class="" allowClear="false"/>
 							</div>
 						</div>
@@ -46,7 +46,7 @@
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
-								<span class="required ">*</span> ${text('登录账号')}：<i class="fa icon-question hide"></i></label>
+								<span class="required">*</span> ${text('登录账号')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
 								<#form:hidden name="oldLoginCode" value="${empUser.loginCode}"/>
 								<#form:input path="loginCode" minlength="4" maxlength="20" readonly="${op=='auth'}"
@@ -71,7 +71,7 @@
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('电子邮箱')}：<i class="fa icon-question hide"></i></label>
+								<span class="required ">*</span> ${text('电子邮箱')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
 								<div class="input-group">
 									<#form:input path="email" maxlength="300" class="form-control email"/>
@@ -83,7 +83,7 @@
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
-								<span class="required hide">*</span> ${text('手机号码')}：<i class="fa icon-question hide"></i></label>
+								<span class="required ">*</span> ${text('手机号码')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
 								<div class="input-group">
 									<#form:input path="mobile" maxlength="100" class="form-control mobile"/>
