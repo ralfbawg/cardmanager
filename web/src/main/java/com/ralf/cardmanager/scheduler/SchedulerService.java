@@ -139,7 +139,7 @@ public class SchedulerService {
                     result = unfreezedCard(cardInfo, 0);
                 }
                 if (result) {
-                    if (commonService.getUnfreezeCardCount(tblCardTransaction.getCardId()) > 20) {
+                    if (commonService.getUnfreezeCardCount(tblCardTransaction.getCardId()) > 10) {
                         tblCardTransaction.setProcStatus(PROC_STATUS_FINISH);
                         transactionService.update(tblCardTransaction);
                     }
