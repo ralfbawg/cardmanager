@@ -47,8 +47,8 @@
 						<#form:input path="clearedMerchant" maxlength="128" class="form-control width-120"/>
 					</div>
 				</div>
-				<div class="form-group">
-					<label class="control-label hide">${text('消费金额')}：</label>
+				<div class="form-group hide">
+					<label class="control-label">${text('消费金额')}：</label>
 					<div class="control-inline">
 						<#form:input path="amount" maxlength="20" class="form-control width-120"/>
 					</div>
@@ -89,10 +89,10 @@
 						<#form:input path="note" maxlength="32" class="form-control width-120"/>
 					</div>
 				</div>
-				<div class="form-group hide">
+				<div class="form-group">
 					<label class="control-label">${text('交易状态')}：</label>
-					<div class="control-inline">
-						<#form:input path="transactionType" dictType="cm_trancaction_type" blankOption="true" class="form-control width-120"/>
+					<div class="control-inline width-120">
+						<#form:select path="transactionType" dictType="cm_trancaction_type" blankOption="true" class="form-control"/>
 					</div>
 				</div>
 				<div class="form-group hide">
