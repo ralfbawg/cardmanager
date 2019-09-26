@@ -250,7 +250,7 @@ public class SchedulerService {
      *
      * @throws IOException
      */
-//    @Scheduled(fixedDelay = 60*1000)//每分钟一次
+    @Scheduled(fixedDelay = 60*1000)//每分钟一次
 //    @Scheduled(fixedDelay = 30 * 1000)//每分钟一次
     public void GetCardTransactions() throws Exception {
         log.debug("开始执行正常流水获取");
@@ -268,7 +268,7 @@ public class SchedulerService {
             if (size > pageSize) {
                 for (int i = 0; i < (size % pageSize > 0 ? 1 : 0) + size / pageSize; i++) {
                     if (size / pageSize > 10 && i % 10 == 0) {
-                        Thread.sleep(1000 * 2);
+                        Thread.sleep(1000 * 5);
                     }
                     val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, i * pageSize, null).execute();
                     try {
