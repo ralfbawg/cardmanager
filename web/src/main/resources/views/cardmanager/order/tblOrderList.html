@@ -52,7 +52,7 @@
 						<#form:select path="payStatus" dictType="cm_order_pay_status" blankOption="true" class="form-control"/>
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group hide">
 					<label class="control-label">${text('状态')}：</label>
 					<div class="control-inline width-120">
 						<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control"/>
@@ -95,7 +95,7 @@ $('#dataGrid').dataGrid({
 		{header:'${text("订单状态")}', name:'payStatus', index:'a.pay_status', width:150, align:"center", formatter: function(val, obj, row, act){
 			return js.getDictLabel(${@DictUtils.getDictListJson('cm_order_pay_status')}, val, '${text("未知")}', true);
 		}},
-		{header:'${text("状态")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+		{header:'${text("状态")}', name:'status', index:'a.status', width:150, align:"center", hidden:true,formatter: function(val, obj, row, act){
 			return js.getDictLabel(${@DictUtils.getDictListJson('sys_search_status')}, val, '${text("未知")}', true);
 		}},
 		{header:'${text("提交时间")}', name:'submitTime', index:'a.submit_time', width:150, align:"center"},

@@ -112,8 +112,8 @@ $('#dataGrid').dataGrid({
 				var tmp = $.GetBudget(val);
 				return tmp==undefined?"未知":tmp.name;
 			}},
-		{header:'${text("查看流水")}', name:'cardNo', index:'a.id', width:100, align:"center", frozen:true, formatter: function(val, obj, row, act){
-				return '<a href="${ctx}/cardtransaction/tblCardTransaction/list?cardId='+row.cardId+'" class="btnList" data-title="${text("查看流水")}">查看流水</a>';
+		{header:'${text("交易记录")}', name:'cardNo', index:'a.id', width:100, align:"center", frozen:true, formatter: function(val, obj, row, act){
+				return '<a href="${ctx}/cardtransaction/tblCardTransaction/list?cardId='+row.cardId+'" class="btnList" data-title="${text("交易记录")}">交易记录</a>';
 			}},
 		{header:'${text("卡号")}', name:'cardNo', index:'a.card_no', width:200, align:"center"},
 		{header:'${text("有效期")}', name:'expiredDate', index:'a.expired_date', width:100, align:"center"},
