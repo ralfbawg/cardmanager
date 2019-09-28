@@ -81,7 +81,7 @@ public class SchedulerService {
 	// 创建卡
 	@Scheduled(fixedRate = 1 * 30 * 1000)
 	public void createCard() {
-		val cardQuery = new TblCardInfo();
+		var cardQuery = new TblCardInfo();
 		cardQuery.setCardStatus("tobecreate");
 		val list = cardInfoService.findList(cardQuery);
 		val ids = list.stream().map(t -> {
@@ -96,10 +96,10 @@ public class SchedulerService {
 		list.stream().forEach(t -> {
 			try {
 				cardQuery.setCardOwner(t.getCardOwner());
-				int count = cardInfoService.findCount(cardQuery);
+				var count = cardInfoService.findCount(cardQuery);
 				val tmpCount = count+1;
 				String timestamp = String.valueOf(System.currentTimeMillis());
-				String tmpName = t.getName().split(",")[0];
+				String tmpName = t.getCardName().split(",")[0];
 				val rsp = SpringUtils.getBean(CreateCardByBudget.class)
 						.init(String.valueOf(t.getCardAmount()), timestamp).execute();// 实际卡名用时间戳，好排序
 //                t.setBudgetId(rsp.getBudgetId());
