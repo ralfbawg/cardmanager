@@ -1,9 +1,9 @@
-<% layout('/layouts/default.html', {title: '交易流水管理', libs: ['dataGrid']}){ %>
+<% layout('/layouts/default.html', {title: '交易记录查询', libs: ['dataGrid']}){ %>
 <div class="main-content">
 	<div class="box box-main">
 		<div class="box-header">
 			<div class="box-title">
-				<i class="fa fa-list-alt"></i> ${text('交易流水管理')}
+				<i class="fa fa-list-alt"></i> ${text('交易记录查询')}
 			</div>
 			<div class="box-tools pull-right">
 				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
@@ -15,7 +15,7 @@
 		<div class="box-body">
 			<#form:form id="searchForm" model="${tblCardTransaction}" action="${ctx}/cardtransaction/tblCardTransaction/listData" method="post" class="form-inline <% if(hasRole()){ %>hide<% } %>"
 					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
-				<div class="form-group <% if(hasRole()){ %>hide<% } %>">
+				<div class="form-group <% if(!hasRole()){ %>hide<% } %>">
 					<label class="control-label">${text('卡id')}：</label>
 					<div class="control-inline">
 						<#form:input path="cardId" maxlength="64" class="form-control width-120"/>
@@ -59,7 +59,7 @@
 						<#form:input path="merchantLogo" class="form-control width-120"/>
 					</div>
 				</div>
-				<div class="form-group ">
+				<div class="form-group hide">
 					<label class="control-label">${text('清算状态')}：</label>
 					<div class="control-inline width-120">
 						<#form:select path="transactionStatus" dictType="cm_trancaction_status" blankOption="true" class="form-control"/>
@@ -134,7 +134,7 @@ $('#dataGrid').dataGrid({
 		// {header:'${text("商户")}', name:'merchantLogo', index:'a.merchant_logo', width:90, align:"center",formatter:function (val, obj, row, act) {
 		// 		return val!=undefined?'<img src="'+val+'" style="width: 20px;height: 20px">':"";
 		// 	}},
-		{header:'${text("清算状态")}', name:'transactionStatus', index:'a.transaction_status', width:150, align:"center", formatter: function(val, obj, row, act){
+		{header:'${text("清算状态")}', name:'transactionStatus', index:'a.transaction_status', hidden:true,width:150, align:"center", formatter: function(val, obj, row, act){
 			return js.getDictLabel(${@DictUtils.getDictListJson('cm_trancaction_status')}, val, '${text("未知")}', true);
 		}},
 		{header:'${text("交易日期")}', name:'occurredDate', index:'a.occurred_date', width:150, align:"left"},
@@ -145,7 +145,7 @@ $('#dataGrid').dataGrid({
 		{header:'${text("标签")}', name:'label', index:'a.label', width:150, align:"left",hidden:true},
 		{header:'${text("注释")}', name:'note', index:'a.note', width:150, align:"left",hidden:true},
 		{header:'${text("税费")}', name:'fee', index:'a.fee', width:80, align:"center",hidden:true},
-		{header:'${text("操作")}', name:'actions', width:80, sortable:false, title:false, formatter: function(val, obj, row, act){
+		{header:'${text("操作")}', name:'actions', width:80, sortable:false, title:false, hidden:true,formatter: function(val, obj, row, act){
 			var actions = [];
 			<% if(hasPermi('cardtransaction:tblCardTransaction:edit')){ %>
 				actions.push('<a href="${ctx}/cardtransaction/tblCardTransaction/form?id='+row.id+'" class="btnList" title="${text("编辑交易流水")}"><i class="fa fa-pencil"></i></a>&nbsp;');

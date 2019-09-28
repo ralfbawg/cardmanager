@@ -177,7 +177,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
 
                 case TYPE_BATCH_CREATE_CARD:
                     if (budgetList.size() == 1) {
-                        SpringUtils.getBean(TblOrderService.class).batchCreateCard(tblOrder, budgetList.get(0).getId());
+                        SpringUtils.getBean(TblOrderService.class).batchCreateCard(tblOrder, budgetList.get(0));
                     }
                     break;
             }
@@ -245,13 +245,13 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
      * @param budgetId
      */
     @Transactional
-    public void batchCreateCard(TblOrder tblOrder, String budgetId) {
+    public void batchCreateCard(TblOrder tblOrder, TblBudget budget) {
         for (int i=0;i<tblOrder.getBatchCardNum();i++){
             val card = new TblCardInfo();
             card.setIsNewRecord(true);
-            card.setBudgetId(budgetId);
+            card.setBudgetId(budget.getId());
             card.setCardOwner(tblOrder.getSubmitUsercode());
-            card.setCardName(String.valueOf(System.currentTimeMillis()+i));
+            card.setCardName(budget.getName()+","+String.valueOf(System.currentTimeMillis()+i));
             card.setCardLimit(tblOrder.getBatchCardAmount());
             card.setCardAmount(tblOrder.getBatchCardAmount());
             card.setCardStatus("tobecreate");
