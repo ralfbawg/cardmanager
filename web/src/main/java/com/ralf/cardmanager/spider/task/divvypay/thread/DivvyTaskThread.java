@@ -87,6 +87,10 @@ public class DivvyTaskThread extends SpiderBasicThread implements Runnable {
 //            service.sendShouldLoginByHandEmail();
             Thread.sleep(3 * 1000);
         }
+        if(!SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("i.SideNavigation-header-logo.Icon.Icon-logoSmall")) &&count<=0){
+            return;
+        }
+
         config.authToken = StringUtils.isEmpty(((ChromeDriver) webDriver).getSessionStorage().getItem("id_token")) ? ((ChromeDriver) webDriver).getLocalStorage().getItem("id_token") : ((ChromeDriver) webDriver).getSessionStorage().getItem("id_token");
         config.getRequestHead().put("authorization", "Bearer " + config.authToken);
         config.setLogined(true);
