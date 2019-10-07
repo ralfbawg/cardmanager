@@ -93,9 +93,9 @@ public class SchedulerService {
 		cardInfoService.update(cardQuery);
 		list.stream().forEach(t -> {
 			try {
-				val cardQuery = new TblCardInfo();
-				cardQuery.setCardOwner(t.getCardOwner());
-				var count = cardInfoService.findCount(cardQuery);
+				var tmpCardQuery = new TblCardInfo();
+				tmpCardQuery.setCardOwner(t.getCardOwner());
+				var count = cardInfoService.findCount(tmpCardQuery);
 				val tmpCount = count+1;
 				String timestamp = String.valueOf(System.currentTimeMillis());
 				String tmpName = t.getCardName().split(",")[0];
