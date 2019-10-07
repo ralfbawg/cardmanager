@@ -90,7 +90,7 @@ $('#dataGrid').dataGrid({
 				return val/100;
 			}},
 			{header:'${text("今日汇率")}', name:'orderAmount', index:'a.order_amount', width:150, align:"center",formatter: function(val, obj, row, act){
-				return '${@CurrencyUtil.GetUSDToRMBCurrency()}';
+				return parseInt('${@CurrencyUtil.GetUSDToRMBCurrency()}')/100;
 			}},
 		{header:'${text("订单总额(RMB)")}', name:'orderAmount', index:'a.order_amount', width:150, align:"center",formatter: function(val, obj, row, act){
 				return $.TransferUsdToRmb(${@CurrencyUtil.GetUSDToRMBCurrency()}, val);
