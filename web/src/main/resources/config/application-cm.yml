@@ -24,6 +24,14 @@ cm:
       ownerId: VXNlcjo1MTE5OA==
     company:
       id: Q29tcGFueTozMDI3
+  epaylinks:
+    username: 13066349373
+    password: Cavy5201!
+    email:
+      username: 2673794381@qq.com
+      password: plu996633
+      host: mail.qq.com
+      port: 23
 mybatis:
   #  # @MyBatisDao、Aliases 扫描基础包，如果多个，用“,”分隔
   scanBasePackage: com.jeesite.modules,com.ralf.cardmanager
