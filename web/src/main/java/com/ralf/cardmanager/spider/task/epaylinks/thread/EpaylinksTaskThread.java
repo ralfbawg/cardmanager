@@ -2,11 +2,17 @@ package com.ralf.cardmanager.spider.task.epaylinks.thread;
 
 
 import com.jeesite.common.lang.StringUtils;
+import com.jeesite.common.msg.EmailUtils;
+import com.jeesite.common.utils.SpringUtils;
+import com.jeesite.modules.msg.send.EmailSendService;
 import com.ralf.cardmanager.spider.task.SpiderBasicThread;
 import com.ralf.cardmanager.spider.task.epaylinks.config.EpaylinksSiteConfig;
 import com.ralf.cardmanager.spider.util.SpiderUtil;
 import com.ralf.cardmanager.spider.util.SpringContextUtil;
 import com.ralf.cardmanager.spider.util.WebDriverPool;
+import com.ralf.cardmanager.system.mail.QQMailUtil;
+import lombok.val;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -21,17 +27,14 @@ public class EpaylinksTaskThread extends SpiderBasicThread implements Runnable {
         super(SpringContextUtil.getBean(EpaylinksSiteConfig.class));
         config.loginUrl = "https://merchant.globalcash.hk/www/login.jsp";
         config.requestHead = new HashMap() {{
-            put(":authority", "app.divvy.co");
             put(":method", "POST");
-            put(":path", "/je/graphql");
             put(":scheme", "https");
             put("accept", "*/*");
             put("accept-encoding", "gzip, deflate, br");
-            put("authority", "app.divvy.co");
             put("accept-language", "zh-CN,zh;q=0.9");
             put("content-type", "application/json");
-            put("origin", "https://app.divvy.co");
-            put("referer", "https://app.divvy.co/home");
+            put("origin", "https://merchant.globalcash.hk");
+            put("referer", "https://merchant.globalcash.hk");
             put("x-api-version", "2");
             put("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3704.400 QQBrowser/10.4.3587.400");
             //TODO 差cookie useragent content-length
@@ -67,19 +70,20 @@ public class EpaylinksTaskThread extends SpiderBasicThread implements Runnable {
         } while (!checkLoginStatus(--loginTry));
 
         ChromeDriver chrome = ((ChromeDriver) webDriver);
-//        chrome.executeScript("document.querySelector('input[name=email]').focus()");
         Thread.sleep(200);
-        chrome.findElement(new By.ByCssSelector("input[name=email]")).sendKeys(config.getUsername());
+        chrome.findElement(new By.ById("account1")).sendKeys(config.getUsername());
         Thread.sleep(200);
-//        chrome.executeScript("document.querySelector('input[name=password]').focus()");
-        chrome.findElement(new By.ByCssSelector("input[name=password]")).sendKeys(config.getPassword());
-        chrome.executeScript("document.querySelector('button.auth0-lock-submit').click();");
+        chrome.findElement(new By.ById("_ocx_password")).sendKeys(config.getPassword());
+                    while (!checkAndFillMailVerifyCode(chrome)) {
+            Thread.sleep(1 * 1000);
+        }
+//        chrome.executeScript("document.querySelector('a.orangeBtn-login').click();");//登录
         int count = 3;
         while (!SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("i.SideNavigation-header-logo.Icon.Icon-logoSmall")) && count-- > 0) {
 //            service.sendShouldLoginByHandEmail();
             Thread.sleep(3 * 1000);
         }
-        if(!SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("i.SideNavigation-header-logo.Icon.Icon-logoSmall")) &&count<=0){
+        if (!SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("i.SideNavigation-header-logo.Icon.Icon-logoSmall")) && count <= 0) {
             return;
         }
 
@@ -89,12 +93,27 @@ public class EpaylinksTaskThread extends SpiderBasicThread implements Runnable {
     }
 
     private boolean checkLoginStatus(int tryCount) {
-        if (SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("input[name=email]")) && SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("input[name=password]"))) {
+//        if (SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("input[name=email]")) && SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("input[name=password]"))) {
+        if (SpiderUtil.doesWebElementExist(webDriver, new By.ById("_ocx_password")) && SpiderUtil.doesWebElementExist(webDriver, new By.ById("account1"))) {
             return true;
         } else {
             config.setLogined(false);
             config.authToken = "";
             return false;
         }
+    }
+
+    private Boolean checkAndFillMailVerifyCode(ChromeDriver chrome) throws Exception {
+        chrome.executeScript("document.querySelector('a.validation').click();");//发验证码
+        Alert alert = chrome.switchTo().alert();
+        alert.accept();
+        val eConfig = (EpaylinksSiteConfig) config;
+        SpringUtils.getBean(QQMailUtil.class).reviceQQEmail(eConfig.getEmailUsername(), eConfig.getEmailPassword());
+        chrome.findElement(new By.ById("account1")).sendKeys("test");
+        return true;
+    }
+
+    private boolean checkLoginedStatus() {
+        return false;
     }
 }

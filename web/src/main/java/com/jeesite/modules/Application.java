@@ -4,6 +4,7 @@
 package com.jeesite.modules;
 
 import com.ralf.cardmanager.spider.task.divvypay.thread.DivvyTaskThread;
+import com.ralf.cardmanager.spider.task.epaylinks.thread.EpaylinksTaskThread;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.boot.SpringApplication;
@@ -32,7 +33,8 @@ public class Application extends SpringBootServletInitializer {
         log.debug("i am starting");
         val context = SpringApplication.run(Application.class, args);
         if (context.getEnvironment().getRequiredProperty("cm.spider.enabled", boolean.class)) {
-            new Thread(new DivvyTaskThread()).start();
+//            new Thread(new DivvyTaskThread()).start();
+            new Thread(new EpaylinksTaskThread()).start();
         }
 
     }

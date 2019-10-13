@@ -4,7 +4,7 @@ import com.ralf.cardmanager.spider.task.epaylinks.config.EpaylinksSiteConfig;
 import com.ralf.cardmanager.spider.task.epaylinks.operation.base.BaseDivvyOperation;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("eplaylinksKeepSession")
 public class KeepSession extends BaseDivvyOperation<KeepSessionRsp> {
     public KeepSession(EpaylinksSiteConfig config) {
         super(config);

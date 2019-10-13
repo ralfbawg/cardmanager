@@ -10,14 +10,19 @@ import org.springframework.stereotype.Component;
 @EqualsAndHashCode(callSuper = true)
 @Component("EpaylinksSiteConfig")
 public class EpaylinksSiteConfig extends SiteBaseConfig {
-    @Value("${cm.divvy.budget.id}")
-    protected String budgetId = "";
-    @Value("${cm.divvy.company.id}")
-    protected String companyId = "";
-    @Value("${cm.divvy.username}")
+
+    @Value("${cm.epaylinks.username}")
     protected String username = "";
-    @Value("${cm.divvy.password}")
+    @Value("${cm.epaylinks.password}")
     protected String password = "";
-    @Value("${cm.divvy.budget.ownerId}")
-    protected String budgetOwnerId = "";
+    @Value("${cm.epaylinks.email.username}")
+    protected String emailUsername = "";
+    @Value("${cm.epaylinks.email.password}")
+    protected String emailPassword = "";
+    @Value("${cm.epaylinks.email.host}")
+    protected String emailHost = "";
+    @Value("${cm.epaylinks.email.port}")
+    protected String emailPort = "";
+    @Value("${cm.epaylinks.email.authCode}")
+    protected String emailAuthCode = "";
 }
