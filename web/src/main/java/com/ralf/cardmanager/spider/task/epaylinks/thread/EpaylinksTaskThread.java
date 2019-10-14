@@ -28,14 +28,14 @@ public class EpaylinksTaskThread extends SpiderBasicThread implements Runnable {
         config.loginUrl = "https://merchant.globalcash.hk/www/login.jsp";
         config.requestHead = new HashMap() {{
             put(":method", "POST");
-            put(":scheme", "https");
+            put(":Cookie", "route=e062ed5a095364733e85c54c9ce5238f; JSESSIONID=344394648C676C7FC75BAAF40A71C564.node919");
             put("accept", "*/*");
             put("accept-encoding", "gzip, deflate, br");
             put("accept-language", "zh-CN,zh;q=0.9");
-            put("content-type", "application/json");
-            put("origin", "https://merchant.globalcash.hk");
-            put("referer", "https://merchant.globalcash.hk");
-            put("x-api-version", "2");
+            put("content-type", "application/x-www-form-urlencoded; charset=utf-8");
+            put("Host", "https://merchant.globalcash.hk");
+            put("referer", "https://merchant.globalcash.hk/space/space.do");
+            put("X-Requested-With", "XMLHttpRequest");
             put("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3704.400 QQBrowser/10.4.3587.400");
             //TODO 差cookie useragent content-length
         }};

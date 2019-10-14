@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
-public abstract class BaseDivvyOperation<T extends BaseDivvyOpertionResp> extends BaseOperation {
+public abstract class BaseEpaylinksOperation<T extends BaseEpaylinksOpertionResp> extends BaseOperation {
     protected EpaylinksSiteConfig config;
 
     private boolean inited = false;
@@ -28,6 +28,8 @@ public abstract class BaseDivvyOperation<T extends BaseDivvyOpertionResp> extend
     protected String defaultUrl = "https://app.divvy.co/je/graphql";
 
     protected String method = "post";
+
+    protected String host = "https://merchant.globalcash.hk/";
 
     public static volatile String AWSALB = "";
 
@@ -52,7 +54,7 @@ public abstract class BaseDivvyOperation<T extends BaseDivvyOpertionResp> extend
 
     }
 
-    public BaseDivvyOperation(EpaylinksSiteConfig config) {
+    public BaseEpaylinksOperation(EpaylinksSiteConfig config) {
         this.config = config;
         defaultHeader = new HashMap<String, String>() {{
             put("authority", "app.divvy.co");
