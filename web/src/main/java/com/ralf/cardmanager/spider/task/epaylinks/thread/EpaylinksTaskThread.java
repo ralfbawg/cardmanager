@@ -1,6 +1,7 @@
 package com.ralf.cardmanager.spider.task.epaylinks.thread;
 
 
+import com.alibaba.druid.sql.visitor.functions.Char;
 import com.jeesite.common.lang.StringUtils;
 import com.jeesite.common.msg.EmailUtils;
 import com.jeesite.common.utils.SpringUtils;
@@ -16,6 +17,7 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 
 import java.util.HashMap;
 
@@ -73,20 +75,19 @@ public class EpaylinksTaskThread extends SpiderBasicThread implements Runnable {
         Thread.sleep(200);
         chrome.findElement(new By.ById("account1")).sendKeys(config.getUsername());
         Thread.sleep(200);
-        chrome.findElement(new By.ById("_ocx_password")).sendKeys(config.getPassword());
-                    while (!checkAndFillMailVerifyCode(chrome)) {
+                chrome.executeScript("document.querySelector('input.ocx_style_new').focus();");//登录
+        for (int i = 0; i <config.getPassword().length() ; i++) {
+            char c = config.getPassword().charAt(i);
+            Actions action = new Actions(chrome);
+//            action.sendKeys(chrome.findElementById("_ocx_password"),String.valueOf(c));
+            action.sendKeys(String.valueOf(c));
+            Thread.sleep(1500);
+        }
+             while (!checkAndFillMailVerifyCode(chrome)) {
             Thread.sleep(1 * 1000);
         }
 //        chrome.executeScript("document.querySelector('a.orangeBtn-login').click();");//登录
         int count = 3;
-        while (!SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("i.SideNavigation-header-logo.Icon.Icon-logoSmall")) && count-- > 0) {
-//            service.sendShouldLoginByHandEmail();
-            Thread.sleep(3 * 1000);
-        }
-        if (!SpiderUtil.doesWebElementExist(webDriver, new By.ByCssSelector("i.SideNavigation-header-logo.Icon.Icon-logoSmall")) && count <= 0) {
-            return;
-        }
-
         config.authToken = StringUtils.isEmpty(((ChromeDriver) webDriver).getSessionStorage().getItem("id_token")) ? ((ChromeDriver) webDriver).getLocalStorage().getItem("id_token") : ((ChromeDriver) webDriver).getSessionStorage().getItem("id_token");
         config.getRequestHead().put("authorization", "Bearer " + config.authToken);
         config.setLogined(true);
