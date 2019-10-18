@@ -56,7 +56,7 @@ public class TblOrderController extends BaseController {
     public static final String STATUS_WAIT_PAY = "02";
 
     public static final String STATUS_AUDIT_PASS_WAIT_PRO = "03";
-    public static final String STATUS_AUDIT_FAIL = "04";
+    public static final String STATUS_AUDIT_FAIL = "05";
     public static final String STATUS_AUDIT_PASS_PRO_SUCCESS = "04";
     public static final String STATUS_AUDIT_PASS_PRO_FAIL = "06";
 
