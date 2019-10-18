@@ -87,10 +87,14 @@ $('#dataGrid').dataGrid({
 		{header:'${text("审核用户")}', name:'auditUsercode', index:'a.audit_usercode', width:150, align:"center",hidden:true},
 		{header:'${text("审核时间")}', name:'auditTime', index:'a.audit_time', width:150, align:"center",hidden:true},
 		{header:'${text("制卡数量")}', name:'batchCardNum', index:'a.batch_card_num', width:150, align:"center"},
-		{header:'${text("卡单价")}', name:'batchCardAmount', index:'a.batch_card_amount', width:150, align:"center",formatter: function(val, obj, row, act){
+		{header:'${text("卡单价")}', name:'batchCardAmount', index:'a.batch_card_amount', width:120, align:"center",formatter: function(val, obj, row, act){
+			if (row.type=="batchCreateCard"){
 				return parseInt("${@CommonUtil.getPerCardPrice()}")/100;
+			}else{
+			    return 0;
+			}
 			}},
-		{header:'${text("卡面值")}', name:'batchCardAmount', index:'a.batch_card_amount', width:150, align:"center",formatter: function(val, obj, row, act){
+		{header:'${text("卡面值")}', name:'batchCardAmount', index:'a.batch_card_amount', width:120, align:"center",formatter: function(val, obj, row, act){
 				return val/100;
 			}},
 		{header:'${text("订单总额(USD)")}', name:'orderAmount', index:'a.order_amount', width:150, align:"center",formatter: function(val, obj, row, act){
@@ -102,7 +106,7 @@ $('#dataGrid').dataGrid({
 		{header:'${text("订单总额(RMB)")}', name:'orderAmount', index:'a.order_amount', width:150, align:"center",formatter: function(val, obj, row, act){
 				return $.TransferUsdToRmb(${@CurrencyUtil.GetUSDToRMBCurrency()}, val);
 			}},
-		{header:'${text("订单状态")}', name:'payStatus', index:'a.pay_status', width:150, align:"center", formatter: function(val, obj, row, act){
+		{header:'${text("订单状态")}', name:'payStatus', index:'a.pay_status', width:210, align:"center", formatter: function(val, obj, row, act){
 			return js.getDictLabel(${@DictUtils.getDictListJson('cm_order_pay_status')}, val, '${text("未知")}', true);
 		}},
 		{header:'${text("状态")}', name:'status', index:'a.status', width:150, align:"center", hidden:true,formatter: function(val, obj, row, act){
