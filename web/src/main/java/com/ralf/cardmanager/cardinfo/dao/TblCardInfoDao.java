@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
+
 /**
  * 卡信息DAO接口
  *
@@ -22,6 +24,10 @@ public interface TblCardInfoDao extends CrudDao<TblCardInfo> {
     @Update({"update tbl_card_info set card_amount=card_amount+#{amount},last_charge_on=NOW() where id =#{id}"})
     int charge(String id, Long amount);
 
-    @Select({"select sum(card_spend_amount) from tbl_card_info where id in(#{ids}"})
-    Long getClearAmount(@Param("ids") String ids);
+    @Select({ "<script>select sum(card_spend_amount) from tbl_card_info where id in",
+            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+            "#{id}",
+            "</foreach>",
+            "</script>"})
+    Long getClearAmount(@Param("ids") List<String> ids);
 }

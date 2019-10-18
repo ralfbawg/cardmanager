@@ -218,7 +218,7 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
         card.setBudgetId(budgetId);
         val list = findList(card);
         if (list!=null&&list.size()>0){
-            val ids = list.parallelStream().map(t->t.getId()).collect(Collectors.joining(","));
+            val ids = list.parallelStream().map(t->t.getId()).collect(Collectors.toList());
             return dao.getClearAmount(ids);
         }else{
             return 0l;
