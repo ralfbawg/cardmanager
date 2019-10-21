@@ -134,7 +134,7 @@ $('#dataGrid').dataGrid({
 				<% } if(hasPermi('order:tblOrder:audit')){ %>
 					if(row.payStatus=='02'||row.payStatus=='04'||row.payStatus=='06') {
 						actions.push('<a href="${ctx}/order/tblOrder/audit?id=' + row.id + '" class="btnList" title="${text("审核订单")}" data-confirm="${text("确认要审核该订单吗？")}"><i class="fa  fa-paypal"></i></a>&nbsp;');
-						actions.push('<a href="${ctx}/order/tblOrder/auditBack?id=' + row.id + '" class="btnList" title="${text("退回订单")}" data-confirm="${text("确认要审核该订单吗？")}"><i class="fa  fa-backward"></i></a>&nbsp;');
+						actions.push('<a href="${ctx}/order/tblOrder/auditBack?id=' + row.id + '" class="btnList" title="${text("退回订单")}" data-confirm="${text("确认要退回该订单吗？")}"><i class="fa  fa-backward"></i></a>&nbsp;');
 					}
                 <% }  if(hasPermi('order:tblOrder:submit')){ %>
                    if(row.payStatus=='01'||row.payStatus=='00') {

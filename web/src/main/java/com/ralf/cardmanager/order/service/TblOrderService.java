@@ -161,23 +161,29 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
         try {
             switch (tblOrder.getType()) {
                 case TYPE_CREATE:
+                    logger.info("开始创建账户,budgetId={}", budget.getOwnerUsercode());
                     SpringUtils.getBean(TblOrderService.class).createBudgetAndCard(tblOrder, budget);
                     break;
                 case TYPE_CREATE_CARD:
                     if (budgetList.size() == 1) {
+                        logger.info("开始建卡,budgetId={}", budget.getId());
                         SpringUtils.getBean(TblOrderService.class).createCard(tblOrder, budgetList.get(0).getId());
                     }
 
                     break;
                 case TYPE_CHARGE:
                     if (budgetList.size() == 1) {
+                        logger.info("开始充值,budgetId={}", budgetList.get(0).getId());
                         int n = budgetService.charge(budgetList.get(0).getId(), tblOrder.getChargeAmount());
+                        logger.info("充值完成,n={},budgetId={}",n,budgetList.get(0).getId());
                     }
                     break;
 
                 case TYPE_BATCH_CREATE_CARD:
                     if (budgetList.size() == 1) {
+                        logger.info("开始批量建卡,budgetId={}", budget.getId());
                         SpringUtils.getBean(TblOrderService.class).batchCreateCard(tblOrder, budgetList.get(0));
+                        logger.info("开始批量建卡,budgetId={}", budget.getId());
                     }
                     break;
             }
@@ -212,6 +218,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
         budget.setLastChargeOn(new Date());
         budget.setCreateTime(new Date());
         budgetService.save(budget);
+        logger.debug("帐户创建完毕,budget({})", budget);
         createCard(tblOrder, budget.getId());
     }
 
@@ -238,6 +245,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
 
         }
     }
+
     /**
      * 批量创建卡
      *
@@ -246,17 +254,18 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
      */
     @Transactional
     public void batchCreateCard(TblOrder tblOrder, TblBudget budget) {
-        for (int i=0;i<tblOrder.getBatchCardNum();i++){
+        for (int i = 0; i < tblOrder.getBatchCardNum(); i++) {
             val card = new TblCardInfo();
             card.setIsNewRecord(true);
             card.setBudgetId(budget.getId());
             card.setCardOwner(tblOrder.getSubmitUsercode());
-            card.setCardName(budget.getName()+","+String.valueOf(System.currentTimeMillis()+i));
+            card.setCardName(budget.getName() + "," + String.valueOf(System.currentTimeMillis() + i));
             card.setCardLimit(tblOrder.getBatchCardAmount());
             card.setCardAmount(tblOrder.getBatchCardAmount());
             card.setCardStatus("tobecreate");
             cardInfoService.insert(card);
         }
+        logger.info("批量制卡完成，制卡数量{}",tblOrder.getBatchCardNum());
     }
 
 
