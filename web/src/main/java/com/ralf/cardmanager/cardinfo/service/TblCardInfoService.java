@@ -215,7 +215,7 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
         try {
             var refundAmount = rsp.getAmount() - 1;
             val rsp1 = updateVirtualCard.init(1l, cardInfo.getCardId(), cardInfo.getCardName()).execute();
-            if (!StringUtils.isEmpty(rsp1.getUpdateCardId()) && cardInfo.getCardId() == rsp1.getUpdateCardId()) {
+            if (!StringUtils.isEmpty(rsp1.getUpdateCardId()) && cardInfo.getCardId().equals(rsp1.getUpdateCardId()) ) {
                 budgetService.refund(cardInfo.getBudgetId(), refundAmount);
             } else {
                 throw new Exception("回收余额失败");

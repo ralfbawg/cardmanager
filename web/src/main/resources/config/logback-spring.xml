@@ -18,12 +18,13 @@
 	</appender>
 
 	<!-- Log file debug output -->
-	<appender name="debug" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${log.path}/debug.log</file>
+	<appender name="info" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.path}/info.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<fileNamePattern>${log.path}/debug.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+			<fileNamePattern>${log.path}/info.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
 			<maxFileSize>50MB</maxFileSize>
 			<maxHistory>30</maxHistory>
+			<totalSizeCap>5GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p ${PID:- } [%15.15t] [%-39logger{39}] - %m%n%wEx</pattern>
@@ -42,6 +43,7 @@
 			<fileNamePattern>${log.path}/error.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
 			<maxFileSize>50MB</maxFileSize>
 			<maxHistory>30</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p ${PID:- } [%15.15t] [%-39logger{39}] - %m%n%wEx</pattern>
@@ -54,7 +56,7 @@
 	<!-- Level: FATAL 0  ERROR 3  WARN 4  INFO 6  DEBUG 7 -->
 	<root level="info">
 		<appender-ref ref="console" />
-		<appender-ref ref="debug" />
+		<appender-ref ref="info" />
 		<appender-ref ref="error" />
 	</root>
 

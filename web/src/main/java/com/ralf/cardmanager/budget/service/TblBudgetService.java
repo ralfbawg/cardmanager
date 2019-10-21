@@ -117,7 +117,7 @@ public class TblBudgetService extends CrudService<TblBudgetDao, TblBudget> {
             budgetQuery.setOwnerUsercode(usercode);
             val list = dao.findList(budgetQuery);
             if (list != null && list.size() > 0) {
-                CacheUtils.put(BUDGET_CACHE, usercode, list.get(0).getId(), 60*60*6);
+                CacheUtils.put(BUDGET_CACHE, usercode, list.get(0).getId());
                 budgetId = list.get(0).getId();
             }
         }

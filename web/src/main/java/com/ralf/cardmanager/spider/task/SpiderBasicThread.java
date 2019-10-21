@@ -105,7 +105,7 @@ public abstract class SpiderBasicThread {
             try {
                 doLogin();
             } catch (Exception e) {
-                log.debug("登录出错了");
+                log.error("登录出错了");
                 e.printStackTrace();
             }
         }

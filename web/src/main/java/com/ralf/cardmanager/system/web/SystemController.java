@@ -69,6 +69,7 @@ public class SystemController extends BaseController {
         }
         return ".......有问题你";
     }
+
     @RequestMapping("/getUser")
     @ResponseBody
     public User getUser(String usercode) {
@@ -77,10 +78,21 @@ public class SystemController extends BaseController {
 
     @RequestMapping("/getBudget")
     @ResponseBody
-    public TblBudget getBudget(String budgetId) {
-        val budget = budgetService.get(budgetId);
-        return budget!=null?budget:null;
+    public TblBudget getBudget(@RequestParam(value = "budgetId", required = false) String budgetId) {
+        TblBudget budget = null;
+        if (StringUtils.isEmpty(budgetId)) {
+            val budgetQuery = new TblBudget();
+            budgetQuery.setOwnerUsercode(UserUtils.getUser().getUserCode());
+            val list = budgetService.findList(budgetQuery);
+            if (list != null && list.size() > 0) {
+                budget = list.get(0);
+            }
+        } else {
+            budget = budgetService.get(budgetId);
+        }
+        return budget != null ? budget : null;
     }
+
     @RequestMapping("/getBudgetCardCount")
     @ResponseBody
     public Long getBudgetCardCount(String budgetId) {

@@ -367,7 +367,7 @@ public class SchedulerService {
                 transaction.setProcStatus(PROC_STATUS_FINISH);
             }
             if (commonService.getCardinfoByCardId(t.getCardId()) == null) {
-                log.error("没有相关卡与id{}对应", t.getCardId());
+                log.info("没有相关卡与id{}对应", t.getCardId());
             } else {
                 transaction.setCardNo(commonService.getCardinfoByCardId(t.getCardId()).getCardNo());
                 transaction.setCardOwner(commonService.getCardinfoByCardId(t.getCardId()).getCardOwner());
@@ -377,7 +377,7 @@ public class SchedulerService {
             try {
                 transactionService.save(transaction);
             } catch (DuplicateKeyException e) {
-                log.error("库里已经存在这条交易流水{}了", transaction.getSpTransactionId());
+                log.debug("库里已经存在这条交易流水{}了", transaction.getSpTransactionId());
             }
 
         });
