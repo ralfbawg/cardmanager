@@ -123,7 +123,7 @@
 </div>
 <% } %>
 <script>
-
+	var budget = $.GetBudget(val);
 
 // 初始化DataGrid对象
 $('#dataGrid').dataGrid({
@@ -131,8 +131,7 @@ $('#dataGrid').dataGrid({
 	showCheckbox: true,
 	columnModel: [
 		{header:'${text("帐户名")}', name:'budgetId', index:'a.budget_id', width:150, align:"center",formatter:function (val, obj, row, act) {
-				var tmp = $.GetBudget(val);
-				return tmp==undefined?"未知":tmp.name;
+				return budget==undefined?"未知":budget.name;
 			}},
 		{header:'${text("交易记录")}', name:'cardNo', index:'a.id', width:100, align:"center", frozen:true, formatter: function(val, obj, row, act){
 				return '<a href="${ctx}/cardtransaction/tblCardTransaction/list?cardId='+row.cardId+'" class="btnList" data-title="${text("交易记录")}">交易记录</a>';
@@ -219,6 +218,7 @@ function batchRefund(ids) {
                     if(data.result == Global.TRUE){
                         js.showMessage(data.message,"消息","success", 4000);
                         $('#dataGrid').dataGrid('refresh');
+						budget = $.GetBudget(val);
                     }else {
                         js.showMessage(data.message, "消息", "error", 4000);
                     }
@@ -235,17 +235,18 @@ function batchRefund(ids) {
 }
 function chargeCard(id) {
 //	layer.prompt({title: '输入充值数额，并确认,当前帐户余额(<font color="green">$ '+$.CurrentLongToDouble('${@CommonUtil.getBudgetAmount("")}')+'</font>', formType: 0}, function (pass, index) {
-	layer.prompt({title: '帐户余额：<font color="green">'+$.CurrentLongToDouble('${@CommonUtil.getBudgetAmount("")}')+'USD</font>', formType: 0}, function (pass, index) {
+	layer.prompt({title: '帐户余额：<font color="green">'+$.CurrentLongToDouble(budget.amount)+'USD</font>', formType: 0}, function (pass, index) {
 		js.loading("充值中");
 		$.ajax({
 			type: "POST",
 			url: "${ctx}/cardinfo/tblCardInfo/charge",
-			data: {id: id, amount: pass},
+			data: {id: id, amount: parseInt(pass*100)},
 			dataType: "json",
             traditional:true,
 			async:false,
 			success: function (data) {
 				js.closeLoading(1000, true);
+				budget = $.GetBudget(val);
 				if(data.result == Global.TRUE){
 					js.showMessage(data.message,"消息","success", 4000);
 					layer.close(index);
@@ -268,7 +269,7 @@ function batchChargeCard(ids) {
 		return js.showMessage("请先选中卡片","提示","warning", 4000);
 	}
 //	layer.prompt({title: '输入每张卡的充值数额，并确认,当前帐户余额(<font color="green">$ '+$.CurrentLongToDouble('${@CommonUtil.getBudgetAmount("")}')+'</font>)', formType: 0}, function (pass, index) {
-	layer.prompt({title: '帐户余额：<font color="green">'+$.CurrentLongToDouble('${@CommonUtil.getBudgetAmount("")}')+'USD</font>', formType: 0}, function (pass, index) {
+	layer.prompt({title: '帐户余额：<font color="green">'+$.CurrentLongToDouble(budget.amount)+'USD</font>', formType: 0}, function (pass, index) {
 		js.loading("充值中");
 		$.ajax({
 			type: "POST",
@@ -279,6 +280,7 @@ function batchChargeCard(ids) {
 			async:false,
 			success: function (data) {
 				js.closeLoading(1000, true);
+				budget = $.GetBudget(val);
 				if(data.result == Global.TRUE){
 					js.showMessage(data.message,"消息","success", 4000);
 					layer.close(index);
@@ -314,6 +316,7 @@ function batchDelete(ids) {
                 traditional:true,
                 async:false,
                 success: function (data) {
+					budget = $.GetBudget(val);
                     js.closeLoading(1000, true);
                     if(data.result == Global.TRUE){
                         js.showMessage(data.message,"消息","success", 4000);

@@ -219,7 +219,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
         budget.setCreateTime(new Date());
         budgetService.save(budget);
         logger.debug("帐户创建完毕,budget({})", budget);
-        createCard(tblOrder, budget.getId());
+//        createCard(tblOrder, budget.getId());
     }
 
     /**
@@ -230,6 +230,9 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
      */
     @Transactional
     public void createCard(TblOrder tblOrder, String budgetId) {
+        val budget = budgetService.get(budgetId);
+
+
         if (tblOrder.getTblOrderDetailList().size() > 0) {
             tblOrder.getTblOrderDetailList().forEach(t -> {
                 val card = new TblCardInfo();

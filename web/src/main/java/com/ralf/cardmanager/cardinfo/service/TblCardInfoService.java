@@ -3,8 +3,8 @@
  */
 package com.ralf.cardmanager.cardinfo.service;
 
-import com.jeesite.common.config.Global;
 import com.jeesite.common.entity.Page;
+import com.jeesite.common.lang.StringUtils;
 import com.jeesite.common.service.CrudService;
 import com.jeesite.common.utils.SpringUtils;
 import com.ralf.cardmanager.budget.service.TblBudgetService;
@@ -21,7 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -112,11 +114,12 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public boolean chargeCard(TblCardInfo card, Long amount) throws Exception {
-        val result = budgetService.minus(card.getBudgetId(), amount);
-        val budget = budgetService.get(card.getBudgetId());
-        if (result <= 0) {
-            throw new Exception();
+    public boolean chargeCard(TblCardInfo card, Long amount, boolean budgetMinusFlag) throws Exception {
+        if (budgetMinusFlag) {
+            val result = budgetService.minus(card.getBudgetId(), amount);
+            if (result <= 0) {
+                throw new Exception();
+            }
         }
         SpringUtils.getBean(TblCardInfoService.class).charge(card.getId(), amount);
         val rsp2 = getVirtualCardEditInfo.init(card.getCardId()).execute();
@@ -135,6 +138,9 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
     @Transactional(rollbackFor = Exception.class)
     public boolean batchChargeCard(String[] ids, String budgetId, Long amount) throws Exception {
         var result = true;
+        if (budgetService.minus(budgetId, amount * ids.length) <= 0) {
+            throw new Exception();
+        }
         for (String id : ids) {
             val cardQuery = new TblCardInfo();
             cardQuery.setId(id);
@@ -144,7 +150,7 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
                 log.error("没找到卡");
                 return false;
             } else {
-                result &= chargeCard(cardList.get(0), amount);
+                result &= chargeCard(cardList.get(0), amount, false);
             }
         }
         return result;
@@ -154,7 +160,7 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
     public boolean deleteCard(TblCardInfo cardInfo) {
         try {
             val rsp = deleteCard.init(cardInfo.getCardId()).execute();
-            if (rsp.getDeleteCardId().equalsIgnoreCase(cardInfo.getCardId())){
+            if (rsp.getDeleteCardId().equalsIgnoreCase(cardInfo.getCardId())) {
                 return true;
             }
         } catch (Exception e) {
@@ -169,8 +175,8 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
         var result = true;
         for (String id : ids) {
             val card = get(id);
-            if (card!=null){
-                result&=deleteCard(card);
+            if (card != null) {
+                result &= deleteCard(card);
             }
 
         }
@@ -179,8 +185,9 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public boolean batchRefundCard(String[] ids, String budgetId) throws Exception{
+    public boolean batchRefundCard(String[] ids, String budgetId) throws Exception {
         var result = true;
+
         for (String id : ids) {
             val cardQuery = new TblCardInfo();
             cardQuery.setId(id);
@@ -190,37 +197,48 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
                 log.error("没找到卡");
                 return false;
             } else {
-                result &= refundCard(cardList.get(0));
+                try {
+                    result = result && refundCard(cardList.get(0));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new Exception("test");
+                }
             }
         }
+
         return result;
     }
 
     @Transactional(rollbackFor = Exception.class)
     public boolean refundCard(TblCardInfo cardInfo) throws Exception {
-            val rsp = getVirtualCardEditInfo.init(cardInfo.getCardId()).execute();
-            var refundAmount = rsp.getAmount()-1;
-            updateVirtualCard.init(refundAmount,cardInfo.getCardId(),cardInfo.getCardName());
+        val rsp = getVirtualCardEditInfo.init(cardInfo.getCardId()).execute();
         try {
-//            budgetService.charge(cardInfo.getBudgetId(),refundAmount);
-            budgetService.refund(cardInfo.getBudgetId(),refundAmount);
+            var refundAmount = rsp.getAmount() - 1;
+            val rsp1 = updateVirtualCard.init(1l, cardInfo.getCardId(), cardInfo.getCardName()).execute();
+            if (!StringUtils.isEmpty(rsp1.getUpdateCardId()) && cardInfo.getCardId() == rsp1.getUpdateCardId()) {
+                budgetService.refund(cardInfo.getBudgetId(), refundAmount);
+            } else {
+                throw new Exception("回收余额失败");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
-            updateVirtualCard.init(rsp.getAmount(),cardInfo.getCardId(),cardInfo.getCardName());
+            log.error("卡cardNo{}cardName{}回收余额失败", cardInfo.getCardNo(), cardInfo.getCardName());
+            updateVirtualCard.init(rsp.getAmount(), cardInfo.getCardId(), cardInfo.getCardName()).execute();
             throw e;
         }
         return true;
     }
 
     @Transactional
-    public Long getClearAmount(String budgetId){
+    public Long getClearAmount(String budgetId) {
         var card = new TblCardInfo();
         card.setBudgetId(budgetId);
         val list = findList(card);
-        if (list!=null&&list.size()>0){
-            val ids = list.parallelStream().map(t->t.getId()).collect(Collectors.toList());
+        if (list != null && list.size() > 0) {
+            val ids = list.parallelStream().map(t -> t.getId()).collect(Collectors.toList());
             return dao.getClearAmount(ids);
-        }else{
+        } else {
             return 0l;
         }
 

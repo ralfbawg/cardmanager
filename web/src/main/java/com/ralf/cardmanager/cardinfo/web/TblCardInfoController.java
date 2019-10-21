@@ -6,6 +6,7 @@ package com.ralf.cardmanager.cardinfo.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.jeesite.common.lang.StringUtils;
 import com.jeesite.modules.sys.entity.User;
 import com.jeesite.modules.sys.utils.UserUtils;
 import com.ralf.cardmanager.budget.entity.TblBudget;
@@ -158,7 +159,7 @@ public class TblCardInfoController extends BaseController {
             }
             try {
                 val card = cardList.get(0);
-                if (tblCardInfoService.chargeCard(card, amount)) {
+                if (tblCardInfoService.chargeCard(card, amount,true)) {
                     return renderResult(Global.TRUE, text("卡充值成功！"));
                 } else {
                     return renderResult(Global.FALSE, text("卡充值失败！请联系管理员"));
@@ -185,11 +186,13 @@ public class TblCardInfoController extends BaseController {
         budgetQuery.setOwnerUsercode(UserUtils.getUser().getUserCode());
         val budgetList = budgetService.findList(budgetQuery);
         if (budgetList != null&&budgetList.size()==1) {
-            if (budgetList.get(0).getBudgetAmount() < (ids.length * amount*100)) {
+            if (budgetList.get(0).getBudgetAmount() < (ids.length * amount)) {
                 return renderResult(Global.FALSE, text("帐户余额不足，请先充值帐户！"));
             }
             try {
-                tblCardInfoService.batchChargeCard(ids, budgetList.get(0).getId(), amount);
+                if (tblCardInfoService.batchChargeCard(ids, budgetList.get(0).getId(), amount)) {
+                    return renderResult(Global.TRUE, text("批量充值成功"));
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 log.error("充值失败,id:{},amounts:{}" + ids, ids.length * amount);
@@ -208,12 +211,10 @@ public class TblCardInfoController extends BaseController {
     @RequestMapping(value = "batchRefund")
     @ResponseBody
     public String batchRefund(@RequestParam("ids") String[] ids) {
-        val budgetQuery = new TblBudget();
-        budgetQuery.setOwnerUsercode(UserUtils.getUser().getUserCode());
-        val budgetList = budgetService.findList(budgetQuery);
-        if (budgetList != null&&budgetList.size()==1){
+        val budgetId = budgetService.findBudgetIdCacheByUsercode(UserUtils.getUser().getUserCode());
+        if (!StringUtils.isEmpty(budgetId)){
             try {
-                tblCardInfoService.batchRefundCard(ids, budgetList.get(0).getId());
+                tblCardInfoService.batchRefundCard(ids,budgetId );
             } catch (Exception e) {
                 return renderResult(Global.FALSE, text("回收错误，请联系管理员"));
             }

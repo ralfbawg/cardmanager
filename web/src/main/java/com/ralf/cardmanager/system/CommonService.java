@@ -65,7 +65,7 @@ public class CommonService {
 
 
     public void updateCardCache(TblCardInfo t) {
-        CacheUtils.put(CARD_CACHE, t.getCardId(), t);
+        CacheUtils.put(CARD_CACHE, t.getCardId(), t,60);
     }
 
     public TblCardInfo getCardinfoByCardId(String cardId) {

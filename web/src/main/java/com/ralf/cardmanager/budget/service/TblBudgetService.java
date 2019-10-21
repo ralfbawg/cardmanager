@@ -5,6 +5,8 @@ package com.ralf.cardmanager.budget.service;
 
 import java.util.List;
 
+import com.jeesite.common.cache.CacheUtils;
+import com.jeesite.common.lang.StringUtils;
 import com.ralf.cardmanager.system.exception.BudgetNotEnoughException;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -27,6 +29,9 @@ import com.ralf.cardmanager.budget.dao.TblBudgetDao;
 @Transactional(readOnly = true)
 @Slf4j
 public class TblBudgetService extends CrudService<TblBudgetDao, TblBudget> {
+    public static final String BUDGET_CACHE = "Budget_Cache";
+
+
     @Autowired
     private TblBudgetDao dao;
 
@@ -92,7 +97,7 @@ public class TblBudgetService extends CrudService<TblBudgetDao, TblBudget> {
     }
 
     @Transactional
-    public int minus(String id, long amount) throws BudgetNotEnoughException{
+    public int minus(String id, long amount) throws BudgetNotEnoughException {
         val budget = get(id);
         if (budget.getBudgetAmount() < amount) {
             log.error("账户{}现有余额{}不足以扣减{}", id, budget.getBudgetAmount(), amount);
@@ -104,4 +109,19 @@ public class TblBudgetService extends CrudService<TblBudgetDao, TblBudget> {
     public int refund(String budgetId, long refundAmount) {
         return dao.refund(budgetId, refundAmount);
     }
+
+    public String findBudgetIdCacheByUsercode(String usercode) {
+        String budgetId = CacheUtils.get(BUDGET_CACHE, usercode);
+        if (StringUtils.isEmpty(budgetId)) {
+            val budgetQuery = new TblBudget();
+            budgetQuery.setOwnerUsercode(usercode);
+            val list = dao.findList(budgetQuery);
+            if (list != null && list.size() > 0) {
+                CacheUtils.put(BUDGET_CACHE, usercode, list.get(0).getId(), 60*60*6);
+                budgetId = list.get(0).getId();
+            }
+        }
+        return budgetId;
+    }
+
 }

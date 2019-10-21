@@ -224,22 +224,22 @@ public class TblOrderController extends BaseController {
     @RequestMapping(value = "submit")
     @ResponseBody
     public String submit(TblOrder tblOrder) {
-//        if (tblOrder.getType().equalsIgnoreCase(TblOrderService.TYPE_CREATE_CARD)||tblOrder.getType().equalsIgnoreCase(TblOrderService.TYPE_BATCH_CREATE_CARD)){
-//            val budget = new TblBudget();
-//            budget.setOwnerUsercode(UserUtils.getUser().getUserCode());
-//            val list = budgetService.findList(budget);
-//            if (list!=null&&list.size()>0){
-//                if (list.get(0).getBudgetAmount()<tblOrder.getOrderAmount()) {
-//                    return renderResult(Global.FALSE, text(" 账户余额不足，请先充值！"));
-//                }
-//            }else {
-//                return renderResult(Global.FALSE, text(" 账户不存在！"));
-//            }
-//
-//        }
+        if (tblOrder.getType().equalsIgnoreCase(TblOrderService.TYPE_CREATE_CARD)||tblOrder.getType().equalsIgnoreCase(TblOrderService.TYPE_BATCH_CREATE_CARD)){
+            val budget = new TblBudget();
+            budget.setOwnerUsercode(UserUtils.getUser().getUserCode());
+            val list = budgetService.findList(budget);
+            if (list!=null&&list.size()>0){
+                if (list.get(0).getBudgetAmount()<tblOrder.getOrderAmount()) {
+                    return renderResult(Global.FALSE, text(" 账户余额不足，请先充值！"));
+                }
+            }else {
+                return renderResult(Global.FALSE, text(" 账户不存在！"));
+            }
+
+        }
         tblOrder.setPayStatus(STATUS_WAIT_PAY);
         tblOrderService.update(tblOrder);
-        return renderResult(Global.TRUE, text(" 提交订单成功！"));
+        return renderResult(Global.TRUE, text(" 订单提交成功！"));
     }
 
 }
