@@ -190,7 +190,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
             tblOrder.setPayStatus(STATUS_AUDIT_PASS_PRO_SUCCESS);
             SpringUtils.getBean(TblOrderService.class).update(tblOrder);
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
     }
