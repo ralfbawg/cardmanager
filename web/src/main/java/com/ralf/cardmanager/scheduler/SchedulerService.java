@@ -74,7 +74,7 @@ public class SchedulerService {
     TblBudgetService budgetService;
 
     // 更新卡的allcocation
-    @Scheduled(cron = "* * * 1 * *")
+    @Scheduled(cron = "0 0 2 1 * *")
     public void updateCardAllocationId() {
 
     }
@@ -117,7 +117,7 @@ public class SchedulerService {
                     t.setExpiredDate(rsp.getStep2Resp().getExpirationDate());
                     t.setUserAllocationId(rsp.getStep2Resp().getUserAllocation());
                     t.setCardType(rsp.getStep2Resp().getCardType());
-                    t.setNickname(tmpName + "第" + (count++) +"张卡");
+                    t.setNickname(tmpName + "第" + (count++) + "张卡");
                     t.setIsNewRecord(false);
                     t.setUpdateDate(new Date());
                     cardInfoService.save(t);
@@ -131,7 +131,7 @@ public class SchedulerService {
     }
 
     // 自动激活卡
-    @Scheduled(cron = "0/30 * * * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     @Transactional
     public void UnfreezedCard() throws Exception {
         val declineTransaction = new TblCardTransaction();
@@ -200,12 +200,17 @@ public class SchedulerService {
      * @param cardinfo
      * @throws Exception
      */
-    private boolean autoCharge(TblCardInfo cardinfo, Long amount) {
+    @Transactional
+    public boolean autoCharge(TblCardInfo cardinfo, Long amount) {
         try {
             cardInfoService.chargeCard(cardinfo, amount, true);
             return true;
         } catch (BudgetNotEnoughException e) {
             log.error("card({})自动充值({})失败", cardinfo.getId(), amount);//todo 自动充值失败逻辑
+            val budget = budgetService.get(cardinfo.getBudgetId());
+            budget.setLastAutoCharge(new Date());
+            budget.setAutoChargeFailCount(budget.getAutoChargeFailCount() + 1L);
+            budgetService.save(budget);
             e.printStackTrace();
             return true;
         } catch (Exception e) {
@@ -215,7 +220,7 @@ public class SchedulerService {
     }
 
     // 自动更新余额与状态
-    @Scheduled(cron = "0/30 * * * * *")
+    @Scheduled(cron = "0 0/3 * * * ?")
     public void updateCardAmount() {
         val cardQuery = new TblCardInfo();
         cardQuery.setUpdateDate_lte(new DateTime().minusMinutes(30).toDate());
@@ -248,7 +253,7 @@ public class SchedulerService {
 
     }
 
-    @Scheduled(cron = "* 5 * * * *")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void budgetProcess() {
         val list = budgetService.findList(new TblBudget());
         list.forEach(t -> {
@@ -263,7 +268,7 @@ public class SchedulerService {
      *
      * @throws IOException
      */
-    @Scheduled(fixedDelay = 60 * 1000) // 每分钟一次
+    @Scheduled(fixedDelay = 150 * 1000) // 每分钟一次
 //    @Scheduled(fixedDelay = 30 * 1000)//每分钟一次
     public void GetCardTransactions() throws Exception {
         log.debug("开始执行正常流水获取");
@@ -312,7 +317,7 @@ public class SchedulerService {
      *
      * @throws IOException
      */
-    @Scheduled(fixedDelay = 60 * 1000) // 每分钟一次
+    @Scheduled(fixedDelay = 300 * 1000) // 每分钟一次
     public void GetCardDeclineTransactions() throws Exception {
         log.debug("开始执行异常流水获取");
         Long dbDeclineTransactionCount = 0l;
@@ -402,7 +407,7 @@ public class SchedulerService {
     /**
      * 卡信息缓存
      */
-    @Scheduled(fixedDelay = 60 * 1000) // 30分钟
+    @Scheduled(fixedDelay = 30 * 60 * 1000) // 30分钟
     public void updateCardCache() {
         commonService.updateCardCache();
     }

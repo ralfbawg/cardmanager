@@ -90,7 +90,7 @@ public class CommonService {
 
     public boolean isAdminOrSecMgr() {
         val user = UserUtils.getUser();
-        if (user.isAdmin() || user.getMgrType() == "2") {
+        if (user.isAdmin() || user.getMgrType().equals("2")) {
             return true;
         } else {
             return false;

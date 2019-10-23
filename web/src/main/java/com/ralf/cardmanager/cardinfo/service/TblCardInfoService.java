@@ -47,6 +47,7 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
     @Autowired
     private DeleteCard deleteCard;
 
+
     /**
      * 获取单条数据
      *
@@ -212,11 +213,15 @@ public class TblCardInfoService extends CrudService<TblCardInfoDao, TblCardInfo>
     @Transactional(rollbackFor = Exception.class)
     public boolean refundCard(TblCardInfo cardInfo) throws Exception {
         val rsp = getVirtualCardEditInfo.init(cardInfo.getCardId()).execute();
+        log.error("回收前:卡id={},rsp={}",cardInfo.getCardId(),rsp);
         try {
             var refundAmount = rsp.getAmount() - 1;
             val rsp1 = updateVirtualCard.init(1l, cardInfo.getCardId(), cardInfo.getCardName()).execute();
+            log.error("回收中:卡id={},rsp1={}",cardInfo.getCardId(),rsp1);
             if (!StringUtils.isEmpty(rsp1.getUpdateCardId()) && cardInfo.getCardId().equals(rsp1.getUpdateCardId()) ) {
                 budgetService.refund(cardInfo.getBudgetId(), refundAmount);
+                dao.refund(cardInfo.getId());
+                log.error("回收结束:卡id={},refundAmount={}",cardInfo.getCardId(),refundAmount);
             } else {
                 throw new Exception("回收余额失败");
             }

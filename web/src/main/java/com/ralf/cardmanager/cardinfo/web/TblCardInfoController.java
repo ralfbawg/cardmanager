@@ -142,9 +142,8 @@ public class TblCardInfoController extends BaseController {
     @RequestMapping(value = "charge")
     @ResponseBody
     public String charge(@RequestParam("id") String id, @RequestParam("amount") Long amount) {
-        val budgetQuery = new TblBudget();
-        budgetQuery.setOwnerUsercode(UserUtils.getUser().getUserCode());
-        val budget = budgetService.get(budgetQuery);
+        String budgetId = budgetService.findBudgetIdCacheByUsercode(UserUtils.getUser().getUserCode());
+        val budget= budgetService.get(budgetId);
         if (budget != null) {
             if (budget.getBudgetAmount() < amount) {
                 return renderResult(Global.FALSE, text("帐户余额不足，请先充值帐户！"));
@@ -214,7 +213,9 @@ public class TblCardInfoController extends BaseController {
         val budgetId = budgetService.findBudgetIdCacheByUsercode(UserUtils.getUser().getUserCode());
         if (!StringUtils.isEmpty(budgetId)){
             try {
-                tblCardInfoService.batchRefundCard(ids,budgetId );
+                if (tblCardInfoService.batchRefundCard(ids,budgetId )) {
+                    return renderResult(Global.TRUE, text("回收成功"));
+                }
             } catch (Exception e) {
                 return renderResult(Global.FALSE, text("回收错误，请联系管理员"));
             }

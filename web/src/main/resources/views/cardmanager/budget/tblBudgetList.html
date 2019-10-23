@@ -25,7 +25,7 @@
 					<label class="control-label">${text('客户名')}：</label>
 					<div class="control-inline width-120" >
 						<#form:treeselect id="ownerUsercode" title="${text('用户选择')}"
-							path="ownerUsercode" labelPath="" 
+							path="ownerUsercode" labelPath=""
 							url="${ctx}/sys/office/treeData?isLoadUser=true" allowClear="true"/>
 					</div>
 				</div>
@@ -46,7 +46,7 @@
 					<label class="control-label">${text('创建者')}：</label>
 					<div class="control-inline width-120" >
 						<#form:treeselect id="createUserCode" title="${text('用户选择')}"
-							path="createUserCode" labelPath="" 
+							path="createUserCode" labelPath=""
 							url="${ctx}/sys/office/treeData?isLoadUser=true" allowClear="true"/>
 					</div>
 				</div>
@@ -103,7 +103,7 @@ $('#dataGrid').dataGrid({
 				return isNaN(val)?0:val/100;
 			}},
 		{header:'${text("开户时间")}', name:'createTime', index:'a.create_time', width:150, align:"center"},
-		{header:'${text("状态")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+		{header:'${text("状态")}', name:'status', index:'a.status', width:120, align:"center", formatter: function(val, obj, row, act){
 			return js.getDictLabel(${@DictUtils.getDictListJson('sys_search_status')}, val, '${text("未知")}', true);
 		}},
 		{header:'${text("是否虚拟")}', name:'virtual', index:'a.virtual', width:150, align:"center",hidden:true, formatter: function(val, obj, row, act){
@@ -113,11 +113,20 @@ $('#dataGrid').dataGrid({
 		{header:'${text("卡品牌")}', name:'cardServiceProvider', index:'a.card_service_provider', width:150,hidden:true, align:"center", formatter: function(val, obj, row, act){
 				return js.getDictLabel(${@DictUtils.getDictListJson('cm_card_sp')}, val, '${text("未知")}', true);
 			}},
-		{header:'${text("卡数量")}', name:'id', index:'a.id', width:150, align:"center", frozen:true, formatter: function(val, obj, row, act){
+		{header:'${text("卡数量")}', name:'id', index:'a.id', width:120, align:"center", frozen:true, formatter: function(val, obj, row, act){
 				return '<a href="${ctx}/cardinfo/tblCardInfo/list?budgetId='+row.id+'" class="btnList" data-title="${text("查看卡信息")}">'+($.GetBudgetCardCount(val)||'未知')+'</a>';
 			}},
 		{header:'${text("上次充值时间")}', name:'lastChargeOn', index:'a.last_charge_on', width:150, align:"center"},
-		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			<% if(hasRole()){ %>
+				{header:'${text("上次自动充值时间")}', name:'lastAutoCharge', index:'a.last_charge_on', width:190, align:"center", formatter: function(val, obj, row, act){
+					return val!=undefined?'<font color="red">'+js.formatDate(new Date(val),'yyyy-MM-dd HH:mm:ss')+'</font>':'';
+				}},
+				{header:'${text("自动充值失败次数")}', name:'autoChargeFailCount', index:'a.last_charge_on', width:150, align:"center",formatter: function(val, obj, row, act){
+					return val!=undefined&&val>=3?'<font color="red">'+val+'</font>':val;
+				}},
+			<% } %>
+
+			{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
 			var actions = [];
 			<% if(hasPermi('budget:tblBudget:edit')){ %>
 				actions.push('<a href="${ctx}/budget/tblBudget/form?id='+row.id+'" class="btnList" title="${text("编辑帐户信息")}"><i class="fa fa-pencil"></i></a>&nbsp;');
@@ -130,7 +139,7 @@ $('#dataGrid').dataGrid({
 	],
 	// 加载成功后执行事件
 	ajaxSuccess: function(data){
-		
+
 	}
 });
 </script>

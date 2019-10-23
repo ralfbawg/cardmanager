@@ -30,4 +30,14 @@ public interface TblCardInfoDao extends CrudDao<TblCardInfo> {
             "</foreach>",
             "</script>"})
     Long getClearAmount(@Param("ids") List<String> ids);
+
+    @Update({ "<script>update  tbl_card_info set card_amount=1 where id in",
+            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>",
+            "#{id}",
+            "</foreach>",
+            "</script>"})
+    Long batchRefund(@Param("ids") List<String> ids);
+
+    @Update({"update tbl_card_info set card_amount=1 where id =#{id}"})
+    Long refund(@Param("id") String id);
 }

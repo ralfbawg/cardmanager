@@ -37,6 +37,8 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 		@Column(name="virtual", attrName="virtual", label="是否虚拟", isQuery=false),
 		@Column(name="card_create_limit", attrName="cardCreateLimit", label="卡数上限", isQuery=false),
 		@Column(name="last_charge_on", attrName="lastChargeOn", label="上次充值时间", isQuery=false),
+		@Column(name="last_auto_charge", attrName="lastAutoCharge", label="上次自动充值时间", isQuery=false),
+		@Column(name="auto_charge_count", attrName="autoChargeFailCount", label="自动充值失败次数", isQuery=false),
 	}, orderBy="a.id DESC"
 )
 public class TblBudget extends DataEntity<TblBudget> {
@@ -57,7 +59,9 @@ public class TblBudget extends DataEntity<TblBudget> {
 	private Integer virtual;		// 是否虚拟
 	private Long cardCreateLimit;		// 卡数上限
 	private Date lastChargeOn;		// 上次充值时间
-	
+	private Date lastAutoCharge;		// 上次自动充值时间
+	private Long autoChargeFailCount;		// 自动充值失败次数
+
 	public TblBudget() {
 		this(null);
 	}
@@ -193,5 +197,20 @@ public class TblBudget extends DataEntity<TblBudget> {
 	public void setLastChargeOn(Date lastChargeOn) {
 		this.lastChargeOn = lastChargeOn;
 	}
-	
+
+	public Date getLastAutoCharge() {
+		return lastAutoCharge;
+	}
+
+	public void setLastAutoCharge(Date lastAutoCharge) {
+		this.lastAutoCharge = lastAutoCharge;
+	}
+
+	public Long getAutoChargeFailCount() {
+		return autoChargeFailCount;
+	}
+
+	public void setAutoChargeFailCount(Long autoChargeFailCount) {
+		this.autoChargeFailCount = autoChargeFailCount;
+	}
 }
