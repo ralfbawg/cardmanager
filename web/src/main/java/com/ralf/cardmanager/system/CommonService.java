@@ -87,13 +87,14 @@ public class CommonService {
                 if (cardInfoList != null && cardInfoList.size() > 0) {
                     updateCardCache(cardInfoList.get(0));
                 }
+                return cardInfoList.get(0);
             } else {
                 return mapper.readValue(resultStr, TblCardInfo.class);
             }
         } catch (Exception e) {
+            log.error("mapper error", e);
             return null;
         }
-        return null;
     }
 
 
