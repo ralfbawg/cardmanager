@@ -126,7 +126,7 @@ $('#dataGrid').dataGrid({
 		{header:'${text("卡号")}', name:'cardNo', index:'a.card_no', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
 			return '<a href="${ctx}/cardtransaction/tblCardTransaction/form?id='+row.id+'" class="btnList" data-title="${text("编辑交易流水")}">'+(val||row.id)+'</a>';
 		}},
-		{header:'${text("交易商户")}', name:'clearedMerchant', index:'a.cleared_merchant', width:150, align:"left"},
+		{header:'${text("交易商户")}', name:'clearedMerchant', index:'a.cleared_merchant', width:150, align:"center"},
 		{header:'${text("交易金额")}', name:'amount', index:'a.amount', width:150, align:"center",formatter:function (val, obj, row, act) {
 			    var price = val/100
 				return (price<0?"-":"")+("$"+price).replace("-","");
@@ -137,8 +137,8 @@ $('#dataGrid').dataGrid({
 		{header:'${text("清算状态")}', name:'transactionStatus', index:'a.transaction_status', hidden:true,width:150, align:"center", formatter: function(val, obj, row, act){
 			return js.getDictLabel(${@DictUtils.getDictListJson('cm_trancaction_status')}, val, '${text("未知")}', true);
 		}},
-		{header:'${text("交易日期")}', name:'occurredDate', index:'a.occurred_date', width:150, align:"left"},
-		{header:'${text("清算日期")}', name:'clearedDate', index:'a.cleared_date', width:150, align:"left"},
+		{header:'${text("交易日期")}', name:'occurredDate', index:'a.occurred_date', width:150, align:"center"},
+		{header:'${text("清算日期")}', name:'clearedDate', index:'a.cleared_date', width:150, align:"center"},
 		{header:'${text("交易状态")}', name:'transactionType', index:'a.transaction_type', width:150, align:"center",formatter: function(val, obj, row, act){
 			if (row.transactionStatus=="COMPLETE"){
 				return js.getDictLabel(${@DictUtils.getDictListJson('cm_trancaction_status')}, row.transactionStatus, '${text("未知")}', true);
