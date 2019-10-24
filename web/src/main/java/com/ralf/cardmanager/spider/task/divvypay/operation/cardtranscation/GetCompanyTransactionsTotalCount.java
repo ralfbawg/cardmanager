@@ -23,16 +23,19 @@ import java.io.IOException;
 @Service
 @Scope("prototype")
 public class GetCompanyTransactionsTotalCount extends BaseDivvyOperation<GetCompanyTransactionsTotalCountRsp> {
-    public GetCompanyTransactionsTotalCount init(String type) throws Exception {
+    public GetCompanyTransactionsTotalCount init(String type, String budgetId, String cardId) throws Exception {
         super.init(new String[]{
                 config.getCompanyId(),
-                StringUtils.isEmpty(type) || type != "decline" ? "null" : "[\"DECLINE\"]",});
+                StringUtils.isEmpty(type) || type != "decline" ? "null" : "[\"DECLINE\"]",
+                !StringUtils.isEmpty(budgetId) ? "[\"" + budgetId + "\"]" : "null",
+                !StringUtils.isEmpty(cardId) ? "[\"" + cardId + "\"]" : "null"
+        });
         return this;
     }
 
     public GetCompanyTransactionsTotalCount(DivvyPaySiteConfig config) {
         super(config);
-        this.body = "{\"operationName\":\"GetCompanyTransactionsTotalCount\",\"variables\":{\"sortDirection\":\"desc\",\"companyId\":\"%s\",\"sortColumn\":\"date\",\"types\":%s,\"budgetId\":null,\"cardId\":null,\"userId\":null,\"status\":null,\"after\":null,\"amountMax\":null,\"amountMin\":null,\"before\":null,\"dateEnd\":null,\"dateStart\":null,\"filterTagValues\":null,\"first\":30,\"last\":null,\"merchantName\":null,\"search\":null,\"isReviewed\":null},\"query\":\"query GetCompanyTransactionsTotalCount($companyId: ID!, $search: String, $userId: [ID], $budgetId: [ID], $cardId: [ID], $merchantName: String, $filterTagValues: [ID], $amountMin: Int, $amountMax: Int, $dateStart: Time, $dateEnd: Time, $sortDirection: String = \\\"desc\\\", $sortColumn: String, $reconciled: Boolean, $isReviewed: Boolean, $isLocked: Boolean, $syncStatus: [SyncStatus], $hasAllRequiredFieldsCompleted: Boolean, $sortTagType: ID, $types: [TransactionType], $status: [TransactionStatus]) {\\n  node(id: $companyId) {\\n    ... on Company {\\n      id\\n      transactionsTotalCount(search: $search, userId: $userId, cardId: $cardId, budgetId: $budgetId, merchantName: $merchantName, filterTagValues: $filterTagValues, amountMin: $amountMin, amountMax: $amountMax, dateStart: $dateStart, dateEnd: $dateEnd, sortDirection: $sortDirection, sortColumn: $sortColumn, reconciled: $reconciled, isReviewed: $isReviewed, isLocked: $isLocked, syncStatus: $syncStatus, hasAllRequiredFieldsCompleted: $hasAllRequiredFieldsCompleted, sortTagType: $sortTagType, types: $types, status: $status)\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}";
+        this.body = "{\"operationName\":\"GetCompanyTransactionsTotalCount\",\"variables\":{\"sortDirection\":\"desc\",\"companyId\":\"%s\",\"sortColumn\":\"date\",\"types\":%s,\"budgetId\":%s,\"cardId\":%s,\"userId\":null,\"status\":null,\"after\":null,\"amountMax\":null,\"amountMin\":null,\"before\":null,\"dateEnd\":null,\"dateStart\":null,\"filterTagValues\":null,\"first\":30,\"last\":null,\"merchantName\":null,\"search\":null,\"isReviewed\":null},\"query\":\"query GetCompanyTransactionsTotalCount($companyId: ID!, $search: String, $userId: [ID], $budgetId: [ID], $cardId: [ID], $merchantName: String, $filterTagValues: [ID], $amountMin: Int, $amountMax: Int, $dateStart: Time, $dateEnd: Time, $sortDirection: String = \\\"desc\\\", $sortColumn: String, $reconciled: Boolean, $isReviewed: Boolean, $isLocked: Boolean, $syncStatus: [SyncStatus], $hasAllRequiredFieldsCompleted: Boolean, $sortTagType: ID, $types: [TransactionType], $status: [TransactionStatus]) {\\n  node(id: $companyId) {\\n    ... on Company {\\n      id\\n      transactionsTotalCount(search: $search, userId: $userId, cardId: $cardId, budgetId: $budgetId, merchantName: $merchantName, filterTagValues: $filterTagValues, amountMin: $amountMin, amountMax: $amountMax, dateStart: $dateStart, dateEnd: $dateEnd, sortDirection: $sortDirection, sortColumn: $sortColumn, reconciled: $reconciled, isReviewed: $isReviewed, isLocked: $isLocked, syncStatus: $syncStatus, hasAllRequiredFieldsCompleted: $hasAllRequiredFieldsCompleted, sortTagType: $sortTagType, types: $types, status: $status)\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}";
         defaultHeader.put("referer", " https://app.divvy.co/home");
     }
 

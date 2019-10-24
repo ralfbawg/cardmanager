@@ -7,6 +7,7 @@ import com.jeesite.common.dao.CrudDao;
 import com.jeesite.common.mybatis.annotation.MyBatisDao;
 import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.ResultType;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -40,4 +41,14 @@ public interface TblCardInfoDao extends CrudDao<TblCardInfo> {
 
     @Update({"update tbl_card_info set card_amount=1 where id =#{id}"})
     Long refund(@Param("id") String id);
+
+
+    @Select({"SELECT" +
+            "*" +
+            "FROM" +
+            "tbl_card_info " +
+            "WHERE" +
+            "CURRENT_TIMESTAMP - INTERVAL #{interval} MINUTE >= last_get_transaction_date  or last_get_transaction_date is null limit 0,#{size}" })
+    @ResultType(value = TblCardInfo.class)
+    List<TblCardInfo> getShouldUpdateTransaction(@Param("interval") long timeInterval,@Param("size")long size);
 }

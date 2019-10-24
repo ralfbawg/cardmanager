@@ -45,6 +45,9 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
         @Column(name = "user_allocation_id", attrName = "userAllocationId", label = "用户操作码", isQuery = false),
         @Column(name = "card_status", attrName = "cardStatus", label = "卡状态"),
         @Column(name = "card_activated_status", attrName = "cardActivatedStatus", label = "卡激活状态"),
+        @Column(name = "last_get_transaction_date", attrName = "lastGetTransactionDate", label = "上次获取流水时间"),
+        @Column(name = "transaction_count", attrName = "normalTransactionCount", label = "成功流水数"),
+        @Column(name = "fail_transaction_count", attrName = "failedTransactionCount", label = "失败流水数"),
 }, orderBy = "a.id DESC"
 )
 public class TblCardInfo extends DataEntity<TblCardInfo> {
@@ -71,7 +74,9 @@ public class TblCardInfo extends DataEntity<TblCardInfo> {
     private String userAllocationId;        // 用户操作码
     private String cardStatus;        // 卡状态
     private String cardActivatedStatus;        // 卡激活状态
-
+    private Date lastGetTransactionDate;
+    private Long normalTransactionCount;
+    private Long failedTransactionCount;
     public TblCardInfo() {
         this(null);
     }
@@ -266,4 +271,27 @@ public class TblCardInfo extends DataEntity<TblCardInfo> {
         this.cardActivatedStatus = cardActivatedStatus;
     }
 
+    public Date getLastGetTransactionDate() {
+        return lastGetTransactionDate;
+    }
+
+    public void setLastGetTransactionDate(Date lastGetTransactionDate) {
+        this.lastGetTransactionDate = lastGetTransactionDate;
+    }
+
+    public Long getNormalTransactionCount() {
+        return normalTransactionCount;
+    }
+
+    public void setNormalTransactionCount(Long normalTransactionCount) {
+        this.normalTransactionCount = normalTransactionCount;
+    }
+
+    public Long getFailedTransactionCount() {
+        return failedTransactionCount;
+    }
+
+    public void setFailedTransactionCount(Long failedTransactionCount) {
+        this.failedTransactionCount = failedTransactionCount;
+    }
 }
