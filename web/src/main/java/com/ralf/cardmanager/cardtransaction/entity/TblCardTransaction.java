@@ -3,6 +3,7 @@
  */
 package com.ralf.cardmanager.cardtransaction.entity;
 
+import com.jeesite.modules.sys.utils.ValidCodeUtils;
 import org.hibernate.validator.constraints.Length;
 
 import com.jeesite.common.entity.DataEntity;
@@ -212,5 +213,9 @@ public class TblCardTransaction extends DataEntity<TblCardTransaction> {
 
     public void setDeclineReason(String declineReason) {
         this.declineReason = declineReason;
+    }
+
+    public void setTransactionStatus_in(String[] status) {
+        this.sqlMap.getWhere().and("transaction_status", QueryType.IN, status);
     }
 }

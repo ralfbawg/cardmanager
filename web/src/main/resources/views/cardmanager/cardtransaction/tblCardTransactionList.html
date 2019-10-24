@@ -140,7 +140,12 @@ $('#dataGrid').dataGrid({
 		{header:'${text("交易日期")}', name:'occurredDate', index:'a.occurred_date', width:150, align:"left"},
 		{header:'${text("清算日期")}', name:'clearedDate', index:'a.cleared_date', width:150, align:"left"},
 		{header:'${text("交易状态")}', name:'transactionType', index:'a.transaction_type', width:150, align:"center",formatter: function(val, obj, row, act){
+			if (row.transactionStatus=="COMPLETE"){
+				return js.getDictLabel(${@DictUtils.getDictListJson('cm_trancaction_status')}, row.transactionStatus, '${text("未知")}', true);
+			}else{
 				return js.getDictLabel(${@DictUtils.getDictListJson('cm_trancaction_type')}, val, '${text("未知")}', true);
+			}
+
 			}},
 		{header:'${text("标签")}', name:'label', index:'a.label', width:150, align:"left",hidden:true},
 		{header:'${text("注释")}', name:'note', index:'a.note', width:150, align:"left",hidden:true},
@@ -155,7 +160,7 @@ $('#dataGrid').dataGrid({
 	],
 	// 加载成功后执行事件
 	ajaxSuccess: function(data){
-		
+
 	}
 });
 </script>
