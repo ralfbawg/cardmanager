@@ -1,6 +1,9 @@
 package com.ralf.cardmanager.system;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeesite.common.cache.CacheUtils;
+import com.jeesite.common.lang.StringUtils;
 import com.jeesite.modules.sys.utils.UserUtils;
 import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
 import com.ralf.cardmanager.cardinfo.service.TblCardInfoService;
@@ -25,6 +28,8 @@ public class CommonService {
     TblCardInfoService tblCardInfoService;
     @Autowired
     TblBizParamService bizParamService;
+
+    public static final ObjectMapper mapper = new ObjectMapper();
 
     public Long getAutoChargeAmount() {
         val bizParam = new TblBizParam();
@@ -65,21 +70,25 @@ public class CommonService {
 
 
     public void updateCardCache(TblCardInfo t) {
-        CacheUtils.put(CARD_CACHE, t.getCardId(), t,60);
+        try {
+            CacheUtils.put(CARD_CACHE, t.getCardId(), mapper.writeValueAsString(t));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
     public TblCardInfo getCardinfoByCardId(String cardId) {
         try {
-            val result = CacheUtils.get(CARD_CACHE, cardId);
-            if (result == null) {
+            String resultStr = CacheUtils.get(CARD_CACHE, cardId);
+            if (StringUtils.isEmpty(resultStr)) {
                 val cardInfo = new TblCardInfo();
                 cardInfo.setCardId(cardId);
                 val cardInfoList = tblCardInfoService.findList(cardInfo);
                 if (cardInfoList != null && cardInfoList.size() > 0) {
-                    CacheUtils.put(CARD_CACHE, cardInfoList.get(0).getCardId(), cardInfoList.get(0));
+                    updateCardCache(cardInfoList.get(0));
                 }
             } else {
-                return (TblCardInfo) result;
+                return mapper.readValue(resultStr, TblCardInfo.class);
             }
         } catch (Exception e) {
             return null;

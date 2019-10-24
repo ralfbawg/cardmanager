@@ -293,8 +293,8 @@ public class SchedulerService {
      *
      * @throws IOException
      */
-    @Scheduled(fixedDelay = 150 * 1000) // 每分钟一次
-//    @Scheduled(fixedDelay = 30 * 1000)//每分钟一次
+//    @Scheduled(fixedDelay = 60 * 1000) // 每分钟一次
+    @Scheduled(fixedDelay = 60 * 1000)//每分钟一次
     public void GetCardTransactions() throws Exception {
         log.debug("开始执行正常流水获取");
         Long dbTransactionCount = 0l;
@@ -306,7 +306,7 @@ public class SchedulerService {
 
         }
         String budgetId = SpringUtils.getBean(DivvyPaySiteConfig.class).getBudgetId();
-        val transactionTotal = getCompanyTransactionsTotalCount.init(null,budgetId,null).execute();
+        val transactionTotal = getCompanyTransactionsTotalCount.init(null, budgetId, null).execute();
         if (transactionTotal.getTotalCount() != dbTransactionCount) {
             val size = transactionTotal.getTotalCount() - dbTransactionCount;
             if (size > pageSize) {
@@ -315,7 +315,7 @@ public class SchedulerService {
                         Thread.sleep(1000 * 5);
                     }
 
-                    val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, i * pageSize, null,budgetId)
+                    val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, dbTransactionCount + (i * pageSize) - 1, null, budgetId)
                             .execute();
                     try {
                         saveTransaction(rsp);
@@ -326,7 +326,7 @@ public class SchedulerService {
                     }
                 }
             } else {
-                val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, 0l, null,budgetId).execute();
+                val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, dbTransactionCount <= 0 ? null : dbTransactionCount - 1, null, budgetId).execute();
                 saveTransaction(rsp);
             }
 
@@ -355,7 +355,7 @@ public class SchedulerService {
             dbDeclineTransactionCount = Long.valueOf(list.get(0).getValue());
         }
         String budgetId = SpringUtils.getBean(DivvyPaySiteConfig.class).getBudgetId();
-        val transactionTotal = getCompanyTransactionsTotalCount.init("decline",budgetId,null).execute();
+        val transactionTotal = getCompanyTransactionsTotalCount.init("decline", budgetId, null).execute();
         if (transactionTotal.getTotalCount() != dbDeclineTransactionCount) {
             val size = transactionTotal.getTotalCount() - dbDeclineTransactionCount;
             if (size > pageSize) {
@@ -363,12 +363,12 @@ public class SchedulerService {
                     if (size / pageSize > 10 && i % 10 == 0) {
                         Thread.sleep(1000 * 2);
                     }
-                    val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, i * pageSize, "decline",budgetId)
+                    val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, dbDeclineTransactionCount + (i * pageSize) - 1, "decline", budgetId)
                             .execute();
                     saveTransaction(rsp);
                 }
             } else {
-                val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, 0l, "decline",budgetId).execute();
+                val rsp = getCardTransactionsByCompanyId.init("", null, null, pageSize, dbDeclineTransactionCount <= 0 ? null : dbDeclineTransactionCount - 1, "decline", budgetId).execute();
                 saveTransaction(rsp);
             }
             if (list != null && list.size() == 1) {
@@ -435,7 +435,7 @@ public class SchedulerService {
     /**
      * 卡信息缓存
      */
-    @Scheduled(fixedDelay = 30 * 60 * 1000) // 30分钟
+    @Scheduled(fixedDelay = 1800*1000) // 30分钟
     public void updateCardCache() {
         commonService.updateCardCache();
     }
