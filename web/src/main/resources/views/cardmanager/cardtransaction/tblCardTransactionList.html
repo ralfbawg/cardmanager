@@ -147,6 +147,11 @@ $('#dataGrid').dataGrid({
 			}
 
 			}},
+			<% if(hasRole()){ %>
+				{header:'${text("失败原因")}', name:'declineReason', index:'a.decline_reason', width:150, align:"center", formatter: function(val, obj, row, act){
+					return js.getDictLabel(${@DictUtils.getDictListJson('cm_trancaction_reason')}, val, '${text("未知")}', true);
+				}},
+			<% } %>
 		{header:'${text("标签")}', name:'label', index:'a.label', width:150, align:"left",hidden:true},
 		{header:'${text("注释")}', name:'note', index:'a.note', width:150, align:"left",hidden:true},
 		{header:'${text("税费")}', name:'fee', index:'a.fee', width:80, align:"center",hidden:true},
