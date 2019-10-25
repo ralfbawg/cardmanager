@@ -41,6 +41,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
         @Column(name = "card_token", attrName = "cardToken", label = "卡token", isQuery = false),
         @Column(name = "card_id", attrName = "cardId", label = "card_id"),
         @Column(name = "expired_date", attrName = "expiredDate", label = "卡面过期时间"),
+        @Column(name = "update_date", attrName = "updateDate", label = "更新时间"),
         @Column(name = "card_brand", attrName = "cardBrand", label = "卡品牌"),
         @Column(name = "user_allocation_id", attrName = "userAllocationId", label = "用户操作码", isQuery = false),
         @Column(name = "card_status", attrName = "cardStatus", label = "卡状态"),

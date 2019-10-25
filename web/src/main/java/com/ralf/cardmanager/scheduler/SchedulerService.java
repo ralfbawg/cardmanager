@@ -231,7 +231,7 @@ public class SchedulerService {
     }
 
     // 自动更新余额与状态
-    @Scheduled(cron = "0 0/3 * * * ?")
+    @Scheduled(fixedDelay = 3*60*1000)
     public void updateCardAmount() {
         var list =cardInfoService.getShouldUpdateInfo(30,getCardDetailCount);
         if (list == null || list.size() <= 0) {
