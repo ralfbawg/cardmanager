@@ -231,11 +231,11 @@ public class SchedulerService {
     }
 
     // 自动更新余额与状态
-    @Scheduled(fixedDelay = 3*60*1000)
+    @Scheduled(fixedDelay = 3 * 60 * 1000)
     public void updateCardAmount() {
-        var list =cardInfoService.getShouldUpdateInfo(30,getCardDetailCount);
+        var list = cardInfoService.getShouldUpdateInfo(30, getCardDetailCount);
         if (list == null || list.size() <= 0) {
-            list =cardInfoService.getShouldUpdateInfo(15,getCardDetailCount);
+            list = cardInfoService.getShouldUpdateInfo(15, getCardDetailCount);
         }
         if (list.size() > 0) {
             list.forEach(t -> {
@@ -243,12 +243,12 @@ public class SchedulerService {
                     val rsp = getVirtualCardDrawer.init(t.getCardId()).execute();
                     val rsp2 = getVirtualCardDetailsInfo.init(t.getCardId()).execute();
                     t.setCardAmount(rsp.getAvailableFunds());
-                    t.setCardSpendAmount(rsp.getTotalCleared());
+                    t.setCardSpendAmount(rsp.getTotalCleared() + rsp.getTotalPending());
                     t.setUserAllocationId(rsp.getUserAllocationId());
                     t.setUpdateDate(new Date());
                     t.setCardStatus(rsp.isFrozen() ? (rsp2.isDeleted() ? "deleted" : "frozen") : "actived");
                     cardInfoService.update(t);
-                    log.info("更新卡信息cardinfo={}",t);
+                    log.info("更新卡信息cardinfo={}", t);
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.debug("更新卡信息出错");
