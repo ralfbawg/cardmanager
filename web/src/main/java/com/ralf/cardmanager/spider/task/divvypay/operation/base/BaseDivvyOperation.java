@@ -68,7 +68,11 @@ public abstract class BaseDivvyOperation<T extends BaseDivvyOpertionResp> extend
             put("cookie", " _ga=GA1.2.87993226.1563987455; _pendo_accountId.063f9b98-4d82-4b70-48d1-1e82e1fa3973=Q29tcGFueTozMDI3; _pendo_visitorId.063f9b98-4d82-4b70-48d1-1e82e1fa3973=VXNlcjo1MTIzNg%3D%3D; _gid=GA1.2.734103677.1564589193; _pendo_meta.063f9b98-4d82-4b70-48d1-1e82e1fa3973=1986949279; _gat=1; AWSALB=9Uefnz6V2WIyaTkqAU7CooRCOxPQYKQyTg8ZEeYD00bytbUYM1N0d2HSfRoH0Ug8gpQ0erzieOpyPefixfs37spf1zF3jaxxHiH6MldBX+1uXdbqJElcBOo1ltgw2ZouehsjeffW4NmbMASZMOEB5I2JKAKXqGSl6Iff95WhdVRXCZUJ7F0SBFInPx94tGDe23tmI5IBUSp7umV9ZkKJavCD99Sj20uJyg3OMVltiyzIWpoRPOJiqPnE8bbc3IU=; intercom-session-gh17um10=TXZQWUxDdEM4VEZvbkdyQnMwREFRLysrNHpQOHMxRXBrSjBURkQ3bUszWnNBRGw2V0pSb0p6a2kwdE1oOGlySS0tUk02Rm92ZmhyVGNhUGVJQlBnaG1mdz09--dbce332ab9c07930d71e7e2d33e9722a4393b682");
             put("origin", " https://app.divvy.co");
             put("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3704.400 QQBrowser/10.4.3587.400");
-            put("x-api-version", " 2");
+            put("X-API-Version", "2");
+            put("X-Client-Type","WEB");
+            put("X-Client-Version", "15.19.1");
+            put("X-Acting-On-Company", config.getCompanyId());
+            put("Sec-Fetch-Mode", "cors");
         }};
     }
 

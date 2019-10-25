@@ -47,7 +47,8 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
         @Column(name = "card_activated_status", attrName = "cardActivatedStatus", label = "卡激活状态"),
         @Column(name = "last_get_transaction_date", attrName = "lastGetTransactionDate", label = "上次获取流水时间"),
         @Column(name = "transaction_count", attrName = "normalTransactionCount", label = "成功流水数"),
-        @Column(name = "fail_transaction_count", attrName = "failedTransactionCount", label = "失败流水数"),
+        @Column(name = "fail_transaction_count", attrName = "" +
+                "edTransactionCount", label = "失败流水数"),
 }, orderBy = "a.id DESC"
 )
 public class TblCardInfo extends DataEntity<TblCardInfo> {

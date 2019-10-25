@@ -51,4 +51,13 @@ public interface TblCardInfoDao extends CrudDao<TblCardInfo> {
             "CURRENT_TIMESTAMP - INTERVAL #{interval} MINUTE >= last_get_transaction_date  or last_get_transaction_date is null limit 0,#{size}" })
     @ResultType(value = TblCardInfo.class)
     List<TblCardInfo> getShouldUpdateTransaction(@Param("interval") long timeInterval,@Param("size")long size);
+
+    @Select({"SELECT" +
+            "*" +
+            "FROM" +
+            "tbl_card_info " +
+            "WHERE" +
+            "CURRENT_TIMESTAMP - INTERVAL #{interval} MINUTE >= update_date or update_date is null limit 0,#{size}" })
+    @ResultType(value = TblCardInfo.class)
+    List<TblCardInfo> getShouldUpdateInfo(@Param("interval") long timeInterval,@Param("size")long size);
 }
