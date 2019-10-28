@@ -247,7 +247,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
                 cardInfoService.insert(card);
             });
             try {
-                budgetService.minus(budget.getId(),tblOrder.getOrderAmount());
+                budgetService.justMinus(budget.getId(),tblOrder.getOrderAmount());
             } catch (BudgetNotEnoughException e) {
                 logger.debug("帐户余额不足budgetId={},orderId={}",budget.getId(),tblOrder.getId());
                 throw new Exception("帐户余额不足");
@@ -276,7 +276,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
             cardInfoService.insert(card);
         }
         try {
-            budgetService.minus(budget.getId(),tblOrder.getOrderAmount());
+            budgetService.justMinus(budget.getId(),tblOrder.getOrderAmount());
         } catch (BudgetNotEnoughException e) {
             logger.debug("帐户余额不足budgetId={},orderId={}",budget.getId(),tblOrder.getId());
             throw new Exception("帐户余额不足");
