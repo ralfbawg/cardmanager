@@ -126,6 +126,10 @@ $('#dataGrid').dataGrid({
 		{header:'${text("卡号")}', name:'cardNo', index:'a.card_no', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
 			return '<a href="${ctx}/cardtransaction/tblCardTransaction/form?id='+row.id+'" class="btnList" data-title="${text("编辑交易流水")}">'+(val||row.id)+'</a>';
 		}},
+		{header:'${text("账号")}', name:'cardOwner', index:'a.card_owner', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			var budget = $.GetBudgetByUsercode(val);
+			return '<a href="${ctx}/budget/tblBudget/list?id='+budget.id+'" class="btnList" data-title="${text("帐户")}">'+(budget.name||row.id)+'</a>';
+		}},
 		{header:'${text("交易商户")}', name:'clearedMerchant', index:'a.cleared_merchant', width:150, align:"center"},
 		{header:'${text("交易金额")}', name:'amount', index:'a.amount', width:150, align:"center",formatter:function (val, obj, row, act) {
 			    var price = val/100

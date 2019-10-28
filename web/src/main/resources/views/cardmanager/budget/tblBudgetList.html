@@ -122,7 +122,7 @@ $('#dataGrid').dataGrid({
 					return val!=undefined?'<font color="red">'+js.formatDate(new Date(val),'yyyy-MM-dd HH:mm:ss')+'</font>':'';
 				}},
 				{header:'${text("自动充值失败次数")}', name:'autoChargeFailCount', index:'a.last_charge_on', width:150, align:"center",formatter: function(val, obj, row, act){
-					return val!=undefined&&val>=3?'<font color="red">'+val+'</font>':val;
+					return val!=undefined&&val>=3?'<font color="red">'+val+'</font>':'';
 				}},
 			<% } %>
 

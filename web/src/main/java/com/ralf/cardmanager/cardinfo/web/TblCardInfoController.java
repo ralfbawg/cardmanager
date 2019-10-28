@@ -142,7 +142,7 @@ public class TblCardInfoController extends BaseController {
     @RequestMapping(value = "charge")
     @ResponseBody
     public String charge(@RequestParam("id") String id, @RequestParam("amount") Long amount) {
-        String budgetId = budgetService.findBudgetIdCacheByUsercode(UserUtils.getUser().getUserCode());
+        String budgetId = budgetService.findBudgetIdCacheByUsercode(UserUtils.getUser().getUserCode()).getId();
         val budget= budgetService.get(budgetId);
         if (budget != null) {
             if (budget.getBudgetAmount() < amount) {
@@ -210,7 +210,7 @@ public class TblCardInfoController extends BaseController {
     @RequestMapping(value = "batchRefund")
     @ResponseBody
     public String batchRefund(@RequestParam("ids") String[] ids) {
-        val budgetId = budgetService.findBudgetIdCacheByUsercode(UserUtils.getUser().getUserCode());
+        val budgetId = budgetService.findBudgetIdCacheByUsercode(UserUtils.getUser().getUserCode()).getId();
         if (!StringUtils.isEmpty(budgetId)){
             try {
                 if (tblCardInfoService.batchRefundCard(ids,budgetId )) {

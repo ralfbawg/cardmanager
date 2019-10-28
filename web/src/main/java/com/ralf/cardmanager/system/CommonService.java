@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeesite.common.cache.CacheUtils;
 import com.jeesite.common.lang.StringUtils;
+import com.jeesite.modules.sys.entity.Role;
+import com.jeesite.modules.sys.entity.User;
 import com.jeesite.modules.sys.utils.UserUtils;
 import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
 import com.ralf.cardmanager.cardinfo.service.TblCardInfoService;
@@ -13,6 +15,7 @@ import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +26,13 @@ public class CommonService {
     public static final String SITE_SWITCH_CACHE_KEY = "SiteSwitch";
     public static final String CARD_USER_CACHE = "CardCache";
     public static final String UNFREEZE_CARD_COUNT = "CardCache";
+
+    public static String secAdminStr = "secAdmin";
+
+    @Value("${cm.constant.constant}")
+    public void setSecAdminStr(String secAdminStr) {
+        secAdminStr = secAdminStr;
+    }
 
     @Autowired
     TblCardInfoService tblCardInfoService;
@@ -100,11 +110,19 @@ public class CommonService {
 
     public boolean isAdminOrSecMgr() {
         val user = UserUtils.getUser();
-        if (user.isAdmin() || user.getMgrType().equals("2")) {
+        if (user.isAdmin() || user.getMgrType().equals("2") || isSecAdmin(user)) {
             return true;
         } else {
             return false;
         }
     }
 
+    private boolean isSecAdmin(User user) {
+        for (Role role : user.getRoleList()) {
+            if (role.getRoleCode().indexOf(secAdminStr) != -1) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

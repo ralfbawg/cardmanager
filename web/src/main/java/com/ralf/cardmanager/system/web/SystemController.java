@@ -100,4 +100,10 @@ public class SystemController extends BaseController {
         cardinfo.setBudgetId(budgetId);
         return cardInfoService.findCount(cardinfo);
     }
+
+    @RequestMapping("/getBudgetByUsercode")
+    @ResponseBody
+    public TblBudget getBudgetByUsercode(String usercode) {
+        return budgetService.findBudgetIdCacheByUsercode(usercode);
+    }
 }

@@ -24,4 +24,5 @@ public class CommonUtil {
         BizParam.setKey("PerCardCost");
         return Long.valueOf(SpringUtils.getBean(TblBizParamService.class).findList(BizParam).get(0).getValue());
     }
+
 }

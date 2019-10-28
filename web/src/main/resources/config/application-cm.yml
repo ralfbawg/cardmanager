@@ -32,6 +32,8 @@ cm:
       password: plu996633
       host: mail.qq.com
       port: 23
+  constant:
+    secAdminStr: secAdmin
 mybatis:
   #  # @MyBatisDao、Aliases 扫描基础包，如果多个，用“,”分隔
   scanBasePackage: com.jeesite.modules,com.ralf.cardmanager

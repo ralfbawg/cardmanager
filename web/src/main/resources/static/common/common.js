@@ -65,6 +65,23 @@ $.extend({
         });
         return budget;
     },
+    GetBudgetByUsercode: function (usercode) {
+        var budget;
+        $.ajax({
+            type: "POST",
+            url: "/system/getBudgetByUsercode",
+            data: {usercode: usercode},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                budget = data;
+            },
+            error: function (e) {
+                console.log(e);
+            }
+        });
+        return budget;
+    },
     GetBudgetCardCount: function (budgetId) {
         var count;
         $.ajax({
@@ -94,4 +111,13 @@ function addRow(id, obj) {
     // 新插入行的位置
     var newInd = ind + 1;
     $("#" + id).addRowData(rowId + 1, obj, newInd);
+}
+
+var budgets = new Array();
+var cardBudgets = new Array();
+function getBudget(id,refresh) {
+    if (budgets[id]==undefined||refresh){
+        budgets[id]=$.GetBudget(id);
+    }
+    return budgets[id];
 }
