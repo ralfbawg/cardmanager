@@ -41,13 +41,15 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
         @Column(name = "card_token", attrName = "cardToken", label = "卡token", isQuery = false),
         @Column(name = "card_id", attrName = "cardId", label = "card_id"),
         @Column(name = "expired_date", attrName = "expiredDate", label = "卡面过期时间"),
+        @Column(name = "update_date", attrName = "updateDate", label = "更新时间"),
         @Column(name = "card_brand", attrName = "cardBrand", label = "卡品牌"),
         @Column(name = "user_allocation_id", attrName = "userAllocationId", label = "用户操作码", isQuery = false),
         @Column(name = "card_status", attrName = "cardStatus", label = "卡状态"),
         @Column(name = "card_activated_status", attrName = "cardActivatedStatus", label = "卡激活状态"),
         @Column(name = "last_get_transaction_date", attrName = "lastGetTransactionDate", label = "上次获取流水时间"),
         @Column(name = "transaction_count", attrName = "normalTransactionCount", label = "成功流水数"),
-        @Column(name = "fail_transaction_count", attrName = "failedTransactionCount", label = "失败流水数"),
+        @Column(name = "fail_transaction_count", attrName = "" +
+                "edTransactionCount", label = "失败流水数"),
 }, orderBy = "a.id DESC"
 )
 public class TblCardInfo extends DataEntity<TblCardInfo> {

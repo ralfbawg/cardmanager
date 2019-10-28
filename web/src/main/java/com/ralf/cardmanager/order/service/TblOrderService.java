@@ -14,6 +14,7 @@ import com.ralf.cardmanager.budget.service.TblBudgetService;
 import com.ralf.cardmanager.cardinfo.entity.TblCardInfo;
 import com.ralf.cardmanager.cardinfo.service.TblCardInfoService;
 import com.ralf.cardmanager.system.SpType;
+import com.ralf.cardmanager.system.exception.BudgetNotEnoughException;
 import com.ralf.cardmanager.tblbizparam.entity.TblBizParam;
 import com.ralf.cardmanager.tblbizparam.service.TblBizParamService;
 import javafx.scene.control.Pagination;
@@ -183,7 +184,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
                     if (budgetList.size() == 1) {
                         logger.info("开始批量建卡,budgetId={}", budget.getId());
                         SpringUtils.getBean(TblOrderService.class).batchCreateCard(tblOrder, budgetList.get(0));
-                        logger.info("开始批量建卡,budgetId={}", budget.getId());
+                        logger.info("结束批量建卡,budgetId={}", budget.getId());
                     }
                     break;
             }
@@ -229,7 +230,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
      * @param budgetId
      */
     @Transactional
-    public void createCard(TblOrder tblOrder, String budgetId) {
+    public void createCard(TblOrder tblOrder, String budgetId) throws Exception {
         val budget = budgetService.get(budgetId);
 
 
@@ -245,6 +246,12 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
                 card.setCardStatus("tobecreate");
                 cardInfoService.insert(card);
             });
+            try {
+                budgetService.justMinus(budget.getId(),tblOrder.getOrderAmount());
+            } catch (BudgetNotEnoughException e) {
+                logger.debug("帐户余额不足budgetId={},orderId={}",budget.getId(),tblOrder.getId());
+                throw new Exception("帐户余额不足");
+            }
 
         }
     }
@@ -256,7 +263,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
      * @param budgetId
      */
     @Transactional
-    public void batchCreateCard(TblOrder tblOrder, TblBudget budget) {
+    public void batchCreateCard(TblOrder tblOrder, TblBudget budget) throws Exception {
         for (int i = 0; i < tblOrder.getBatchCardNum(); i++) {
             val card = new TblCardInfo();
             card.setIsNewRecord(true);
@@ -267,6 +274,12 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
             card.setCardAmount(tblOrder.getBatchCardAmount());
             card.setCardStatus("tobecreate");
             cardInfoService.insert(card);
+        }
+        try {
+            budgetService.justMinus(budget.getId(),tblOrder.getOrderAmount());
+        } catch (BudgetNotEnoughException e) {
+            logger.debug("帐户余额不足budgetId={},orderId={}",budget.getId(),tblOrder.getId());
+            throw new Exception("帐户余额不足");
         }
         logger.info("批量制卡完成，制卡数量{}",tblOrder.getBatchCardNum());
     }

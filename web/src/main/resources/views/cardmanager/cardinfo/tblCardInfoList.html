@@ -153,7 +153,9 @@ $('#dataGrid').dataGrid({
 				return val/100;
 			}},
 		{header:'${text("上次充值时间")}', name:'lastChargeOn', index:'a.last_charge_on', width:150, align:"center",hidden:true},
-		{header:'${text("消费金额")}', name:'cardSpendAmount', index:'a.card_spend_amount', width:150, align:"center"},
+		{header:'${text("消费金额")}', name:'cardSpendAmount', index:'a.card_spend_amount', width:150, align:"center", formatter: function(val, obj, row, act){
+				return val/100;
+			}},
 		{header:'${text("卡类型")}', name:'cardType', index:'a.card_type', width:150, align:"center", formatter: function(val, obj, row, act){
 				return js.getDictLabel(${@DictUtils.getDictListJson('cm_card_bank_divvy_type')}, val, '${text("未知")}', true);
 			}},

@@ -75,6 +75,8 @@ public class SchedulerService {
     @Autowired
     GetVirtualCardEditInfo getVirtualCardEditInfo;
     @Autowired
+    GetVirtualCardDrawer getVirtualCardDrawer;
+    @Autowired
     GetTransaction_Details_Merchant getTransactionDetailsMerchant;
     @Autowired
     TblBudgetService budgetService;
@@ -229,34 +231,31 @@ public class SchedulerService {
     }
 
     // 自动更新余额与状态
-    @Scheduled(cron = "0 0/3 * * * ?")
+    @Scheduled(fixedDelay = 3 * 60 * 1000)
     public void updateCardAmount() {
-        val cardQuery = new TblCardInfo();
-        cardQuery.setUpdateDate_lte(new DateTime().minusMinutes(30).toDate());
-        cardQuery.setPageSize(getCardDetailCount);
-        var page = cardInfoService.findPage(cardQuery);
-        var list = page.getList();
+        var list = cardInfoService.getShouldUpdateInfo(30, getCardDetailCount);
         if (list == null || list.size() <= 0) {
-            cardQuery.setUpdateDate_lte(new DateTime().minusMinutes(20).toDate());
-            list = cardInfoService.findPage(cardQuery).getList();
+            list = cardInfoService.getShouldUpdateInfo(15, getCardDetailCount);
         }
         if (list.size() > 0) {
             list.forEach(t -> {
                 try {
-                    val rsp = getVirtualCardEditInfo.init(t.getCardId()).execute();
+                    val rsp = getVirtualCardDrawer.init(t.getCardId()).execute();
                     val rsp2 = getVirtualCardDetailsInfo.init(t.getCardId()).execute();
-                    t.setCardAmount(rsp.getAmount());
-                    t.setCardSpendAmount(rsp.getClearedAmount());
-                    t.setUserAllocationId(rsp.getAllocationId());
+                    t.setCardAmount(rsp.getAvailableFunds());
+                    t.setCardSpendAmount(rsp.getTotalCleared() + rsp.getTotalPending());
+                    t.setUserAllocationId(rsp.getUserAllocationId());
                     t.setUpdateDate(new Date());
-                    t.setCardStatus(rsp2.isFrozen() ? (rsp2.isDeleted() ? "deleted" : "frozen") : "actived");
+                    t.setCardStatus(rsp.isFrozen() ? (rsp2.isDeleted() ? "deleted" : "frozen") : "actived");
                     cardInfoService.update(t);
+                    log.info("更新卡信息cardinfo={}", t);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    log.debug("更新卡信息出错");
                 }
             });
         }
-        if (page.getCount() / 30 > 3) {
+        if (list.size() / 30 > 3) {
             updateCardAmount();
         }
 

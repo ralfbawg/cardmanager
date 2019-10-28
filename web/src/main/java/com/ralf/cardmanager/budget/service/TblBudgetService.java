@@ -106,6 +106,16 @@ public class TblBudgetService extends CrudService<TblBudgetDao, TblBudget> {
         return dao.minus(id, amount);
     }
 
+    @Transactional
+    public int justMinus(String id, long amount) throws BudgetNotEnoughException {
+        val budget = get(id);
+        if (budget.getBudgetAmount() < amount) {
+            log.error("账户{}现有余额{}不足以扣减{}", id, budget.getBudgetAmount(), amount);
+            throw new BudgetNotEnoughException("账户现有余额不足以扣减");
+        }
+        return dao.justMinus(id, amount);
+    }
+
     public int refund(String budgetId, long refundAmount) {
         return dao.refund(budgetId, refundAmount);
     }
