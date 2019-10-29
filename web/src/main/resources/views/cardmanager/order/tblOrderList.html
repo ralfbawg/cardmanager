@@ -81,7 +81,7 @@ $('#dataGrid').dataGrid({
 			return js.getDictLabel(${@DictUtils.getDictListJson('cm_order_type')}, val, '${text("未知")}', true);
 		}},
 		{header:'${text("充值金额")}', name:'chargeAmount', index:'a.charge_amount', width:150, align:"center",formatter: function(val, obj, row, act){
-				return val/100;
+				return val?val/100:"";
 			}},
 
 		{header:'${text("审核用户")}', name:'auditUsercode', index:'a.audit_usercode', width:150, align:"center",hidden:true},
@@ -95,7 +95,7 @@ $('#dataGrid').dataGrid({
 			}
 			}},
 		{header:'${text("卡面值")}', name:'batchCardAmount', index:'a.batch_card_amount', width:120, align:"center",formatter: function(val, obj, row, act){
-				return val/100;
+				return val?val/100:"";
 			}},
 		{header:'${text("订单总额(USD)")}', name:'orderAmount', index:'a.order_amount', width:150, align:"center",formatter: function(val, obj, row, act){
 				return val/100;

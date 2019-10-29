@@ -247,7 +247,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
                 cardInfoService.insert(card);
             });
             try {
-                budgetService.justMinus(budget.getId(),tblOrder.getOrderAmount());
+                budgetService.justMinus(budget.getId(),tblOrder.getTblOrderDetailList().stream().mapToLong(TblOrderDetail::getLimitAmount).sum());
             } catch (BudgetNotEnoughException e) {
                 logger.debug("帐户余额不足budgetId={},orderId={}",budget.getId(),tblOrder.getId());
                 throw new Exception("帐户余额不足");
@@ -260,7 +260,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
      * 批量创建卡
      *
      * @param tblOrder
-     * @param budgetId
+     * @param budget
      */
     @Transactional
     public void batchCreateCard(TblOrder tblOrder, TblBudget budget) throws Exception {
@@ -276,7 +276,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
             cardInfoService.insert(card);
         }
         try {
-            budgetService.justMinus(budget.getId(),tblOrder.getOrderAmount());
+            budgetService.justMinus(budget.getId(),tblOrder.getBatchCardAmount()*tblOrder.getBatchCardNum());
         } catch (BudgetNotEnoughException e) {
             logger.debug("帐户余额不足budgetId={},orderId={}",budget.getId(),tblOrder.getId());
             throw new Exception("帐户余额不足");

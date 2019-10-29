@@ -121,11 +121,11 @@ public class TblBudgetService extends CrudService<TblBudgetDao, TblBudget> {
     }
 
     public TblBudget findBudgetIdCacheByUsercode(String usercode) {
-        String budgetId = CacheUtils.get(BUDGET_CACHE, usercode);
-        if (StringUtils.isEmpty(budgetId)) {
+        TblBudget budget = CacheUtils.get(BUDGET_CACHE, usercode);
+        if (budget == null) {
             val budgetQuery = new TblBudget();
             val list = dao.findList(budgetQuery);
-            list.parallelStream().forEach(t->{
+            list.parallelStream().forEach(t -> {
                 CacheUtils.put(BUDGET_CACHE, usercode, t);
             });
         }
