@@ -24,7 +24,7 @@
 								<span class="required ">*</span> ${text('归属机构')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
 								<#form:treeselect id="office" title="${text('机构选择')}" value="CHGS" defaultValue="CHGS"
-									path="employee.office.officeCode" labelPath="employee.office.officeName" defaultLabel="程欢的公司"
+									path="employee.office.officeCode" labelPath="employee.office.officeName" defaultLabel="CH公司"
 									url="${ctx}/sys/office/treeData?ctrlPermi=${@Global.getConfig('user.adminCtrlPermi', '2')}" class="" allowClear="false"/>
 							</div>
 						</div>

@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.jeesite.common.lang.StringUtils;
-import com.jeesite.modules.sys.entity.User;
 import com.jeesite.modules.sys.utils.UserUtils;
 import com.ralf.cardmanager.budget.entity.TblBudget;
 import com.ralf.cardmanager.budget.service.TblBudgetService;
@@ -142,7 +141,7 @@ public class TblCardInfoController extends BaseController {
     @RequestMapping(value = "charge")
     @ResponseBody
     public String charge(@RequestParam("id") String id, @RequestParam("amount") Long amount) {
-        String budgetId = budgetService.findBudgetIdCacheByUsercode(UserUtils.getUser().getUserCode()).getId();
+        String budgetId = budgetService.findBudgetCacheByUsercode(UserUtils.getUser().getUserCode()).getId();
         val budget= budgetService.get(budgetId);
         if (budget != null) {
             if (budget.getBudgetAmount() < amount) {
@@ -210,7 +209,7 @@ public class TblCardInfoController extends BaseController {
     @RequestMapping(value = "batchRefund")
     @ResponseBody
     public String batchRefund(@RequestParam("ids") String[] ids) {
-        val budgetId = budgetService.findBudgetIdCacheByUsercode(UserUtils.getUser().getUserCode()).getId();
+        val budgetId = budgetService.findBudgetCacheByUsercode(UserUtils.getUser().getUserCode()).getId();
         if (!StringUtils.isEmpty(budgetId)){
             try {
                 if (tblCardInfoService.batchRefundCard(ids,budgetId )) {

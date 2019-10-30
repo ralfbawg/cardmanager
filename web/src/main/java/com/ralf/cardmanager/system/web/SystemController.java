@@ -1,8 +1,6 @@
 package com.ralf.cardmanager.system.web;
 
-import com.jeesite.common.cache.CacheUtils;
 import com.jeesite.common.lang.StringUtils;
-import com.jeesite.common.utils.SpringUtils;
 import com.jeesite.common.web.BaseController;
 import com.jeesite.modules.sys.entity.User;
 import com.jeesite.modules.sys.service.UserService;
@@ -20,11 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.PostConstruct;
-
-import static com.ralf.cardmanager.system.CommonService.SITE_SWITCH_CACHE;
-import static com.ralf.cardmanager.system.CommonService.SITE_SWITCH_CACHE_KEY;
 
 @RequestMapping("system")
 @RestController
@@ -104,6 +97,6 @@ public class SystemController extends BaseController {
     @RequestMapping("/getBudgetByUsercode")
     @ResponseBody
     public TblBudget getBudgetByUsercode(String usercode) {
-        return budgetService.findBudgetIdCacheByUsercode(usercode);
+        return budgetService.findBudgetCacheByUsercode(usercode);
     }
 }
