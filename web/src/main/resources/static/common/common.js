@@ -32,6 +32,9 @@ $.extend({
         return a / 100;
     },
     GetUser: function (usercode) {
+        if ($.userCache.users[usercode] != undefined && new Date().getTime() - $.userCache.lastTime[usercode] < 60 * 1000) {
+            return $.userCache.users[usercode];
+        }
         var user;
         $.ajax({
             type: "POST",
@@ -41,6 +44,8 @@ $.extend({
             async: false,
             success: function (data) {
                 user = data;
+                $.userCache.users[user.usercode] = user;
+                $.userCache.lastTime[user.usercode] = new Date().getTime();
             },
             error: function (e) {
                 console.log(e);
@@ -49,6 +54,9 @@ $.extend({
         return user;
     },
     GetBudget: function (budgetId) {
+        if ($.budgetCache.budgetWithId[budgetId] != undefined && new Date().getTime() - $.budgetCache.lastTime[budgetId] < 60 * 1000) {
+            return $.budgetCache[budgetId];
+        }
         var budget;
         $.ajax({
             type: "POST",
@@ -58,6 +66,7 @@ $.extend({
             async: false,
             success: function (data) {
                 budget = data;
+                $.budgetCache.budgetWithId[budget.id] = budget;
             },
             error: function (e) {
                 console.log(e);
@@ -66,6 +75,9 @@ $.extend({
         return budget;
     },
     GetBudgetByUsercode: function (usercode) {
+        if ($.budgetCache.budgets[usercode] != undefined && new Date().getTime() - $.budgetCache.lastTime[usercode] < 60 * 1000) {
+            return $.budgetCache[usercode];
+        }
         var budget;
         $.ajax({
             type: "POST",
@@ -75,6 +87,9 @@ $.extend({
             async: false,
             success: function (data) {
                 budget = data;
+                $.budgetCache.budgets[usercode] = budget;
+                $.budgetCache.budgetWithId[budget.id] = budget;
+                $.budgetCache.lastTime[usercode] = new Date().getTime();
             },
             error: function (e) {
                 console.log(e);
@@ -83,6 +98,9 @@ $.extend({
         return budget;
     },
     GetBudgetCardCount: function (budgetId) {
+        if ($.budgetCountCache.budgets[budgetId] != undefined && new Date().getTime() - $.budgetCountCache.lastTime[budgetId] < 60 * 1000) {
+            return $.budgetCountCache[budgetId];
+        }
         var count;
         $.ajax({
             type: "POST",
@@ -92,6 +110,8 @@ $.extend({
             async: false,
             success: function (data) {
                 count = data;
+                $.budgetCountCache.budgets[budgetId] = count;
+                $.budgetCountCache.lastTime[budgetId] = new Date().getTime();
             },
             error: function (e) {
                 console.log(e);
@@ -99,7 +119,9 @@ $.extend({
         });
         return count;
     },
-    userCache: {users: {}, lastTime: new Date().getMilliseconds()}
+    userCache: {users: [], lastTime: []},
+    budgetCache: {budgets: [], budgetWithId:[],lastTime: []},
+    budgetCountCache: {budgets: [], lastTime: []}
 });
 
 function addRow(id, obj) {
@@ -115,9 +137,10 @@ function addRow(id, obj) {
 
 var budgets = new Array();
 var cardBudgets = new Array();
-function getBudget(id,refresh) {
-    if (budgets[id]==undefined||refresh){
-        budgets[id]=$.GetBudget(id);
+
+function getBudget(id, refresh) {
+    if (budgets[id] == undefined || refresh) {
+        budgets[id] = $.GetBudget(id);
     }
     return budgets[id];
 }
