@@ -145,45 +145,54 @@ public class SchedulerService {
     @Scheduled(cron = "0 0/5 * * * *")
     @Transactional
     public void UnfreezedCard() throws Exception {
-        val declineTransaction = new TblCardTransaction();
-        declineTransaction.setProcStatus(PROC_STATUS_WAIT);
-        declineTransaction.setTransactionType("DECLINE");
-        val list = transactionService.findList(declineTransaction);
-        if (list != null && list.size() > 0) {
-            val filterTransactionList = list.stream()
-                    .filter(t -> commonService.getCardinfoByCardId(t.getCardId()) != null).collect(Collectors.toList());
-            for (TblCardTransaction tblCardTransaction : filterTransactionList) {
-                TblCardInfo cardInfo = null;
-                val rsp = getVirtualCardDetailsInfo.init(tblCardTransaction.getCardId()).execute();
-                var result = rsp.isFrozen();
-                if (rsp.isFrozen()) {
-                    val card = new TblCardInfo();
-                    card.setCardId(tblCardTransaction.getCardId());
-                    cardInfo = cardInfoService.findList(card).get(0);
-                    result = unfreezedCard(cardInfo, 0);
-                }
-                if (result) {
-                    if (commonService.getUnfreezeCardCount(tblCardTransaction.getCardId()) > 10) {
-                        tblCardTransaction.setProcStatus(PROC_STATUS_FINISH);
-                        transactionService.update(tblCardTransaction);
+        try {
+            val declineTransaction = new TblCardTransaction();
+            declineTransaction.setProcStatus(PROC_STATUS_WAIT);
+            declineTransaction.setTransactionType("DECLINE");
+            val list = transactionService.findList(declineTransaction);
+            if (list != null && list.size() > 0) {
+                val filterTransactionList = list.stream()
+                        .filter(t -> commonService.getCardinfoByCardId(t.getCardId()) != null).collect(Collectors.toList());
+                for (TblCardTransaction tblCardTransaction : filterTransactionList) {
+                    TblCardInfo cardInfo = null;
+                    val rsp = getVirtualCardDetailsInfo.init(tblCardTransaction.getCardId()).execute();
+                    var result = rsp.isFrozen();
+                    if (rsp.isFrozen()) {
+                        val card = new TblCardInfo();
+                        card.setCardId(tblCardTransaction.getCardId());
+                        cardInfo = cardInfoService.findList(card).get(0);
+                        result = unfreezedCard(cardInfo, 0);
                     }
-                    continue;
-                }
-                if (!result && tblCardTransaction.getDeclineReason().equalsIgnoreCase("exceeds_vc_balance")) {// 如果是超过余额，需要自动充值
-
-                    if (!autoCharge(cardInfo, commonService.getAutoChargeAmount() == 0 ? tblCardTransaction.getAmount()
-                            : commonService.getAutoChargeAmount())) {
+                    if (result) {
+                        if (commonService.getUnfreezeCardCount(tblCardTransaction.getCardId()) > 10) {
+                            tblCardTransaction.setProcStatus(PROC_STATUS_FINISH);
+                            transactionService.update(tblCardTransaction);
+                        }
                         continue;
                     }
-                }
-                if (result && tblCardTransaction.getDeclineReason().equalsIgnoreCase("exceeds_vc_limit")) {// todo
-                    // 如果是超过限额
-                }
-                tblCardTransaction.setProcStatus(PROC_STATUS_FINISH);
-                transactionService.update(tblCardTransaction);
+                    if (!result){
+                        switch (tblCardTransaction.getDeclineReason().toLowerCase()){
+                            case "exceeds_vc_balance":// 如果是超过余额，需要自动充值
+                                if (!autoCharge(cardInfo, commonService.getAutoChargeAmount() == 0 ? tblCardTransaction.getAmount()
+                                        : commonService.getAutoChargeAmount())) {
+                                    continue;
+                                }
+                                break;
+                            case "exceeds_vc_limit":// 如果是超过限额
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    tblCardTransaction.setProcStatus(PROC_STATUS_FINISH);
+                    transactionService.update(tblCardTransaction);
 
+                }
             }
+        }catch (Exception e){
+            log.error("解冻时出一异常",e);
         }
+
     }
 
     @Transactional

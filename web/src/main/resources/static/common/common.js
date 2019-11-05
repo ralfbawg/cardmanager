@@ -55,7 +55,7 @@ $.extend({
     },
     GetBudget: function (budgetId) {
         if ($.budgetCache.budgetWithId[budgetId] != undefined && new Date().getTime() - $.budgetCache.lastTime[budgetId] < 60 * 1000) {
-            return $.budgetCache[budgetId];
+            return $.budgetCache.budgetWithId[budgetId];
         }
         var budget;
         $.ajax({
@@ -66,6 +66,10 @@ $.extend({
             async: false,
             success: function (data) {
                 budget = data;
+                var now = new Date().getTime();
+                $.budgetCache.budgets[budget.ownerUsercode] = budget;
+                $.budgetCache.lastTime[budget.ownerUsercode] = now;
+                $.budgetCache.IdLastTime[budget.id] =  now;
                 $.budgetCache.budgetWithId[budget.id] = budget;
             },
             error: function (e) {
@@ -76,7 +80,7 @@ $.extend({
     },
     GetBudgetByUsercode: function (usercode) {
         if ($.budgetCache.budgets[usercode] != undefined && new Date().getTime() - $.budgetCache.lastTime[usercode] < 60 * 1000) {
-            return $.budgetCache[usercode];
+            return $.budgetCache.budgets[usercode];
         }
         var budget;
         $.ajax({
@@ -87,9 +91,11 @@ $.extend({
             async: false,
             success: function (data) {
                 budget = data;
-                $.budgetCache.budgets[usercode] = budget;
+                var now = new Date().getTime();
+                $.budgetCache.budgets[budget.ownerUsercode] = budget;
+                $.budgetCache.lastTime[budget.ownerUsercode] = now;
+                $.budgetCache.IdLastTime[budget.id] =  now;
                 $.budgetCache.budgetWithId[budget.id] = budget;
-                $.budgetCache.lastTime[usercode] = new Date().getTime();
             },
             error: function (e) {
                 console.log(e);
@@ -120,7 +126,7 @@ $.extend({
         return count;
     },
     userCache: {users: [], lastTime: []},
-    budgetCache: {budgets: [], budgetWithId:[],lastTime: []},
+    budgetCache: {budgets: [], budgetWithId:[],lastTime: [],IdLastTime: []},
     budgetCountCache: {budgets: [], lastTime: []}
 });
 
