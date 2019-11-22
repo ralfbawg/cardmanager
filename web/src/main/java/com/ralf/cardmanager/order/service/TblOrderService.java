@@ -276,7 +276,7 @@ public class TblOrderService extends CrudService<TblOrderDao, TblOrder> {
             cardInfoService.insert(card);
         }
         try {
-            budgetService.justMinus(budget.getId(),tblOrder.getBatchCardAmount()*tblOrder.getBatchCardNum());
+            budgetService.minus(budget.getId(),tblOrder.getBatchCardAmount()*tblOrder.getBatchCardNum());
         } catch (BudgetNotEnoughException e) {
             logger.debug("帐户余额不足budgetId={},orderId={}",budget.getId(),tblOrder.getId());
             throw new Exception("帐户余额不足");
