@@ -14,16 +14,20 @@ cm:
         smtpPort: 23
   divvy:
 #    username: 22123971@qq.com
-    username: 2673794381@qq.com
+#    username: 2673794381@qq.com
+    username: contac@ziteusa.com
 #    password: Wwkkvikthh1234
     password: Cavy996633!
     budget:
 #      id: QnVkZ2V0OjQ3MzAz
-      id: QnVkZ2V0OjQ5MTQ2
+#      id: QnVkZ2V0OjQ5MTQ2
+      id: QnVkZ2V0OjYzMzU2
 #      ownerId: VXNlcjo1MTIzNg==
-      ownerId: VXNlcjo1MTE5OA==
+#      ownerId: VXNlcjo1MTE5OA==
+      ownerId: VXNlcjo3MjM2MQ==
     company:
-      id: Q29tcGFueTozMDI3
+#      id: Q29tcGFueTozMDI3
+      id: Q29tcGFueTozODI0
   epaylinks:
     username: 13066349373
     password: Cavy5201!
