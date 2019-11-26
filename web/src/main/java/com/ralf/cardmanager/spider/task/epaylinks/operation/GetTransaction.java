@@ -10,7 +10,7 @@ public class GetTransaction extends BaseEpaylinksOperation {
         super(config);
         this.url = host+"/account/record.do?method=qryTradeList";
     }
-    public GetTransaction init(String amount) throws Exception{
+    public GetTransaction init(String amount,int page,int pageSize) throws Exception{
         super.init(new String[]{
                 amount
         });

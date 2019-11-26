@@ -10,9 +10,7 @@ public class OpenCard extends BaseEpaylinksOperation {
 
     }
 
-    protected void init(Long cardNo,Double initfee
-
-    ) throws Exception {
+    protected void init(Long cardNo,Double initfee) throws Exception {
         body="cardNumber=%s&cardOrgan=%s&initFee=%%s";
         bodyParams = new String[]{
                String.valueOf(cardNo),"00","15.00"
