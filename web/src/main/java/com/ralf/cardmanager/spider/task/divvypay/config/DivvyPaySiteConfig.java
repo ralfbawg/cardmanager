@@ -20,4 +20,6 @@ public class DivvyPaySiteConfig extends SiteBaseConfig {
     protected String password = "";
     @Value("${cm.divvy.budget.ownerId}")
     protected String budgetOwnerId = "";
+    @Value("${cm.divvy.api.version}")
+    protected String apiVersion = "";
 }

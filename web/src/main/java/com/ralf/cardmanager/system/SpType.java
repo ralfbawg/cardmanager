@@ -1,7 +1,7 @@
 package com.ralf.cardmanager.system;
 
 public enum SpType {
-    DIVVY("divvy"), YIPIAOLIAN("yipiaolian");
+    DIVVY("divvy"), YIPIAOLIAN("epaylinks");
 
     private String name;
 

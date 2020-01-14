@@ -28,6 +28,8 @@ cm:
     company:
 #      id: Q29tcGFueTozMDI3
       id: Q29tcGFueTozODI0
+    api:
+      version: 16.36.2
   epaylinks:
     username: 13066349373
     password: Cavy5201!
