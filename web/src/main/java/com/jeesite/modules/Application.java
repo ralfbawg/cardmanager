@@ -33,8 +33,8 @@ public class Application extends SpringBootServletInitializer {
         log.debug("i am starting");
         val context = SpringApplication.run(Application.class, args);
         if (context.getEnvironment().getRequiredProperty("cm.spider.enabled", boolean.class)) {
-            new Thread(new DivvyTaskThread()).start();
-//            new Thread(new EpaylinksTaskThread()).start();
+//            new Thread(new DivvyTaskThread()).start();
+            new Thread(new EpaylinksTaskThread()).start();
         }
 
     }
